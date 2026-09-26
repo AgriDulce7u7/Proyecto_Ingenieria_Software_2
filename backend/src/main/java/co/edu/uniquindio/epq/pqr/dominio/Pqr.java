@@ -121,8 +121,13 @@ public class Pqr {
 
     /** El gestor toma la PQR para atención (EST-03 → EST-04). */
     public void iniciarTramite(EstadoPqr enTramite, Gestor gestorResponsable) {
+        Objects.requireNonNull(gestorResponsable, "El gestor es obligatorio");
+        if (!gestorResponsable.isActivo()) {
+            throw new ReglaNegocioException(
+                    "El gestor '%s' está inactivo".formatted(gestorResponsable.getNombre()));
+        }
         cambiarEstado(enTramite);
-        asignarA(gestorResponsable);
+        this.gestor = gestorResponsable;
     }
 
     /** Registra la respuesta formal (EST-04 → EST-05). RN-06: la respuesta es obligatoria. */
