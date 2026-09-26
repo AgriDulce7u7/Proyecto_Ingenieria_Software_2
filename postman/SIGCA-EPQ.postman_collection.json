@@ -1,0 +1,2228 @@
+{
+  "info": {
+    "_postman_id": "3f9634a6-1426-4b49-bc7e-ed1e74daf103",
+    "name": "SIGCA-EPQ API",
+    "description": "Pruebas de la API REST de SIGCA-EPQ (F-01 Facturación y F-02 PQR). Ejecutar en orden con el Collection Runner sobre una base de datos recién creada.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Tiempo de respuesta menor a 2 s\", () => pm.expect(pm.response.responseTime).to.be.below(2000));",
+          "if (pm.response.text().length > 0) {",
+          "    pm.test(\"Respuesta en JSON\", () => pm.expect(pm.response.headers.get(\"Content-Type\")).to.match(/json/));",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Salud",
+      "description": "",
+      "item": [
+        {
+          "name": "Health check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"La aplicación está UP\", () => pm.expect(pm.response.json().status).to.eql(\"UP\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 - PQR Catálogos",
+      "description": "",
+      "item": [
+        {
+          "name": "Tipos de solicitud",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Devuelve los 3 tipos\", () => pm.expect(b).to.have.lengthOf(3));",
+                  "pm.test(\"Códigos PETICION, QUEJA, RECLAMO\", () => pm.expect(b.map(x => x.codigo)).to.have.members([\"PETICION\",\"QUEJA\",\"RECLAMO\"]));",
+                  "pm.test(\"Cada elemento tiene id, codigo y nombre\", () => b.forEach(x => pm.expect(x).to.have.all.keys(\"id\",\"codigo\",\"nombre\")));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/catalogos/tipos-solicitud",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "catalogos",
+                "tipos-solicitud"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Canales de atención",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Devuelve los 4 canales\", () => pm.expect(b.map(x => x.codigo)).to.have.members([\"WEB\",\"PRESENCIAL\",\"TELEFONICO\",\"CORREO\"]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/catalogos/canales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "catalogos",
+                "canales"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Estados de PQR",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Devuelve los 5 estados\", () => pm.expect(b.map(x => x.codigo)).to.have.members([\"RADICADO\",\"EN_TRAMITE\",\"RESUELTO\",\"CERRADO\",\"VENCIDO\"]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/catalogos/estados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "catalogos",
+                "estados"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Gestores activos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Solo devuelve gestores activos\", () => { pm.expect(b.length).to.be.above(0); b.forEach(g => pm.expect(g.activo).to.be.true); });",
+                  "pm.test(\"No incluye al gestor inactivo del seed\", () => pm.expect(b.map(g => g.nombre)).to.not.include(\"Jorge Arango Londoño\"));",
+                  "pm.collectionVariables.set(\"gestoresActivos\", JSON.stringify(b.map(g => g.id)));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/gestores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "gestores"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Notificaciones de un gestor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve un arreglo\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/gestores/1/notificaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "gestores",
+                "1",
+                "notificaciones"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - PQR Flujo completo",
+      "description": "Ciclo de vida completo: Radicado → En trámite → Resuelto → Cerrado. Las peticiones dependen de las anteriores.",
+      "item": [
+        {
+          "name": "1. Registrar PQR",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 - Created\", () => pm.response.to.have.status(201));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Radicado con formato YYYYMM-NNNN\", () => pm.expect(b.radicado).to.match(/^\\d{6}-\\d{4}$/));",
+                  "pm.test(\"Estado inicial Radicado\", () => pm.expect(b.estado).to.eql(\"Radicado\"));",
+                  "pm.test(\"Tipo Reclamo\", () => pm.expect(b.tipoSolicitud).to.eql(\"Reclamo\"));",
+                  "pm.test(\"Asigna gestor automáticamente\", () => pm.expect(b.gestorAsignado).to.be.a(\"string\").and.not.empty);",
+                  "pm.test(\"Calcula fecha límite y fecha estimada\", () => { pm.expect(b.fechaLimiteRespuesta).to.exist; pm.expect(b.fechaEstimadaRespuesta).to.exist; });",
+                  "pm.test(\"Mensaje incluye el radicado\", () => pm.expect(b.mensaje).to.include(b.radicado));",
+                  "pm.collectionVariables.set(\"radicado\", b.radicado);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoDocumento\": \"CC\",\n  \"numeroDocumento\": \"1094{{$randomInt}}77\",\n  \"nombreCompleto\": \"Ana María Gómez\",\n  \"correo\": \"ana.gomez@correo.com\",\n  \"telefono\": \"3001234567\",\n  \"direccion\": \"Cra 14 # 20-30, Armenia\",\n  \"tipoSolicitud\": \"RECLAMO\",\n  \"canal\": \"WEB\",\n  \"asunto\": \"Cobro elevado en la factura\",\n  \"descripcion\": \"El valor facturado este mes duplica mi consumo habitual sin explicación.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "2. Consulta pública del estado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Devuelve el radicado consultado\", () => pm.expect(b.radicado).to.eql(pm.collectionVariables.get(\"radicado\")));",
+                  "pm.test(\"No expone datos personales (Ley 1581)\", () => { pm.expect(b).to.not.have.property(\"ciudadano\"); pm.expect(b).to.not.have.property(\"descripcion\"); pm.expect(b).to.not.have.property(\"correo\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/consulta/{{radicado}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "consulta",
+                "{{radicado}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "3. Detalle de la PQR",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Estado Radicado\", () => pm.expect(b.estado).to.eql(\"Radicado\"));",
+                  "pm.test(\"Acción disponible: EN_TRAMITE\", () => pm.expect(b.accionesDisponibles).to.eql([\"EN_TRAMITE\"]));",
+                  "pm.test(\"Incluye ciudadano y gestor\", () => { pm.expect(b.ciudadano.nombreCompleto).to.eql(\"Ana María Gómez\"); pm.expect(b.gestor.id).to.be.a(\"number\"); });",
+                  "pm.collectionVariables.set(\"gestorAsignadoId\", b.gestor.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicado}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicado}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "4. Bandeja filtrada por estado RADICADO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Todas las PQR están en estado Radicado\", () => b.forEach(p => pm.expect(p.estado).to.eql(\"Radicado\")));",
+                  "pm.test(\"Incluye la PQR registrada\", () => pm.expect(b.map(p => p.radicado)).to.include(pm.collectionVariables.get(\"radicado\")));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr?estado=RADICADO",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "RADICADO"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "5. Tomar PQR (Radicado → En trámite)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Estado En trámite\", () => pm.expect(b.estado).to.eql(\"En trámite\"));",
+                  "pm.test(\"Acción disponible: RESUELTO\", () => pm.expect(b.accionesDisponibles).to.eql([\"RESUELTO\"]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicado}}/tomar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicado}}",
+                "tomar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": {{gestorAsignadoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. Reasignar a otro gestor",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const activos = JSON.parse(pm.collectionVariables.get(\"gestoresActivos\") || \"[]\");",
+                  "const actual = Number(pm.collectionVariables.get(\"gestorAsignadoId\"));",
+                  "const otro = activos.find(id => id !== actual);",
+                  "pm.collectionVariables.set(\"gestorNuevoId\", otro);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"El gestor cambió\", () => pm.expect(b.gestor.id).to.eql(Number(pm.collectionVariables.get(\"gestorNuevoId\"))));",
+                  "pm.test(\"El estado no cambia al reasignar\", () => pm.expect(b.estado).to.eql(\"En trámite\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicado}}/reasignar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicado}}",
+                "reasignar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": {{gestorNuevoId}},\n  \"usuario\": \"coordinador.pqr\",\n  \"motivo\": \"Balanceo de carga\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "7. Responder PQR (En trámite → Resuelto)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Estado Resuelto\", () => pm.expect(b.estado).to.eql(\"Resuelto\"));",
+                  "pm.test(\"Guarda la respuesta y la fecha de resolución\", () => { pm.expect(b.respuesta).to.not.be.empty; pm.expect(b.fechaResolucion).to.exist; });",
+                  "pm.test(\"Acción disponible: CERRADO\", () => pm.expect(b.accionesDisponibles).to.eql([\"CERRADO\"]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicado}}/responder",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicado}}",
+                "responder"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": {{gestorNuevoId}},\n  \"respuesta\": \"Se revisó la lectura del medidor y se ajustará el valor en la próxima factura.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "8. Cerrar PQR (Resuelto → Cerrado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Estado Cerrado\", () => pm.expect(b.estado).to.eql(\"Cerrado\"));",
+                  "pm.test(\"Sin acciones disponibles\", () => pm.expect(b.accionesDisponibles).to.be.empty);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicado}}/cerrar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicado}}",
+                "cerrar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"coordinador.pqr\",\n  \"observacion\": \"Ciudadano conforme con la respuesta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "9. Historial de la PQR",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const estados = pm.response.json().map(h => h.estado);",
+                  "pm.test(\"Registra todas las transiciones\", () => pm.expect(estados).to.include.members([\"Radicado\",\"En trámite\",\"Resuelto\",\"Cerrado\"]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicado}}/historial",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicado}}",
+                "historial"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "10. Notificaciones de la PQR",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Se enviaron notificaciones\", () => pm.expect(b.length).to.be.above(0));",
+                  "pm.test(\"Todas pertenecen al radicado\", () => b.forEach(n => pm.expect(n.radicado).to.eql(pm.collectionVariables.get(\"radicado\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicado}}/notificaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicado}}",
+                "notificaciones"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "11. Ejecutar monitoreo de plazos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Devuelve contadores numéricos\", () => { pm.expect(b.alertasEnviadas).to.be.a(\"number\"); pm.expect(b.pqrMarcadasVencidas).to.be.a(\"number\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/monitoreo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "monitoreo"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - PQR Casos de error",
+      "description": "Validaciones, reglas de negocio y transiciones inválidas. Requiere haber ejecutado la carpeta 02.",
+      "item": [
+        {
+          "name": "Registrar sin campos obligatorios → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Datos inválidos\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});",
+                  "const e = pm.response.json().errores;",
+                  "pm.test(\"Reporta los campos obligatorios\", () => pm.expect(e).to.include.keys(\"tipoDocumento\",\"numeroDocumento\",\"nombreCompleto\",\"correo\",\"tipoSolicitud\",\"asunto\",\"descripcion\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Registrar con tipo de documento y correo inválidos → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Datos inválidos\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});",
+                  "const e = pm.response.json().errores;",
+                  "pm.test(\"Señala tipoDocumento y correo\", () => pm.expect(e).to.include.keys(\"tipoDocumento\",\"correo\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoDocumento\": \"XX\",\n  \"numeroDocumento\": \"1094{{$randomInt}}77\",\n  \"nombreCompleto\": \"Ana María Gómez\",\n  \"correo\": \"no-es-correo\",\n  \"telefono\": \"3001234567\",\n  \"direccion\": \"Cra 14 # 20-30, Armenia\",\n  \"tipoSolicitud\": \"RECLAMO\",\n  \"canal\": \"WEB\",\n  \"asunto\": \"Cobro elevado en la factura\",\n  \"descripcion\": \"El valor facturado este mes duplica mi consumo habitual sin explicación.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Registrar con descripción muy corta → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Datos inválidos\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});",
+                  "pm.test(\"Señala la descripción\", () => pm.expect(pm.response.json().errores).to.have.property(\"descripcion\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoDocumento\": \"CC\",\n  \"numeroDocumento\": \"1094{{$randomInt}}77\",\n  \"nombreCompleto\": \"Ana María Gómez\",\n  \"correo\": \"ana.gomez@correo.com\",\n  \"telefono\": \"3001234567\",\n  \"direccion\": \"Cra 14 # 20-30, Armenia\",\n  \"tipoSolicitud\": \"RECLAMO\",\n  \"canal\": \"WEB\",\n  \"asunto\": \"Cobro elevado en la factura\",\n  \"descripcion\": \"Corta\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Registrar con tipo de solicitud inexistente → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Solicitud inválida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoDocumento\": \"CC\",\n  \"numeroDocumento\": \"1094{{$randomInt}}77\",\n  \"nombreCompleto\": \"Ana María Gómez\",\n  \"correo\": \"ana.gomez@correo.com\",\n  \"telefono\": \"3001234567\",\n  \"direccion\": \"Cra 14 # 20-30, Armenia\",\n  \"tipoSolicitud\": \"SUGERENCIA\",\n  \"canal\": \"WEB\",\n  \"asunto\": \"Cobro elevado en la factura\",\n  \"descripcion\": \"El valor facturado este mes duplica mi consumo habitual sin explicación.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Consulta pública de radicado inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(404);",
+                  "    pm.expect(b.title).to.eql(\"Recurso no encontrado\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/consulta/199901-9999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "consulta",
+                "199901-9999"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Bandeja con estado inválido → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Solicitud inválida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr?estado=PENDIENTE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "PENDIENTE"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Cerrar una PQR ya cerrada → 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(409);",
+                  "    pm.expect(b.title).to.eql(\"Transición de estado inválida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicado}}/cerrar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicado}}",
+                "cerrar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario\": \"coordinador.pqr\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Registrar PQR auxiliar (para casos de error)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set(\"radicadoAux\", pm.response.json().radicado);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoDocumento\": \"CC\",\n  \"numeroDocumento\": \"1094{{$randomInt}}77\",\n  \"nombreCompleto\": \"Ana María Gómez\",\n  \"correo\": \"ana.gomez@correo.com\",\n  \"telefono\": \"3001234567\",\n  \"direccion\": \"Cra 14 # 20-30, Armenia\",\n  \"tipoSolicitud\": \"PETICION\",\n  \"canal\": \"WEB\",\n  \"asunto\": \"Solicitud de duplicado de factura\",\n  \"descripcion\": \"Solicito un duplicado de la factura del mes pasado para trámites bancarios.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Obtener gestor de la PQR auxiliar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set(\"gestorAsignadoId\", pm.response.json().gestor.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicadoAux}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicadoAux}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Responder sin haber tomado la PQR → 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(409);",
+                  "    pm.expect(b.title).to.eql(\"Transición de estado inválida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicadoAux}}/responder",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicadoAux}}",
+                "responder"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": {{gestorAsignadoId}},\n  \"respuesta\": \"Respuesta enviada antes de iniciar el trámite de la PQR.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Tomar con gestor inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(404);",
+                  "    pm.expect(b.title).to.eql(\"Recurso no encontrado\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicadoAux}}/tomar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicadoAux}}",
+                "tomar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": 9999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Tomar con gestor inactivo → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(422);",
+                  "    pm.expect(b.title).to.eql(\"Regla de negocio incumplida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicadoAux}}/tomar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicadoAux}}",
+                "tomar"
+              ]
+            },
+            "description": "El gestor con id 4 (Jorge Arango Londoño) está inactivo en el seed.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Reasignar al mismo gestor → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(422);",
+                  "    pm.expect(b.title).to.eql(\"Regla de negocio incumplida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicadoAux}}/reasignar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicadoAux}}",
+                "reasignar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": {{gestorAsignadoId}},\n  \"usuario\": \"coordinador.pqr\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Tomar PQR auxiliar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicadoAux}}/tomar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicadoAux}}",
+                "tomar"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": {{gestorAsignadoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Responder con gestor no asignado → 422",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const activos = JSON.parse(pm.collectionVariables.get(\"gestoresActivos\") || \"[]\");",
+                  "const actual = Number(pm.collectionVariables.get(\"gestorAsignadoId\"));",
+                  "const otro = activos.find(id => id !== actual);",
+                  "pm.collectionVariables.set(\"gestorNuevoId\", otro);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(422);",
+                  "    pm.expect(b.title).to.eql(\"Regla de negocio incumplida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicadoAux}}/responder",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicadoAux}}",
+                "responder"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": {{gestorNuevoId}},\n  \"respuesta\": \"Respuesta de un gestor que no tiene asignada la PQR.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Responder con respuesta muy corta → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Datos inválidos\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});",
+                  "pm.test(\"Señala el campo respuesta\", () => pm.expect(pm.response.json().errores).to.have.property(\"respuesta\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/pqr/{{radicadoAux}}/responder",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pqr",
+                "{{radicadoAux}}",
+                "responder"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gestorId\": {{gestorAsignadoId}},\n  \"respuesta\": \"Ok\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Ruta inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(404);",
+                  "    pm.expect(b.title).to.eql(\"Ruta no encontrada\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/no-existe",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "no-existe"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Facturación",
+      "description": "Generación del lote mensual, idempotencia, liquidación y sincronización con el ERP simulado.",
+      "item": [
+        {
+          "name": "Programación de facturación",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Periodo pendiente con formato YYYY-MM\", () => pm.expect(b.periodoPendienteDeFacturar).to.match(/^\\d{4}-\\d{2}$/));",
+                  "pm.test(\"Configuración del application.yml\", () => { pm.expect(b.diasParaVencimiento).to.eql(15); pm.expect(b.tiempoMaximoLoteMinutos).to.eql(60); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/programacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "programacion"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Listar todos los contratos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve los 9 contratos del seed\", () => pm.expect(pm.response.json()).to.have.lengthOf(9));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/contratos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "contratos"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Listar contratos activos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Devuelve 7 contratos activos\", () => pm.expect(b).to.have.lengthOf(7));",
+                  "pm.test(\"Todos en estado ACTIVO\", () => b.forEach(c => pm.expect(c.estado).to.eql(\"ACTIVO\")));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/contratos?estado=ACTIVO",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "contratos"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "ACTIVO"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Generar lote del mes anterior",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.collectionVariables.set(\"periodo\", b.periodo);",
+                  "pm.test(\"Evalúa los 7 contratos activos\", () => pm.expect(b.contratosActivosEvaluados).to.eql(7));",
+                  "pm.test(\"Excluye los 2 contratos no activos\", () => pm.expect(b.contratosNoActivosExcluidos).to.eql(2));",
+                  "pm.test(\"El lote tiene 6 facturas\", () => pm.expect(b.totalFacturasDelLote).to.eql(6));",
+                  "pm.test(\"Reporta la incidencia de CT-ACU-0005 (sin lectura)\", () => pm.expect(b.incidencias.map(i => i.numeroContrato)).to.include(\"CT-ACU-0005\"));",
+                  "pm.test(\"Se ejecuta dentro del tiempo máximo\", () => pm.expect(b.dentroDelTiempoMaximo).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes"
+              ]
+            },
+            "description": "Sin cuerpo factura el mes anterior. Los datos de prueba tienen lecturas del mes anterior a la fecha de creación de la BD."
+          }
+        },
+        {
+          "name": "Generar lote otra vez (idempotencia)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"No genera facturas nuevas\", () => pm.expect(b.facturasGeneradas).to.eql(0));",
+                  "pm.test(\"Reconoce las 6 existentes\", () => pm.expect(b.facturasYaExistentes).to.eql(6));",
+                  "pm.test(\"El total del lote sigue en 6\", () => pm.expect(b.totalFacturasDelLote).to.eql(6));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodo\": \"{{periodo}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Historial de lotes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Incluye el lote generado\", () => pm.expect(pm.response.json().map(l => l.periodo)).to.include(pm.collectionVariables.get(\"periodo\")));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Detalle del lote",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Corresponde al periodo\", () => pm.expect(b.periodo).to.eql(pm.collectionVariables.get(\"periodo\")));",
+                  "pm.test(\"6 facturas generadas\", () => pm.expect(b.totalFacturasGeneradas).to.eql(6));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes/{{periodo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes",
+                "{{periodo}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Facturas del lote",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Devuelve 6 facturas\", () => pm.expect(b).to.have.lengthOf(6));",
+                  "pm.test(\"Número con formato FAC-yyyyMM-NNNNNN\", () => b.forEach(f => pm.expect(f.numeroFactura).to.match(/^FAC-\\d{6}-\\d{6}$/)));",
+                  "pm.test(\"No factura CT-ACU-0005\", () => pm.expect(b.map(f => f.numeroContrato)).to.not.include(\"CT-ACU-0005\"));",
+                  "const f = b.find(x => x.numeroContrato === \"CT-ACU-0001\");",
+                  "pm.collectionVariables.set(\"numeroFactura\", f.numeroFactura);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes/{{periodo}}/facturas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes",
+                "{{periodo}}",
+                "facturas"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Buscar facturas por contrato",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Todas son del contrato CT-ACU-0001\", () => { pm.expect(b.length).to.be.above(0); b.forEach(f => pm.expect(f.numeroContrato).to.eql(\"CT-ACU-0001\")); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/facturas?contrato=CT-ACU-0001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "facturas"
+              ],
+              "query": [
+                {
+                  "key": "contrato",
+                  "value": "CT-ACU-0001"
+                }
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Detalle de factura (liquidación)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Consumo 21,50 m³\", () => pm.expect(Number(b.consumo)).to.eql(21.5));",
+                  "pm.test(\"Tarifa vigente 2026\", () => { pm.expect(Number(b.valorPorUnidad)).to.eql(3215.5); pm.expect(Number(b.cargoFijo)).to.eql(12650); });",
+                  "pm.test(\"Total = consumo × tarifa + cargo fijo = 81.783,25\", () => pm.expect(Number(b.total)).to.eql(81783.25));",
+                  "pm.test(\"Quedó sincronizada con el ERP simulado\", () => pm.expect(b.estado).to.eql(\"SINCRONIZADA\"));",
+                  "pm.test(\"Consumo = lectura actual - lectura anterior\", () => pm.expect(Number(b.lecturaActual) - Number(b.lecturaAnterior)).to.be.closeTo(Number(b.consumo), 0.001));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/facturas/{{numeroFactura}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "facturas",
+                "{{numeroFactura}}"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Bitácora de sincronizaciones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Registra los intentos con el ERP\", () => pm.expect(pm.response.json().length).to.be.above(0));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/facturas/{{numeroFactura}}/sincronizaciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "facturas",
+                "{{numeroFactura}}",
+                "sincronizaciones"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Reintentar sincronización del lote",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"Procesadas = exitosas + fallidas\", () => pm.expect(b.facturasProcesadas).to.eql(b.exitosas + b.fallidas));",
+                  "pm.test(\"No quedan facturas con error\", () => pm.expect(b.fallidas).to.eql(0));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes/{{periodo}}/sincronizacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes",
+                "{{periodo}}",
+                "sincronizacion"
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Facturación Casos de error",
+      "description": "",
+      "item": [
+        {
+          "name": "Sincronizar factura ya sincronizada → 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(422);",
+                  "    pm.expect(b.title).to.eql(\"Regla de negocio incumplida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/facturas/{{numeroFactura}}/sincronizacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "facturas",
+                "{{numeroFactura}}",
+                "sincronizacion"
+              ]
+            },
+            "description": "Con app.erp.simulado.tasa-fallo = 0.0 todas las facturas quedan SINCRONIZADAS al generar el lote."
+          }
+        },
+        {
+          "name": "Generar lote con periodo inválido → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Datos inválidos\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});",
+                  "pm.test(\"Señala el campo periodo\", () => pm.expect(pm.response.json().errores).to.have.property(\"periodo\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes"
+              ]
+            },
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"periodo\": \"2026-13\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Lote inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(404);",
+                  "    pm.expect(b.title).to.eql(\"Recurso no encontrado\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes/1999-01",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes",
+                "1999-01"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Lote con periodo mal formado → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Solicitud inválida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/lotes/enero",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "lotes",
+                "enero"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Factura inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(404);",
+                  "    pm.expect(b.title).to.eql(\"Recurso no encontrado\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/facturas/FAC-199901-000001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "facturas",
+                "FAC-199901-000001"
+              ]
+            },
+            "description": ""
+          }
+        },
+        {
+          "name": "Contratos con estado inválido → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Formato de error RFC 7807 (ProblemDetail)\", () => {",
+                  "    const b = pm.response.json();",
+                  "    pm.expect(b.status).to.eql(400);",
+                  "    pm.expect(b.title).to.eql(\"Solicitud inválida\");",
+                  "    pm.expect(b.detail).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/facturacion/contratos?estado=CANCELADO",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "facturacion",
+                "contratos"
+              ],
+              "query": [
+                {
+                  "key": "estado",
+                  "value": "CANCELADO"
+                }
+              ]
+            },
+            "description": ""
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "radicado",
+      "value": ""
+    },
+    {
+      "key": "radicadoAux",
+      "value": ""
+    },
+    {
+      "key": "gestorAsignadoId",
+      "value": ""
+    },
+    {
+      "key": "gestorNuevoId",
+      "value": ""
+    },
+    {
+      "key": "gestoresActivos",
+      "value": ""
+    },
+    {
+      "key": "periodo",
+      "value": ""
+    },
+    {
+      "key": "numeroFactura",
+      "value": ""
+    }
+  ]
+}

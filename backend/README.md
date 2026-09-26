@@ -36,7 +36,9 @@ Todas las variables del `.env` deben tener valor.
 > Los scripts de `database/init` solo se ejecutan cuando el volumen está vacío. Si la base ya existía
 > antes de agregar `02_seed_data.sql`, recréala con `docker compose down -v && docker compose up -d`.
 
-Pruebas unitarias: `./mvnw test`
+Pruebas: `./mvnw clean test` ejecuta las 328 pruebas unitarias y genera el reporte de cobertura en
+`target/site/jacoco/index.html`. La estrategia de pruebas, la cobertura y la colección de Postman se
+documentan en el [README principal](../README.md#4-pruebas).
 
 ### Configuración (`src/main/resources/application.yml`)
 
