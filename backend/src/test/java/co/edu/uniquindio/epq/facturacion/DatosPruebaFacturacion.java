@@ -16,6 +16,7 @@ import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
 import co.edu.uniquindio.epq.facturacion.dominio.LecturaMedidor;
 import co.edu.uniquindio.epq.facturacion.dominio.LoteFacturacion;
+import co.edu.uniquindio.epq.facturacion.dominio.Medidor;
 import co.edu.uniquindio.epq.facturacion.dominio.Servicio;
 import co.edu.uniquindio.epq.facturacion.dominio.Tarifa;
 
@@ -76,6 +77,23 @@ public final class DatosPruebaFacturacion {
         ReflectionTestUtils.setField(tarifa, "cargoFijo", new BigDecimal("12650.00"));
         ReflectionTestUtils.setField(tarifa, "fechaVigenciaInicio", LocalDate.of(2026, 1, 1));
         return tarifa;
+    }
+
+    public static Medidor medidor(Contrato contrato) {
+        Medidor medidor = BeanUtils.instantiateClass(Medidor.class);
+        ReflectionTestUtils.setField(medidor, "id", 1);
+        ReflectionTestUtils.setField(medidor, "contrato", contrato);
+        ReflectionTestUtils.setField(medidor, "numeroSerie", "MED-" + NUMERO_CONTRATO);
+        ReflectionTestUtils.setField(medidor, "fechaInstalacion", LocalDate.of(2022, 3, 10));
+        ReflectionTestUtils.setField(medidor, "estado", Medidor.ESTADO_ACTIVO);
+        return medidor;
+    }
+
+    /** Lote en proceso del periodo de prueba, con id asignado. */
+    public static LoteFacturacion lote() {
+        LoteFacturacion lote = LoteFacturacion.abrir(PERIODO, FECHA_GENERACION);
+        ReflectionTestUtils.setField(lote, "id", 5);
+        return lote;
     }
 
     public static LecturaMedidor lectura() {
