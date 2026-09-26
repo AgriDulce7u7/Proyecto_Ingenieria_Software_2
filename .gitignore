@@ -1,0 +1,16 @@
+# Variables de entorno con credenciales reales
+.env
+
+# Datos del volumen de Docker (si Docker los llega a crear localmente)
+database/data/
+
+# Dependencias (por si backend/frontend usan Node)
+node_modules/
+
+# Archivos de configuración local de IntelliJ (no se comparten entre el equipo)
+.idea/
+*.iml
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
