@@ -275,6 +275,6 @@ El alcance va entre paréntesis cuando aplica, por ejemplo `test(pqr): ...` o `f
 
 | Integrante | Responsabilidades |
 |---|---|
-| [Nombre] | Base de datos y backend |
-| [Nombre] | Base de datos y backend |
+| Angelica María Reyes | Base de datos y Docker Compose |
+| Steven Severino | Backend, pruebas (unitarias) |
 | Andrés Felipe Zambrano | Frontend, pruebas (unitarias y Postman) y documentación del proyecto |
