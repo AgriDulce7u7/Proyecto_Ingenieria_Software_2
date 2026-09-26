@@ -64,11 +64,15 @@ public final class DatosPruebaPqr {
         return tipo;
     }
 
-    public static CanalAtencion canalWeb() {
+    public static CanalAtencion canal(String nombre) {
         CanalAtencion canal = BeanUtils.instantiateClass(CanalAtencion.class);
         ReflectionTestUtils.setField(canal, "id", 1);
-        ReflectionTestUtils.setField(canal, "nombre", "Web");
+        ReflectionTestUtils.setField(canal, "nombre", nombre);
         return canal;
+    }
+
+    public static CanalAtencion canalWeb() {
+        return canal("Web");
     }
 
     /** PQR recién radicada, sin gestor asignado. */
