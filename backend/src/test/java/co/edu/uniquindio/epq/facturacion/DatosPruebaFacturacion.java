@@ -99,6 +99,7 @@ public final class DatosPruebaFacturacion {
     public static LecturaMedidor lectura() {
         LecturaMedidor lectura = BeanUtils.instantiateClass(LecturaMedidor.class);
         ReflectionTestUtils.setField(lectura, "id", 1L);
+        ReflectionTestUtils.setField(lectura, "medidor", medidor(contrato(EstadoContrato.ACTIVO)));
         ReflectionTestUtils.setField(lectura, "periodo", PERIODO);
         ReflectionTestUtils.setField(lectura, "lecturaAnterior", new BigDecimal("1538.00"));
         ReflectionTestUtils.setField(lectura, "lecturaActual", new BigDecimal("1559.50"));
