@@ -1,0 +1,172 @@
+/* Constancia de radicación (mobile-first) */
+
+.constancia {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 50px 20px 70px;
+  text-align: center;
+}
+
+.constancia-exito {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 24px;
+  color: var(--color-superficie);
+  background: var(--color-exito);
+  border: 9px solid var(--color-exito-claro);
+  border-radius: 50%;
+  box-sizing: content-box;
+}
+
+.constancia h1 {
+  margin: 10px 0;
+  font-size: 30px;
+  letter-spacing: -0.035em;
+  color: var(--color-agua-profundo);
+}
+
+.constancia-intro {
+  max-width: 550px;
+  margin: 0 auto 26px;
+}
+
+/* ---------------------------------------------------------------- número de radicado */
+
+.constancia-radicado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 24px 18px 14px;
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-borde);
+  border-radius: var(--radio-grande);
+}
+
+.constancia-radicado span,
+.constancia-radicado small {
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+}
+
+.constancia-radicado strong {
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  color: var(--color-agua-oscuro);
+}
+
+/* ---------------------------------------------------------------- datos */
+
+.constancia-datos {
+  display: grid;
+  margin: 22px 0 24px;
+  text-align: left;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-panel);
+}
+
+.constancia-datos div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 16px;
+}
+
+.constancia-datos div + div {
+  border-top: 1px solid var(--color-borde);
+}
+
+.constancia-datos dt {
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+}
+
+.constancia-datos dd {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.constancia-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 26px;
+  padding: 14px 16px;
+  text-align: left;
+  background: var(--color-agua-suave);
+  border-radius: 9px;
+}
+
+.constancia-nota .icono {
+  flex: none;
+  color: var(--color-agua);
+}
+
+.constancia-nota p {
+  font-size: 12px;
+}
+
+.constancia-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.constancia-vacia p {
+  max-width: 520px;
+  margin: 0 auto 26px;
+}
+
+/* ---------------------------------------------------------------- tableta y escritorio */
+
+@media (min-width: 37.5rem) {
+  .constancia {
+    padding: 70px 24px 100px;
+  }
+
+  .constancia h1 {
+    font-size: 36px;
+  }
+
+  .constancia-radicado {
+    padding: 26px 26px 14px;
+  }
+
+  .constancia-radicado strong {
+    font-size: 34px;
+  }
+
+  /* Tres datos arriba y dos abajo, como una constancia impresa */
+  .constancia-datos {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .constancia-datos div {
+    grid-column: span 2;
+  }
+
+  .constancia-datos div:nth-child(n + 4) {
+    grid-column: span 3;
+  }
+
+  .constancia-datos div + div {
+    border-top: 0;
+    border-left: 1px solid var(--color-borde);
+  }
+
+  .constancia-datos div:nth-child(4) {
+    border-left: 0;
+  }
+
+  .constancia-datos div:nth-child(n + 4) {
+    border-top: 1px solid var(--color-borde);
+  }
+
+  .constancia-acciones {
+    flex-direction: row;
+    justify-content: center;
+  }
+}

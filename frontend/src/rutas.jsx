@@ -3,6 +3,7 @@ import { BackofficeLayout } from "./componentes/BackofficeLayout";
 import { NoEncontrada } from "./componentes/NoEncontrada";
 import { Pendiente } from "./componentes/Pendiente";
 import { PortalLayout } from "./componentes/PortalLayout";
+import { Constancia } from "./paginas/ciudadano/Constancia";
 import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
@@ -25,10 +26,8 @@ export const enrutador = createBrowserRouter([
       { index: true, element: <Inicio /> },
       // RF-08, CU-06
       { path: "radicar", element: <RadicarPqr /> },
-      {
-        path: "radicar/constancia",
-        element: <Pendiente titulo="Constancia de radicación" requisitos="RF-08, RN-04" />,
-      },
+      // RF-08, RN-04
+      { path: "radicar/constancia", element: <Constancia /> },
       // SWR-08
       { path: "consultar", element: <ConsultarEstado /> },
     ],
