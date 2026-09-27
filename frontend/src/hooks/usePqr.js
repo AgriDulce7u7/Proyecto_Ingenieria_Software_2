@@ -1,9 +1,11 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   consultarEstadoPqr,
+  ejecutarMonitoreo,
   listarPqr,
   obtenerEstados,
   obtenerGestores,
+  obtenerNotificacionesGestor,
   obtenerTiposSolicitud,
   registrarPqr,
 } from "../api/pqr";
@@ -14,6 +16,7 @@ export const clavesPqr = {
   tiposSolicitud: ["pqr", "catalogos", "tipos-solicitud"],
   estados: ["pqr", "catalogos", "estados"],
   gestores: ["gestores"],
+  notificacionesGestor: (gestorId) => ["gestores", gestorId, "notificaciones"],
   bandeja: (filtros) => ["pqr", "bandeja", filtros],
   consultaPublica: (radicado) => ["pqr", "consulta", radicado],
 };
@@ -60,5 +63,31 @@ export function useBandejaPqr(filtros = {}) {
     queryFn: () => listarPqr(filtros),
     refetchInterval: 60 * 1000,
     placeholderData: (anteriores) => anteriores,
+  });
+}
+
+/** Notificaciones del gestor actual (asignaciones, alertas de 48 h y vencimientos). */
+export function useNotificacionesGestor(gestorId) {
+  return useQuery({
+    queryKey: clavesPqr.notificacionesGestor(gestorId),
+    queryFn: () => obtenerNotificacionesGestor(gestorId),
+    enabled: Boolean(gestorId),
+    refetchInterval: 60 * 1000,
+  });
+}
+
+/**
+ * Ejecuta a demanda el monitoreo de plazos (SWR-07, RN-04). Puede marcar PQR como vencidas
+ * y enviar alertas, así que al terminar se refrescan la bandeja y las notificaciones.
+ */
+export function useEjecutarMonitoreo() {
+  const clienteConsultas = useQueryClient();
+  return useMutation({
+    mutationFn: ejecutarMonitoreo,
+    onSuccess: () =>
+      Promise.all([
+        clienteConsultas.invalidateQueries({ queryKey: clavesPqr.todo }),
+        clienteConsultas.invalidateQueries({ queryKey: clavesPqr.gestores }),
+      ]),
   });
 }

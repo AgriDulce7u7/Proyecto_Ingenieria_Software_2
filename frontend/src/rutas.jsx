@@ -6,6 +6,8 @@ import { PortalLayout } from "./componentes/PortalLayout";
 import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
+import { Alertas } from "./paginas/gestion/alertas/Alertas";
+import { Programacion } from "./paginas/gestion/facturacion/Programacion";
 import { BandejaPqr } from "./paginas/gestion/pqr/BandejaPqr";
 
 /**
@@ -41,13 +43,12 @@ export const enrutador = createBrowserRouter([
         path: "pqr/:radicado",
         element: <Pendiente titulo="Detalle de PQR" requisitos="CU-07, DE-02, RN-06, SWR-09" />,
       },
-      { path: "alertas", element: <Pendiente titulo="Mis alertas" requisitos="SWR-07, RN-04" /> },
+      // SWR-07, RN-04
+      { path: "alertas", element: <Alertas /> },
 
       // F-01 · Facturación
-      {
-        path: "facturacion",
-        element: <Pendiente titulo="Programación de facturación" requisitos="SWR-01, SWR-02" />,
-      },
+      // SWR-01, SWR-02, RF-05, CU-03
+      { path: "facturacion", element: <Programacion /> },
       { path: "facturacion/lotes", element: <Pendiente titulo="Lotes de facturación" requisitos="RF-05, CU-03" /> },
       {
         path: "facturacion/lotes/:periodo",

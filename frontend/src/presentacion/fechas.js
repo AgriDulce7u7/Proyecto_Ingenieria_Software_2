@@ -68,3 +68,23 @@ export function formatearFechaLimite(texto, ahora = new Date()) {
   if (mismoDia(fecha, manana)) return `Mañana, ${FORMATO_HORA.format(fecha)}`;
   return formatoCorto(fecha);
 }
+
+/** Tiempo transcurrido: "Hace un momento", "Hace 18 min", "Hace 3 h", "Ayer, 4:32 p. m." o "16 sept 2026". */
+export function formatearTiempoRelativo(texto, ahora = new Date()) {
+  const fecha = aFecha(texto);
+  if (!fecha) return "";
+  const minutos = Math.floor((ahora - fecha) / 60000);
+  const ayer = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() - 1);
+
+  if (minutos < 1) return "Hace un momento";
+  if (minutos < 60) return `Hace ${minutos} min`;
+  if (mismoDia(fecha, ahora)) return `Hace ${Math.floor(minutos / 60)} h`;
+  if (mismoDia(fecha, ayer)) return `Ayer, ${FORMATO_HORA.format(fecha)}`;
+  return formatoCorto(fecha);
+}
+
+/** "4:32 p. m." */
+export function formatearHora(texto) {
+  const fecha = aFecha(texto);
+  return fecha ? FORMATO_HORA.format(fecha) : "";
+}

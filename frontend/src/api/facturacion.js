@@ -20,3 +20,6 @@ export const obtenerFactura = (numero) => solicitar(`${BASE}/facturas/${numero}`
 export const obtenerSincronizacionesFactura = (numero) => solicitar(`${BASE}/facturas/${numero}/sincronizaciones`);
 export const sincronizarFactura = (numero) =>
   solicitar(`${BASE}/facturas/${numero}/sincronizacion`, { metodo: "POST" });
+
+// Contratos
+export const listarContratos = (estado) => solicitar(`${BASE}/contratos`, { parametros: { estado } });
