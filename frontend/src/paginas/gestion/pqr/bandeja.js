@@ -1,4 +1,5 @@
 import { ESTADO, esPendiente, situacionPlazo } from "../../../presentacion/estadosPqr";
+import { buscarEn } from "../../../presentacion/texto";
 
 export const TAMANO_PAGINA = 10;
 
@@ -9,21 +10,8 @@ export const aFiltrosApi = ({ estado, tipo, gestor }) => ({
   ...(gestor && { gestorId: gestor }),
 });
 
-/** Texto en minúsculas y sin tildes, para buscar "tramite" y encontrar "trámite". */
-const normalizar = (texto = "") =>
-  texto
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase();
-
 /** Búsqueda libre por radicado, asunto o ciudadano. */
-export function buscar(pqrs, texto) {
-  const buscado = normalizar(texto.trim());
-  if (!buscado) return pqrs;
-  return pqrs.filter((pqr) =>
-    [pqr.radicado, pqr.asunto, pqr.ciudadano].some((campo) => normalizar(campo).includes(buscado)),
-  );
-}
+export const buscar = (pqrs, texto) => buscarEn(pqrs, texto, ["radicado", "asunto", "ciudadano"]);
 
 /** Indicadores de la bandeja, calculados sobre todas las PQR (sin filtros). */
 export function calcularMetricas(pqrs) {

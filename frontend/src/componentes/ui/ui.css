@@ -220,3 +220,78 @@
 .enlace-volver:hover {
   color: var(--color-agua-oscuro);
 }
+
+/* ---------------------------------------------------------------- ventana modal */
+
+.dialogo {
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  margin: auto;
+  padding: 0;
+  color: var(--color-tinta);
+  background: var(--color-superficie);
+  border-radius: var(--radio-grande);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 22%);
+}
+
+.dialogo::backdrop {
+  background: rgb(6 32 40 / 58%);
+}
+
+.dialogo-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 18px;
+}
+
+.dialogo-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.dialogo-cabecera h2 {
+  margin-top: 6px;
+  font-size: 22px;
+}
+
+.dialogo-cerrar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  color: var(--color-tinta-suave);
+}
+
+.dialogo-cerrar:hover {
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+}
+
+.dialogo-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dialogo-acciones {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+@media (min-width: 37.5rem) {
+  .dialogo-contenido {
+    padding: 26px;
+  }
+
+  .dialogo-acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

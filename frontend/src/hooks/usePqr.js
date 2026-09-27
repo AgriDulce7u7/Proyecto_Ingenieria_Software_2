@@ -2,12 +2,19 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   consultarEstadoPqr,
   ejecutarMonitoreo,
+  cerrarPqr,
   listarPqr,
   obtenerEstados,
   obtenerGestores,
+  obtenerHistorialPqr,
   obtenerNotificacionesGestor,
+  obtenerNotificacionesPqr,
+  obtenerPqr,
   obtenerTiposSolicitud,
+  reasignarPqr,
   registrarPqr,
+  responderPqr,
+  tomarPqr,
 } from "../api/pqr";
 
 /** Claves de caché de TanStack Query para el módulo PQR, centralizadas para invalidarlas sin errores. */
@@ -19,6 +26,9 @@ export const clavesPqr = {
   notificacionesGestor: (gestorId) => ["gestores", gestorId, "notificaciones"],
   bandeja: (filtros) => ["pqr", "bandeja", filtros],
   consultaPublica: (radicado) => ["pqr", "consulta", radicado],
+  detalle: (radicado) => ["pqr", "detalle", radicado],
+  historial: (radicado) => ["pqr", "detalle", radicado, "historial"],
+  notificaciones: (radicado) => ["pqr", "detalle", radicado, "notificaciones"],
 };
 
 // Los catálogos no cambian durante la sesión: se piden una sola vez.
@@ -91,3 +101,41 @@ export function useEjecutarMonitoreo() {
       ]),
   });
 }
+
+/** Detalle de una PQR para el back-office, con las acciones que permite su estado (CU-07). */
+export function usePqrDetalle(radicado) {
+  return useQuery({ queryKey: clavesPqr.detalle(radicado), queryFn: () => obtenerPqr(radicado) });
+}
+
+/** Trazabilidad de la PQR: cada cambio de estado, asignación y comentario (SWR-09). */
+export function useHistorialPqr(radicado) {
+  return useQuery({ queryKey: clavesPqr.historial(radicado), queryFn: () => obtenerHistorialPqr(radicado) });
+}
+
+/** Notificaciones enviadas por la PQR (al ciudadano y al gestor). */
+export function useNotificacionesPqr(radicado) {
+  return useQuery({ queryKey: clavesPqr.notificaciones(radicado), queryFn: () => obtenerNotificacionesPqr(radicado) });
+}
+
+/**
+ * Acción sobre una PQR (tomar, reasignar, responder o cerrar). El backend responde con el detalle
+ * actualizado, que se guarda de inmediato; luego se refrescan la bandeja, el historial y las alertas.
+ */
+function useAccionPqr(radicado, accion) {
+  const clienteConsultas = useQueryClient();
+  return useMutation({
+    mutationFn: (datos) => accion(radicado, datos),
+    onSuccess: (detalle) => {
+      clienteConsultas.setQueryData(clavesPqr.detalle(radicado), detalle);
+      return Promise.all([
+        clienteConsultas.invalidateQueries({ queryKey: clavesPqr.todo }),
+        clienteConsultas.invalidateQueries({ queryKey: clavesPqr.gestores }),
+      ]);
+    },
+  });
+}
+
+export const useTomarPqr = (radicado) => useAccionPqr(radicado, tomarPqr);
+export const useReasignarPqr = (radicado) => useAccionPqr(radicado, reasignarPqr);
+export const useResponderPqr = (radicado) => useAccionPqr(radicado, responderPqr);
+export const useCerrarPqr = (radicado) => useAccionPqr(radicado, cerrarPqr);

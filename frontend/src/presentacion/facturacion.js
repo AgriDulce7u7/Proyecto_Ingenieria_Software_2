@@ -56,3 +56,23 @@ const INCIDENCIAS = {
 };
 
 export const presentarIncidencia = (tipo) => INCIDENCIAS[tipo] ?? tipo;
+
+/** Estado de una factura frente al ERP (EstadoFactura en el backend). */
+const ESTADOS_FACTURA = {
+  GENERADA: { etiqueta: "Pendiente", tono: "advertencia" },
+  SINCRONIZADA: { etiqueta: "Sincronizada", tono: "exito" },
+  ERROR_SINCRONIZACION: { etiqueta: "Error", tono: "peligro" },
+  PAGADA: { etiqueta: "Pagada", tono: "info" },
+};
+
+export const ESTADOS_FACTURA_CODIGOS = Object.keys(ESTADOS_FACTURA);
+
+export const presentarEstadoFactura = (estado) => ESTADOS_FACTURA[estado] ?? { etiqueta: estado, tono: "neutro" };
+
+/** Solo se reenvían al ERP las facturas que aún no llegan (SWR-04). */
+export const puedeSincronizarse = (estado) => estado === "GENERADA" || estado === "ERROR_SINCRONIZACION";
+
+const FORMATO_CONSUMO = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 2 });
+
+/** 21.5 → "21,5 m³" */
+export const formatearConsumo = (valor) => `${FORMATO_CONSUMO.format(Number(valor ?? 0))} m³`;

@@ -1,5 +1,5 @@
 /**
- * Presentación de las notificaciones que recibe un gestor. Las claves son los códigos
+ * Presentación de las notificaciones de una PQR (al gestor y al ciudadano). Las claves son los códigos
  * que envía la API en el campo "tipo" (ver TipoNotificacion en el backend).
  */
 
@@ -24,6 +24,20 @@ const TIPOS = {
     icono: "personas",
     gravedad: "normal",
     titulo: (radicado) => `Se le asignó la solicitud ${radicado}`,
+  },
+  radicacion_ciudadano: {
+    etiqueta: "Constancia al ciudadano",
+    tono: "neutro",
+    icono: "documento",
+    gravedad: "normal",
+    titulo: (radicado) => `Constancia de radicación de ${radicado}`,
+  },
+  respuesta_ciudadano: {
+    etiqueta: "Respuesta al ciudadano",
+    tono: "exito",
+    icono: "check",
+    gravedad: "normal",
+    titulo: (radicado) => `Respuesta de ${radicado} enviada`,
   },
 };
 

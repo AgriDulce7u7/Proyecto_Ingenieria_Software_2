@@ -1,11 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { generarLote, listarContratos, listarLotes, obtenerProgramacion } from "../api/facturacion";
+import {
+  buscarFacturas,
+  generarLote,
+  listarContratos,
+  listarLotes,
+  obtenerProgramacion,
+  sincronizarFactura,
+} from "../api/facturacion";
 
 /** Claves de caché del módulo de facturación. */
 export const clavesFacturacion = {
   todo: ["facturacion"],
   programacion: ["facturacion", "programacion"],
   lotes: ["facturacion", "lotes"],
+  facturas: (filtros) => ["facturacion", "facturas", filtros],
   contratos: (estado) => ["facturacion", "contratos", estado ?? "todos"],
 };
 
@@ -33,5 +41,27 @@ export function useGenerarLote() {
   return useMutation({
     mutationFn: generarLote,
     onSuccess: () => clienteConsultas.invalidateQueries({ queryKey: clavesFacturacion.todo }),
+  });
+}
+
+/** Búsqueda de facturas con los filtros del backend: { periodo, contrato, estado, documento }. */
+export function useFacturas(filtros, { habilitada = true } = {}) {
+  return useQuery({
+    queryKey: clavesFacturacion.facturas(filtros),
+    queryFn: () => buscarFacturas(filtros),
+    enabled: habilitada,
+    placeholderData: (anteriores) => anteriores,
+  });
+}
+
+/**
+ * Reenvía una factura al ERP (SWR-04). El resultado puede ser un rechazo del ERP (exitosa: false),
+ * que no es un error de la petición. Al terminar se refrescan facturas y lotes.
+ */
+export function useSincronizarFactura() {
+  const clienteConsultas = useQueryClient();
+  return useMutation({
+    mutationFn: sincronizarFactura,
+    onSettled: () => clienteConsultas.invalidateQueries({ queryKey: clavesFacturacion.todo }),
   });
 }
