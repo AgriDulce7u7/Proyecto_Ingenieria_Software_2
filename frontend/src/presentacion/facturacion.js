@@ -3,11 +3,20 @@
 const LOCALE = "es-CO";
 const FORMATO_NUMERO = new Intl.NumberFormat(LOCALE);
 const FORMATO_MES = new Intl.DateTimeFormat(LOCALE, { month: "long" });
+const FORMATO_MONEDA = new Intl.NumberFormat(LOCALE, {
+  style: "currency",
+  currency: "COP",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 /** 12486 → "12.486" */
 export const formatearNumero = (valor) => FORMATO_NUMERO.format(valor ?? 0);
 
-/** "2026-08" → { mes: "Agosto", anio: "2026", texto: "agosto de 2026" } */
+/** 81783.25 → "$ 81.783,25" (pesos colombianos) */
+export const formatearMoneda = (valor) => FORMATO_MONEDA.format(Number(valor ?? 0));
+
+/** "2026-08" → { mes: "Agosto", anio: "2026", texto: "agosto de 2026", corto: "Agosto 2026" } */
 export function partesPeriodo(periodo) {
   const [anio, mes] = periodo.split("-").map(Number);
   const nombreMes = FORMATO_MES.format(new Date(anio, mes - 1, 1));
@@ -15,6 +24,7 @@ export function partesPeriodo(periodo) {
     mes: nombreMes[0].toUpperCase() + nombreMes.slice(1),
     anio: String(anio),
     texto: `${nombreMes} de ${anio}`,
+    corto: `${nombreMes[0].toUpperCase()}${nombreMes.slice(1)} ${anio}`,
   };
 }
 

@@ -9,14 +9,6 @@
 const LOCALE = "es-CO";
 
 const FORMATO_FECHA = new Intl.DateTimeFormat(LOCALE, { day: "numeric", month: "long", year: "numeric" });
-const FORMATO_FECHA_HORA = new Intl.DateTimeFormat(LOCALE, {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  hour: "numeric",
-  minute: "2-digit",
-});
-
 function aFecha(texto) {
   if (!texto) return null;
   if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) {
@@ -36,7 +28,7 @@ export function formatearFecha(texto) {
 /** "1 sept 2026, 8:00 a. m." */
 export function formatearFechaHora(texto) {
   const fecha = aFecha(texto);
-  return fecha ? FORMATO_FECHA_HORA.format(fecha) : "";
+  return fecha ? `${formatoCorto(fecha)}, ${FORMATO_HORA.format(fecha)}` : "";
 }
 
 const FORMATO_DIA_MES_ANIO = new Intl.DateTimeFormat(LOCALE, { day: "numeric", month: "short", year: "numeric" });
