@@ -183,27 +183,6 @@
   background: var(--color-agua-suave);
 }
 
-/* ---------------------------------------------------------------- paginación */
-
-.facturas-paginacion {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 13px 17px;
-  font-size: 12px;
-  color: var(--color-tinta-tenue);
-  border-top: 1px solid var(--color-borde-suave);
-}
-
-.facturas-paginacion div {
-  display: flex;
-  gap: 5px;
-}
-
-.facturas-paginacion .boton {
-  flex: 1;
-}
-
 /* ---------------------------------------------------------------- tableta */
 
 @media (min-width: 37.5rem) {
@@ -223,16 +202,6 @@
 
   .facturas-filtros > .boton {
     display: inline-flex;
-  }
-
-  .facturas-paginacion {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .facturas-paginacion .boton {
-    flex: none;
   }
 }
 

@@ -1,6 +1,7 @@
 import { Cargando } from "../../../componentes/Cargando";
 import { EncabezadoGestion } from "../../../componentes/EncabezadoGestion";
 import { MensajeError } from "../../../componentes/MensajeError";
+import { Paginacion } from "../../../componentes/Paginacion";
 import { Boton } from "../../../componentes/ui/Boton";
 import { Icono } from "../../../componentes/ui/Icono";
 import { useFacturas, useLotes, useSincronizarFactura } from "../../../hooks/useFacturacion";
@@ -12,6 +13,7 @@ import {
   partesPeriodo,
   presentarEstadoFactura,
 } from "../../../presentacion/facturacion";
+import { paginar } from "../../../presentacion/paginacion";
 import { buscarEn } from "../../../presentacion/texto";
 import { TablaFacturas } from "./TablaFacturas";
 import "./facturas.css";
@@ -57,10 +59,7 @@ export function Facturas() {
 
   const resultado = buscarEn(facturas.data ?? [], filtros.q, ["numeroFactura", "numeroContrato", "cliente"]);
   const total = resultado.reduce((suma, factura) => suma + Number(factura.total), 0);
-  const totalPaginas = Math.max(1, Math.ceil(resultado.length / TAMANO_PAGINA));
-  const paginaActual = Math.min(pagina, totalPaginas);
-  const inicio = (paginaActual - 1) * TAMANO_PAGINA;
-  const visibles = resultado.slice(inicio, inicio + TAMANO_PAGINA);
+  const { visibles, paginaActual, totalPaginas, inicio } = paginar(resultado, pagina, TAMANO_PAGINA);
 
   return (
     <>
@@ -148,25 +147,14 @@ export function Facturas() {
           />
         )}
 
-        {resultado.length > TAMANO_PAGINA && (
-          <nav className="facturas-paginacion" aria-label="Paginación">
-            <span>
-              Mostrando {inicio + 1}–{inicio + visibles.length} de {resultado.length}
-            </span>
-            <div>
-              <Boton variante="discreto" disabled={paginaActual === 1} onClick={() => cambiarPagina(paginaActual - 1)}>
-                Anterior
-              </Boton>
-              <Boton
-                variante="secundario"
-                disabled={paginaActual === totalPaginas}
-                onClick={() => cambiarPagina(paginaActual + 1)}
-              >
-                Siguiente
-              </Boton>
-            </div>
-          </nav>
-        )}
+        <Paginacion
+          total={resultado.length}
+          pagina={paginaActual}
+          totalPaginas={totalPaginas}
+          inicio={inicio}
+          cantidadVisible={visibles.length}
+          onCambiar={cambiarPagina}
+        />
       </section>
     </>
   );

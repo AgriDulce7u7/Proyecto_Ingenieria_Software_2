@@ -327,3 +327,36 @@
     padding: 24px;
   }
 }
+
+/* ---------------------------------------------------------------- paginación (compartida) */
+
+.paginacion {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 13px 17px;
+  font-size: 12px;
+  color: var(--color-tinta-tenue);
+  border-top: 1px solid var(--color-borde-suave);
+}
+
+.paginacion div {
+  display: flex;
+  gap: 5px;
+}
+
+.paginacion .boton {
+  flex: 1;
+}
+
+@media (min-width: 37.5rem) {
+  .paginacion {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .paginacion .boton {
+    flex: none;
+  }
+}

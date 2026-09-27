@@ -8,6 +8,7 @@ import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
 import { Alertas } from "./paginas/gestion/alertas/Alertas";
+import { DetalleLote } from "./paginas/gestion/facturacion/DetalleLote";
 import { Facturas } from "./paginas/gestion/facturacion/Facturas";
 import { Lotes } from "./paginas/gestion/facturacion/Lotes";
 import { Programacion } from "./paginas/gestion/facturacion/Programacion";
@@ -51,10 +52,8 @@ export const enrutador = createBrowserRouter([
       { path: "facturacion", element: <Programacion /> },
       // RF-05, CU-03, SWR-02, SWR-04
       { path: "facturacion/lotes", element: <Lotes /> },
-      {
-        path: "facturacion/lotes/:periodo",
-        element: <Pendiente titulo="Detalle del lote" requisitos="RF-05, CU-03, RN-02" />,
-      },
+      // RF-05, CU-03, SWR-02, SWR-04
+      { path: "facturacion/lotes/:periodo", element: <DetalleLote /> },
       // RF-05, SWR-03, SWR-04
       { path: "facturacion/facturas", element: <Facturas /> },
       {

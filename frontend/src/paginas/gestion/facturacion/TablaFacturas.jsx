@@ -9,6 +9,7 @@ import {
   puedeSincronizarse,
 } from "../../../presentacion/facturacion";
 import { formatearFechaCorta } from "../../../presentacion/fechas";
+import "./facturas.css";
 
 /**
  * Listado de facturas. Las que no han llegado al ERP ofrecen "Reintentar" (SWR-04).
