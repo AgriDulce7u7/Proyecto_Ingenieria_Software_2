@@ -1,0 +1,44 @@
+/* Páginas internas del portal ciudadano (mobile-first) */
+
+.pagina-portal {
+  margin: 0 auto;
+  padding: 40px 16px 70px;
+}
+
+.pagina-portal-normal {
+  max-width: 1000px;
+}
+
+.pagina-portal-estrecha {
+  max-width: 940px;
+}
+
+.pagina-portal-intro {
+  max-width: 720px;
+  margin-bottom: 34px;
+}
+
+.pagina-portal-intro .enlace-volver {
+  margin-bottom: 28px;
+}
+
+.pagina-portal-intro h1 {
+  margin: 10px 0;
+  font-size: 34px;
+  letter-spacing: -0.035em;
+  color: var(--color-agua-profundo);
+}
+
+.pagina-portal-intro p {
+  font-size: 16px;
+}
+
+@media (min-width: 37.5rem) {
+  .pagina-portal {
+    padding: 62px 24px 90px;
+  }
+
+  .pagina-portal-intro h1 {
+    font-size: 42px;
+  }
+}

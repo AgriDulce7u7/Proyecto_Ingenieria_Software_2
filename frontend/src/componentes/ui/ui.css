@@ -1,0 +1,297 @@
+/* Componentes base del sistema visual: marca, botones, etiquetas, antetítulos y campos */
+
+.icono {
+  flex: none;
+}
+
+/* ---------------------------------------------------------------- marca */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-marca {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: var(--color-superficie);
+  background: var(--color-agua);
+  border-radius: 11px 11px 11px 4px;
+}
+
+.logo-texto strong {
+  display: block;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--color-agua-oscuro);
+}
+
+.logo-texto small {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  white-space: nowrap;
+  color: var(--color-tinta-suave);
+}
+
+/* ---------------------------------------------------------------- botones */
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 650;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, transform 0.18s ease;
+}
+
+.boton:hover {
+  transform: translateY(-1px);
+}
+
+.boton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.boton-principal {
+  color: var(--color-superficie);
+  background: var(--color-agua);
+  box-shadow: 0 5px 14px rgb(11 110 138 / 16%);
+}
+
+.boton-principal:hover {
+  background: var(--color-agua-oscuro);
+}
+
+.boton-secundario {
+  color: var(--color-agua-oscuro);
+  background: var(--color-superficie);
+  border-color: #a9c8d1;
+}
+
+.boton-discreto {
+  color: var(--color-agua-oscuro);
+}
+
+.boton-peligro {
+  color: var(--color-vencido);
+  background: var(--color-vencido-claro);
+}
+
+/* ---------------------------------------------------------------- textos de apoyo */
+
+.antetitulo {
+  display: block;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-agua);
+}
+
+/* ---------------------------------------------------------------- etiquetas de estado */
+
+.etiqueta {
+  display: inline-flex;
+  width: fit-content;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.etiqueta-neutro {
+  color: var(--color-tinta-suave);
+  background: #eef2f3;
+}
+
+.etiqueta-exito {
+  color: var(--color-exito);
+  background: var(--color-exito-claro);
+}
+
+.etiqueta-advertencia {
+  color: #825300;
+  background: var(--color-plazo-claro);
+}
+
+.etiqueta-peligro {
+  color: var(--color-vencido);
+  background: var(--color-vencido-claro);
+}
+
+.etiqueta-info {
+  color: var(--color-agua-oscuro);
+  background: var(--color-info-claro);
+}
+
+/* ---------------------------------------------------------------- campos de formulario */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.campo > label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+
+.campo > label b {
+  color: var(--color-vencido);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio-control);
+  font-weight: 450;
+  color: var(--color-tinta);
+  background: var(--color-superficie);
+}
+
+.campo textarea {
+  resize: vertical;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: var(--color-placeholder);
+}
+
+.campo [aria-invalid="true"] {
+  border-color: var(--color-vencido);
+  background: #fffafa;
+}
+
+.campo-error {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--color-vencido);
+}
+
+/* Ayuda y contador debajo del control */
+.campo-pie {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--color-tinta-tenue);
+}
+
+.campo-contador {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- enlace para volver */
+
+.enlace-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 650;
+  color: var(--color-agua);
+}
+
+.enlace-volver:hover {
+  color: var(--color-agua-oscuro);
+}
+
+/* ---------------------------------------------------------------- ventana modal */
+
+.dialogo {
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  margin: auto;
+  padding: 0;
+  color: var(--color-tinta);
+  background: var(--color-superficie);
+  border-radius: var(--radio-grande);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 22%);
+}
+
+.dialogo::backdrop {
+  background: rgb(6 32 40 / 58%);
+}
+
+.dialogo-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 18px;
+}
+
+.dialogo-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.dialogo-cabecera h2 {
+  margin-top: 6px;
+  font-size: 22px;
+}
+
+.dialogo-cerrar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  color: var(--color-tinta-suave);
+}
+
+.dialogo-cerrar:hover {
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+}
+
+.dialogo-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dialogo-acciones {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+@media (min-width: 37.5rem) {
+  .dialogo-contenido {
+    padding: 26px;
+  }
+
+  .dialogo-acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

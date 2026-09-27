@@ -1,0 +1,70 @@
+/*
+ * Tokens de diseño de SIGCA-EPQ (sistema visual de Figma).
+ *
+ * Puntos de corte (las variables CSS no funcionan dentro de @media, por eso se documentan aquí):
+ *   - 37.5rem  (600px): teléfono grande / tableta vertical
+ *   - 56.25rem (900px): escritorio
+ */
+:root {
+  /* Marca: azul petróleo del servicio de agua */
+  --color-agua: #0b6e8a;
+  --color-agua-oscuro: #084f63;
+  --color-agua-profundo: #063947;
+  --color-agua-claro: #e3f1f4;
+  --color-agua-suave: #f0f7f8;
+  --color-agua-borde: #a9ccd5;
+  --color-agua-linea: #b9dbe2;
+
+  /* Texto */
+  --color-tinta: #1c2b33;
+  --color-tinta-suave: #4a5b64;
+  --color-tinta-tenue: #73828a;
+  --color-placeholder: #829198;
+
+  /* Superficies y bordes */
+  --color-fondo: #f7f9fa;
+  --color-superficie: #ffffff;
+  --color-borde: #d5dee2;
+  --color-borde-suave: #e7edef;
+  --color-borde-control: #c6d2d7;
+
+  /* Estados (semánticos) */
+  --color-plazo: #a86a00;
+  --color-plazo-claro: #fff7e7;
+  --color-vencido: #b42318;
+  --color-vencido-claro: #fff0ee;
+  --color-exito: #1f7a4d;
+  --color-exito-claro: #eaf7f0;
+  --color-info-claro: #e9f4f7;
+
+  /* Tipografía */
+  --fuente: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --texto-xs: 0.8125rem;
+  --texto-sm: 0.875rem;
+  --texto-base: 1rem;
+  --texto-lg: 1.25rem;
+  --texto-xl: 1.5625rem;
+  --texto-2xl: 1.953rem;
+  --texto-3xl: 3.052rem;
+
+  /* Espaciado (múltiplos de 4px) */
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 0.75rem;
+  --espacio-4: 1rem;
+  --espacio-6: 1.5rem;
+  --espacio-8: 2rem;
+  --espacio-12: 3rem;
+
+  /* Forma y profundidad */
+  --radio-control: 8px;
+  --radio-panel: 12px;
+  --radio-grande: 20px;
+  --sombra-panel: 0 12px 34px rgb(8 79 99 / 9%);
+
+  /* Anchos */
+  --ancho-contenido: 1180px;
+  --ancho-lectura: 42rem;
+  --ancho-gestion: 76rem;
+  --alto-barra: 4rem;
+}

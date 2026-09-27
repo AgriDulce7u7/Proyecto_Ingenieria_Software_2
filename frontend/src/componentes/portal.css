@@ -1,0 +1,137 @@
+/* Estructura del portal ciudadano (mobile-first; ver puntos de corte en tokens.css) */
+
+.portal {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.portal-contenido {
+  flex: 1;
+}
+
+.portal-contenido:focus {
+  outline: none;
+}
+
+/* Enlace para saltar la navegación con el teclado: solo visible al recibir el foco */
+.saltar-contenido {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 8px 14px;
+  border-radius: var(--radio-control);
+  font-weight: 650;
+  color: var(--color-superficie);
+  background: var(--color-agua-oscuro);
+  transform: translateY(-150%);
+}
+
+.saltar-contenido:focus {
+  transform: none;
+}
+
+/* ---------------------------------------------------------------- encabezado */
+
+.portal-encabezado {
+  position: relative;
+  z-index: 5;
+  height: 68px;
+  background: rgb(255 255 255 / 96%);
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.portal-encabezado-interior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: var(--ancho-contenido);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* En móvil la marca muestra solo el nombre y la navegación se hace desde el contenido */
+.portal-marca .logo-texto small,
+.portal-nav {
+  display: none;
+}
+
+.portal-acceso.boton {
+  min-height: 38px;
+  padding: 0 11px;
+  font-size: 11px;
+}
+
+.portal-nav a {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--color-tinta-suave);
+}
+
+.portal-nav a:hover {
+  color: var(--color-agua-oscuro);
+}
+
+.portal-nav a.active {
+  color: var(--color-agua-oscuro);
+  border-color: var(--color-agua);
+}
+
+/* ---------------------------------------------------------------- pie */
+
+.portal-pie {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px 20px;
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+  background: var(--color-superficie);
+  border-top: 1px solid var(--color-borde);
+}
+
+.portal-pie p {
+  font-size: 12px;
+}
+
+@media (min-width: 37.5rem) {
+  .portal-encabezado {
+    height: 76px;
+  }
+
+  .portal-encabezado-interior {
+    padding: 0 24px;
+  }
+
+  .portal-marca .logo-texto small {
+    display: block;
+  }
+
+  .portal-acceso.boton {
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .portal-pie {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 100px;
+    padding: 22px max(24px, calc((100% - 1132px) / 2));
+  }
+}
+
+@media (min-width: 56.25rem) {
+  .portal-nav {
+    display: flex;
+    align-self: stretch;
+    gap: 28px;
+  }
+}

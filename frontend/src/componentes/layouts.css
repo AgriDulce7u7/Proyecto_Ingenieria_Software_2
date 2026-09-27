@@ -1,0 +1,226 @@
+/* ---------------------------------------------------------------- back-office
+ * Mobile-first: en pantallas pequeñas el menú es un panel lateral que se abre sobre el contenido;
+ * desde 48rem (768px) pasa a ser una columna fija a la izquierda.
+ */
+
+.gestion {
+  min-height: 100vh;
+}
+
+.gestion-barra {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  height: var(--alto-barra);
+  padding: 0 var(--espacio-4);
+  background: var(--color-superficie);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.gestion-boton-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  min-height: 2.5rem;
+  padding: 0 var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-control);
+  background: var(--color-superficie);
+  font: inherit;
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  color: var(--color-tinta);
+  cursor: pointer;
+}
+
+/* Tres líneas dibujadas con bordes, sin depender de una librería de íconos */
+.icono-menu {
+  width: 1rem;
+  height: 0.75rem;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  background: linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat;
+}
+
+.selector-gestor {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-left: auto;
+  font-size: var(--texto-sm);
+  color: var(--color-tinta-suave);
+}
+
+.selector-gestor select {
+  max-width: 11rem;
+  min-height: 2.5rem;
+  padding: 0 var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-control);
+  font: inherit;
+  color: var(--color-tinta);
+  background: var(--color-superficie);
+}
+
+.gestion-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgb(28 43 51 / 45%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms;
+}
+
+.gestion-velo[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.gestion-nav {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+  width: min(18rem, 85vw);
+  padding: var(--espacio-6) var(--espacio-4);
+  overflow-y: auto;
+  background: var(--color-superficie);
+  box-shadow: 4px 0 24px rgb(28 43 51 / 18%);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition: transform 200ms ease, visibility 200ms;
+}
+
+.gestion-nav[data-abierto="true"] {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.gestion-nav-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--espacio-3);
+  font-weight: 700;
+}
+
+.gestion-boton-cerrar {
+  min-height: 2.5rem;
+  padding: 0 var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-control);
+  background: var(--color-superficie);
+  font: inherit;
+  font-size: var(--texto-sm);
+  font-weight: 600;
+  color: var(--color-tinta);
+  cursor: pointer;
+}
+
+.gestion-nav-grupo h2 {
+  margin: 0 0 var(--espacio-2);
+  padding: 0 var(--espacio-3);
+  font-size: var(--texto-xs);
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+}
+
+.gestion-nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gestion-nav-grupo a {
+  display: block;
+  padding: var(--espacio-3);
+  border-radius: var(--radio-control);
+  color: var(--color-tinta);
+  text-decoration: none;
+}
+
+.gestion-nav-grupo a:hover {
+  background: var(--color-fondo);
+}
+
+.gestion-nav-grupo a.active {
+  background: var(--color-agua-claro);
+  color: var(--color-agua-oscuro);
+  font-weight: 600;
+}
+
+.gestion-nav-portal {
+  margin-top: auto;
+  padding: 0 var(--espacio-3);
+  font-size: var(--texto-sm);
+}
+
+.gestion-contenido {
+  width: 100%;
+  max-width: var(--ancho-gestion);
+  padding: var(--espacio-6) var(--espacio-4);
+}
+
+@media (min-width: 48rem) {
+  .gestion {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "barra barra"
+      "nav contenido";
+  }
+
+  .gestion-barra {
+    grid-area: barra;
+    padding: 0 var(--espacio-6);
+  }
+
+  .gestion-boton-menu,
+  .gestion-velo,
+  .gestion-nav-cabecera {
+    display: none;
+  }
+
+
+  .selector-gestor select {
+    max-width: none;
+  }
+
+  .gestion-nav {
+    grid-area: nav;
+    position: sticky;
+    top: var(--alto-barra);
+    width: auto;
+    height: calc(100vh - var(--alto-barra));
+    padding: var(--espacio-6) var(--espacio-4);
+    box-shadow: none;
+    border-right: 1px solid var(--color-borde);
+    transform: none;
+    visibility: visible;
+    transition: none;
+  }
+
+  .gestion-nav-grupo a {
+    padding: var(--espacio-2) var(--espacio-3);
+  }
+
+  .gestion-contenido {
+    grid-area: contenido;
+    padding: var(--espacio-8) var(--espacio-6);
+  }
+}
+
+/* ---------------------------------------------------------------- página simple */
+
+.pagina-simple {
+  max-width: var(--ancho-lectura);
+  margin: 0 auto;
+  padding: var(--espacio-12) var(--espacio-6);
+}

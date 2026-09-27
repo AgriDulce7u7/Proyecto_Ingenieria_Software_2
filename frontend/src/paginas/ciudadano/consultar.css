@@ -1,0 +1,203 @@
+/* Consulta pública del estado de una PQR (mobile-first) */
+
+/* ---------------------------------------------------------------- búsqueda */
+
+.consulta-busqueda {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 22px;
+  background: var(--color-agua-suave);
+  border: 1px solid #bad6dd;
+  border-radius: var(--radio-panel);
+}
+
+.consulta-busqueda .boton {
+  width: 100%;
+}
+
+.pagina-portal .aviso {
+  margin-bottom: 24px;
+}
+
+/* ---------------------------------------------------------------- resultado */
+
+.consulta-resultado {
+  padding: 22px 18px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-grande);
+}
+
+.consulta-resultado-encabezado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.consulta-resultado-encabezado h2 {
+  margin-top: 7px;
+  font-size: 22px;
+}
+
+.consulta-datos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.consulta-datos div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consulta-datos dt {
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+}
+
+.consulta-datos dd {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- línea de tiempo */
+
+.consulta-linea-tiempo {
+  padding: 26px 10px 8px;
+}
+
+.consulta-paso {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 14px;
+  min-height: 76px;
+  color: var(--color-tinta-tenue);
+}
+
+/* Conector vertical entre pasos */
+.consulta-paso::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  bottom: -1px;
+  left: 9px;
+  width: 2px;
+  background: var(--color-borde);
+}
+
+.consulta-paso:last-child::after {
+  display: none;
+}
+
+.consulta-paso-marca {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  background: var(--color-superficie);
+  border: 2px solid #b8c5ca;
+  border-radius: 50%;
+}
+
+.consulta-paso div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.consulta-paso strong {
+  font-weight: 700;
+}
+
+.consulta-paso small {
+  font-size: 13px;
+  color: var(--color-tinta-tenue);
+}
+
+.consulta-paso-completo .consulta-paso-marca {
+  color: var(--color-superficie);
+  background: var(--color-exito);
+  border-color: var(--color-exito);
+}
+
+.consulta-paso-completo strong {
+  color: var(--color-tinta-suave);
+}
+
+.consulta-paso-actual {
+  color: var(--color-agua-oscuro);
+}
+
+.consulta-paso-actual .consulta-paso-marca {
+  border: 5px solid var(--color-agua);
+}
+
+.consulta-paso-vencido {
+  color: var(--color-vencido);
+}
+
+.consulta-paso-vencido .consulta-paso-marca {
+  border-color: var(--color-vencido);
+}
+
+.consulta-paso-vencido small {
+  color: var(--color-vencido);
+}
+
+/* ---------------------------------------------------------------- nota de privacidad */
+
+.consulta-privacidad {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--color-fondo);
+  border-radius: 9px;
+}
+
+.consulta-privacidad .icono {
+  color: var(--color-agua);
+}
+
+.consulta-privacidad p {
+  font-size: 12px;
+}
+
+/* ---------------------------------------------------------------- tableta y escritorio */
+
+@media (min-width: 37.5rem) {
+  .consulta-busqueda {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .consulta-busqueda .boton {
+    width: auto;
+    min-height: 44px;
+  }
+
+  .consulta-resultado {
+    padding: 30px;
+  }
+
+  .consulta-resultado-encabezado {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .consulta-datos {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+}
