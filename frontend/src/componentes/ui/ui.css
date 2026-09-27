@@ -192,3 +192,31 @@
   font-weight: 550;
   color: var(--color-vencido);
 }
+
+/* Ayuda y contador debajo del control */
+.campo-pie {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--color-tinta-tenue);
+}
+
+.campo-contador {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- enlace para volver */
+
+.enlace-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 650;
+  color: var(--color-agua);
+}
+
+.enlace-volver:hover {
+  color: var(--color-agua-oscuro);
+}

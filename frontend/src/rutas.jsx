@@ -1,9 +1,11 @@
+
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { BackofficeLayout } from "./componentes/BackofficeLayout";
 import { NoEncontrada } from "./componentes/NoEncontrada";
 import { Pendiente } from "./componentes/Pendiente";
 import { PortalLayout } from "./componentes/PortalLayout";
 import { Inicio } from "./paginas/ciudadano/Inicio";
+import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
 
 /**
  * Mapa de pantallas. Cada ruta indica los requisitos del Plan de Requisitos que respalda
@@ -15,7 +17,8 @@ export const enrutador = createBrowserRouter([
     element: <PortalLayout />,
     children: [
       { index: true, element: <Inicio /> },
-      { path: "radicar", element: <Pendiente titulo="Radicar una PQR" requisitos="RF-08, CU-06" /> },
+      // RF-08, CU-06
+      { path: "radicar", element: <RadicarPqr /> },
       {
         path: "radicar/constancia",
         element: <Pendiente titulo="Constancia de radicación" requisitos="RF-08, RN-04" />,

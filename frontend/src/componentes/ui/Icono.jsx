@@ -7,6 +7,12 @@ const TRAZOS = {
       <path d="m14 7 5 5-5 5" />
     </>
   ),
+  volver: (
+    <>
+      <path d="M19 12H5" />
+      <path d="m10 7-5 5 5 5" />
+    </>
+  ),
   buscar: (
     <>
       <circle cx="11" cy="11" r="7" />
