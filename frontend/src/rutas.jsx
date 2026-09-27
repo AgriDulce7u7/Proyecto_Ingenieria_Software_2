@@ -1,9 +1,9 @@
-
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { BackofficeLayout } from "./componentes/BackofficeLayout";
 import { NoEncontrada } from "./componentes/NoEncontrada";
 import { Pendiente } from "./componentes/Pendiente";
 import { PortalLayout } from "./componentes/PortalLayout";
+import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
 
@@ -23,7 +23,8 @@ export const enrutador = createBrowserRouter([
         path: "radicar/constancia",
         element: <Pendiente titulo="Constancia de radicación" requisitos="RF-08, RN-04" />,
       },
-      { path: "consultar", element: <Pendiente titulo="Consultar estado" requisitos="SWR-08" /> },
+      // SWR-08
+      { path: "consultar", element: <ConsultarEstado /> },
     ],
   },
   {
