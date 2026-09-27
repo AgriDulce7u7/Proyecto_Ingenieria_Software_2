@@ -5,8 +5,10 @@ import {
   listarContratos,
   listarFacturasDelLote,
   listarLotes,
+  obtenerFactura,
   obtenerLote,
   obtenerProgramacion,
+  obtenerSincronizacionesFactura,
   sincronizarFactura,
   sincronizarLote,
 } from "../api/facturacion";
@@ -16,6 +18,8 @@ export const clavesFacturacion = {
   todo: ["facturacion"],
   programacion: ["facturacion", "programacion"],
   lotes: ["facturacion", "lotes"],
+  factura: (numero) => ["facturacion", "factura", numero],
+  sincronizacionesFactura: (numero) => ["facturacion", "factura", numero, "sincronizaciones"],
   lote: (periodo) => ["facturacion", "lotes", periodo],
   facturasLote: (periodo) => ["facturacion", "lotes", periodo, "facturas"],
   facturas: (filtros) => ["facturacion", "facturas", filtros],
@@ -90,5 +94,18 @@ export function useSincronizarLote(periodo) {
   return useMutation({
     mutationFn: () => sincronizarLote(periodo),
     onSettled: () => clienteConsultas.invalidateQueries({ queryKey: clavesFacturacion.todo }),
+  });
+}
+
+/** Detalle de una factura: contrato, lecturas, tarifa y liquidación (SWR-03). */
+export function useFactura(numero) {
+  return useQuery({ queryKey: clavesFacturacion.factura(numero), queryFn: () => obtenerFactura(numero) });
+}
+
+/** Bitácora de envíos de la factura al ERP, del más reciente al más antiguo (SWR-04). */
+export function useSincronizacionesFactura(numero) {
+  return useQuery({
+    queryKey: clavesFacturacion.sincronizacionesFactura(numero),
+    queryFn: () => obtenerSincronizacionesFactura(numero),
   });
 }

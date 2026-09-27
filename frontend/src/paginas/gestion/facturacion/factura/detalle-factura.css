@@ -1,0 +1,354 @@
+/* Detalle de una factura (mobile-first) */
+
+.detalle-factura-volver {
+  margin-bottom: 18px;
+}
+
+.detalle-factura-encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.detalle-factura-encabezado h1 {
+  margin: 6px 0 10px;
+  font-size: 26px;
+  letter-spacing: -0.01em;
+  color: var(--color-agua-profundo);
+}
+
+.detalle-factura-encabezado > .boton {
+  width: 100%;
+}
+
+.detalle-factura-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+}
+
+.detalle-factura-aviso {
+  margin-bottom: 18px;
+}
+
+.detalle-factura-rejilla {
+  display: grid;
+  gap: 18px;
+  align-items: start;
+}
+
+.detalle-factura-principal,
+.detalle-factura-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* En pantallas pequeñas la liquidación va primero: el total a pagar es lo más consultado */
+.detalle-factura-lateral {
+  order: -1;
+}
+
+.factura-panel-descripcion {
+  margin-top: 3px;
+  font-size: 12px;
+}
+
+/* ---------------------------------------------------------------- rejilla de datos */
+
+.factura-datos {
+  display: grid;
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 9px;
+}
+
+.factura-datos div {
+  padding: 12px 12px 14px;
+}
+
+.factura-datos div + div {
+  border-top: 1px solid var(--color-borde-suave);
+}
+
+.factura-datos dt {
+  margin-bottom: 5px;
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.factura-datos dd {
+  font-size: 13px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------------- consumo */
+
+.factura-lecturas {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.factura-lecturas > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 12px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 9px;
+}
+
+.factura-lecturas span {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.factura-lecturas strong {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.factura-lecturas > .icono {
+  justify-self: center;
+  color: var(--color-tinta-tenue);
+  transform: rotate(90deg);
+}
+
+.factura-lecturas .factura-consumo {
+  background: var(--color-agua-suave);
+  border-color: var(--color-agua-borde);
+}
+
+.factura-consumo strong {
+  font-size: 18px;
+  color: var(--color-agua-oscuro);
+}
+
+/* ---------------------------------------------------------------- bitácora del ERP */
+
+.factura-bitacora li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 14px;
+  padding-bottom: 20px;
+}
+
+.factura-bitacora li::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  bottom: 0;
+  left: 5px;
+  width: 1px;
+  background: var(--color-borde);
+}
+
+.factura-bitacora li:last-child {
+  padding-bottom: 0;
+}
+
+.factura-bitacora li:last-child::after {
+  display: none;
+}
+
+.factura-bitacora i {
+  z-index: 1;
+  width: 11px;
+  height: 11px;
+  margin-top: 4px;
+  border-radius: 50%;
+}
+
+.factura-envio-exitoso i {
+  background: var(--color-exito);
+}
+
+.factura-envio-fallido i {
+  background: var(--color-vencido);
+}
+
+.factura-bitacora strong {
+  font-size: 13px;
+}
+
+.factura-bitacora p {
+  margin: 4px 0;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.factura-envio-fallido p {
+  color: var(--color-vencido);
+}
+
+.factura-bitacora small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+/* ---------------------------------------------------------------- liquidación */
+
+.factura-liquidacion {
+  overflow: hidden;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-panel);
+}
+
+.factura-liquidacion h2 {
+  padding: 18px 16px;
+  font-size: 16px;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.factura-liquidacion dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  font-size: 13px;
+}
+
+.factura-liquidacion dt {
+  color: var(--color-tinta-suave);
+}
+
+.factura-liquidacion dd {
+  font-weight: 700;
+}
+
+.factura-liquidacion-subtotal {
+  border-top: 1px solid var(--color-borde-suave);
+}
+
+.factura-liquidacion-subtotal dt {
+  font-weight: 700;
+  color: var(--color-tinta);
+}
+
+.factura-liquidacion-total {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 16px;
+  color: var(--color-superficie);
+  background: var(--color-agua-profundo);
+}
+
+.factura-liquidacion-total span,
+.factura-liquidacion-total small {
+  font-size: 11px;
+  color: #a6c5cc;
+}
+
+.factura-liquidacion-total strong {
+  font-size: 30px;
+  font-weight: 750;
+}
+
+/* ---------------------------------------------------------------- aviso del ERP */
+
+.factura-aviso {
+  display: flex;
+  gap: 11px;
+  padding: 15px;
+  border: 1px solid;
+  border-radius: var(--radio-panel);
+}
+
+.factura-aviso .icono {
+  margin-top: 1px;
+}
+
+.factura-aviso strong {
+  font-size: 13px;
+}
+
+.factura-aviso p {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.factura-aviso-error {
+  color: var(--color-vencido);
+  background: var(--color-vencido-claro);
+  border-color: #f2c2bc;
+}
+
+.factura-aviso-pendiente {
+  color: var(--color-plazo);
+  background: var(--color-plazo-claro);
+  border-color: #ecd7a9;
+}
+
+.factura-aviso-exito {
+  color: var(--color-exito);
+  background: var(--color-exito-claro);
+  border-color: #b8dec9;
+}
+
+/* ---------------------------------------------------------------- tableta */
+
+@media (min-width: 37.5rem) {
+  .detalle-factura-encabezado {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .detalle-factura-encabezado h1 {
+    font-size: 30px;
+  }
+
+  .detalle-factura-encabezado > .boton {
+    width: auto;
+  }
+
+  .factura-datos {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .factura-datos div + div {
+    border-top: 0;
+  }
+
+  .factura-datos div:nth-child(even) {
+    border-left: 1px solid var(--color-borde-suave);
+  }
+
+  .factura-datos div:nth-child(n + 3) {
+    border-top: 1px solid var(--color-borde-suave);
+  }
+
+  .factura-lecturas {
+    grid-template-columns: 1fr auto 1fr 1fr;
+    align-items: center;
+  }
+
+  .factura-lecturas > .icono {
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------- escritorio */
+
+@media (min-width: 56.25rem) {
+  .detalle-factura-rejilla {
+    grid-template-columns: 1fr 300px;
+  }
+
+  .detalle-factura-lateral {
+    order: 0;
+    position: sticky;
+    top: calc(var(--alto-barra) + 20px);
+  }
+}

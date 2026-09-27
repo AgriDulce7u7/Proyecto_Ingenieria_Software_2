@@ -1,7 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { BackofficeLayout } from "./componentes/BackofficeLayout";
 import { NoEncontrada } from "./componentes/NoEncontrada";
-import { Pendiente } from "./componentes/Pendiente";
 import { PortalLayout } from "./componentes/PortalLayout";
 import { Constancia } from "./paginas/ciudadano/Constancia";
 import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
@@ -9,6 +8,7 @@ import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
 import { Alertas } from "./paginas/gestion/alertas/Alertas";
 import { DetalleLote } from "./paginas/gestion/facturacion/DetalleLote";
+import { DetalleFactura } from "./paginas/gestion/facturacion/factura/DetalleFactura";
 import { Facturas } from "./paginas/gestion/facturacion/Facturas";
 import { Lotes } from "./paginas/gestion/facturacion/Lotes";
 import { Programacion } from "./paginas/gestion/facturacion/Programacion";
@@ -17,7 +17,7 @@ import { DetallePqr } from "./paginas/gestion/pqr/detalle/DetallePqr";
 
 /**
  * Mapa de pantallas. Cada ruta indica los requisitos del Plan de Requisitos que respalda
- * (matriz de trazabilidad). Las pantallas <Pendiente> se reemplazan en las siguientes etapas.
+ * (matriz de trazabilidad).
  */
 export const enrutador = createBrowserRouter([
   {
@@ -56,10 +56,8 @@ export const enrutador = createBrowserRouter([
       { path: "facturacion/lotes/:periodo", element: <DetalleLote /> },
       // RF-05, SWR-03, SWR-04
       { path: "facturacion/facturas", element: <Facturas /> },
-      {
-        path: "facturacion/facturas/:numero",
-        element: <Pendiente titulo="Detalle de factura" requisitos="SWR-03, SWR-04" />,
-      },
+      // RF-05, SWR-03, SWR-04
+      { path: "facturacion/facturas/:numero", element: <DetalleFactura /> },
     ],
   },
   { path: "*", element: <NoEncontrada /> },
