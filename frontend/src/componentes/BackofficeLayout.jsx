@@ -1,33 +1,35 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, NavLink, Outlet, ScrollRestoration } from "react-router-dom";
+import { useSesion } from "../sesion/useSesion";
 import { SelectorGestor } from "./SelectorGestor";
+import { Icono } from "./ui/Icono";
 import { Logo } from "./ui/Logo";
-import "./layouts.css";
+import "./backoffice.css";
 
-const SECCIONES = [
-  {
-    titulo: "PQR",
-    enlaces: [
-      { a: "/gestion/pqr", texto: "Bandeja", fin: true },
-      { a: "/gestion/alertas", texto: "Mis alertas" },
-    ],
-  },
-  {
-    titulo: "Facturación",
-    enlaces: [
-      { a: "/gestion/facturacion", texto: "Programación", fin: true },
-      { a: "/gestion/facturacion/lotes", texto: "Lotes" },
-      { a: "/gestion/facturacion/facturas", texto: "Facturas" },
-    ],
-  },
+const MENU = [
+  { a: "/gestion/pqr", texto: "Gestión de PQR", icono: "documento" },
+  { a: "/gestion/alertas", texto: "Alertas", icono: "campana" },
+  { a: "/gestion/facturacion", texto: "Facturación", icono: "recibo", fin: true },
+  { a: "/gestion/facturacion/lotes", texto: "Lotes de facturación", icono: "capas" },
+  { a: "/gestion/facturacion/facturas", texto: "Facturas", icono: "documento" },
 ];
+
+/** Iniciales del gestor para el avatar: "Laura Giraldo Ríos" → "LG". */
+const iniciales = (nombre = "") =>
+  nombre
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((parte) => parte[0].toUpperCase())
+    .join("");
 
 /**
  * Back-office de funcionarios: atención de PQR (F-02) y facturación (F-01).
  * En escritorio el menú es una columna fija; en pantallas pequeñas es un panel lateral
- * que se abre con el botón "Menú" y se cierra al navegar, al tocar fuera o con Esc.
+ * que se abre con el botón de menú y se cierra al navegar, al tocar fuera o con Esc.
  */
 export function BackofficeLayout() {
+  const { gestor } = useSesion();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const botonMenu = useRef(null);
   const menu = useRef(null);
@@ -53,67 +55,69 @@ export function BackofficeLayout() {
 
   return (
     <div className="gestion">
-      <header className="gestion-barra">
-        <button
-          ref={botonMenu}
-          type="button"
-          className="gestion-boton-menu"
-          aria-expanded={menuAbierto}
-          aria-controls={idMenu}
-          onClick={() => setMenuAbierto((abierto) => !abierto)}
-        >
-          <span className="icono-menu" aria-hidden="true" />
-          Menú
-        </button>
-        <Link to="/gestion" aria-label="SIGCA, inicio del back-office">
-          <Logo compacto />
+      <a className="saltar-contenido" href="#contenido-gestion">
+        Saltar al contenido principal
+      </a>
+
+      <aside ref={menu} id={idMenu} className="gestion-lateral" data-abierto={menuAbierto}>
+        <Link to="/gestion" className="gestion-lateral-marca" aria-label="SIGCA, inicio del back-office" onClick={cerrarMenu}>
+          <Logo />
         </Link>
-        <SelectorGestor />
-      </header>
-
-      <div
-        className="gestion-velo"
-        data-visible={menuAbierto}
-        onClick={cerrarMenu}
-        aria-hidden="true"
-      />
-
-      <nav ref={menu} id={idMenu} className="gestion-nav" data-abierto={menuAbierto} aria-label="Back-office">
-        <div className="gestion-nav-cabecera">
-          <span>SIGCA-EPQ</span>
-          <button
-            type="button"
-            className="gestion-boton-cerrar"
-            onClick={() => {
-              cerrarMenu();
-              botonMenu.current?.focus();
-            }}
-          >
-            Cerrar
-          </button>
+        <nav aria-label="Back-office">
+          <ul>
+            {MENU.map((opcion) => (
+              <li key={opcion.a}>
+                <NavLink to={opcion.a} end={opcion.fin} onClick={cerrarMenu}>
+                  <Icono nombre={opcion.icono} tamano={19} />
+                  <span>{opcion.texto}</span>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="gestion-lateral-pie">
+          <span>Portal ciudadano</span>
+          <Link to="/" onClick={cerrarMenu}>
+            Ir al portal
+            <Icono nombre="flecha" tamano={16} />
+          </Link>
         </div>
-        {SECCIONES.map((seccion) => (
-          <div key={seccion.titulo} className="gestion-nav-grupo">
-            <h2>{seccion.titulo}</h2>
-            <ul>
-              {seccion.enlaces.map((enlace) => (
-                <li key={enlace.a}>
-                  <NavLink to={enlace.a} end={enlace.fin} onClick={cerrarMenu}>
-                    {enlace.texto}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-        <Link to="/" className="gestion-nav-portal" onClick={cerrarMenu}>
-          Ver portal ciudadano
-        </Link>
-      </nav>
+      </aside>
 
-      <main className="gestion-contenido">
-        <Outlet />
-      </main>
+      <div className="gestion-velo" data-visible={menuAbierto} onClick={cerrarMenu} aria-hidden="true" />
+
+      <div className="gestion-principal">
+        <header className="gestion-barra">
+          <button
+            ref={botonMenu}
+            type="button"
+            className="gestion-boton-icono gestion-boton-menu"
+            aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={menuAbierto}
+            aria-controls={idMenu}
+            onClick={() => setMenuAbierto((abierto) => !abierto)}
+          >
+            <Icono nombre={menuAbierto ? "cerrar" : "menu"} />
+          </button>
+          <Link to="/gestion" className="gestion-barra-marca" aria-label="SIGCA, inicio del back-office">
+            <span className="logo-marca">
+              <Icono nombre="gota" tamano={22} />
+            </span>
+          </Link>
+
+          <SelectorGestor />
+          <Link to="/gestion/alertas" className="gestion-boton-icono gestion-campana" aria-label="Ver alertas">
+            <Icono nombre="campana" />
+          </Link>
+          <span className="gestion-avatar" aria-hidden="true">
+            {gestor ? iniciales(gestor.nombre) : "?"}
+          </span>
+        </header>
+
+        <main id="contenido-gestion" tabIndex={-1} className="gestion-contenido">
+          <Outlet />
+        </main>
+      </div>
       <ScrollRestoration />
     </div>
   );

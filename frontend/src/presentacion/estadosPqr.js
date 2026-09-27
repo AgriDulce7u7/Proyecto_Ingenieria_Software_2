@@ -45,3 +45,18 @@ export function pasosSeguimiento(estado) {
     };
   });
 }
+
+/** Estados en los que la PQR sigue esperando respuesta. */
+const PENDIENTES = [ESTADO.RADICADO, ESTADO.EN_TRAMITE, ESTADO.VENCIDO];
+
+export const esPendiente = (estado) => PENDIENTES.includes(estado);
+
+/**
+ * Situación del plazo de una PQR para resaltarla en la bandeja:
+ * "vencido", "proximo" (el backend ya envió la alerta de 48 h, SWR-07), "en-plazo" o "cerrado".
+ */
+export function situacionPlazo(pqr) {
+  if (pqr.estado === ESTADO.VENCIDO) return "vencido";
+  if (!esPendiente(pqr.estado)) return "cerrado";
+  return pqr.alertaVencimientoEnviada ? "proximo" : "en-plazo";
+}

@@ -6,6 +6,7 @@ import { PortalLayout } from "./componentes/PortalLayout";
 import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
+import { BandejaPqr } from "./paginas/gestion/pqr/BandejaPqr";
 
 /**
  * Mapa de pantallas. Cada ruta indica los requisitos del Plan de Requisitos que respalda
@@ -34,7 +35,8 @@ export const enrutador = createBrowserRouter([
       { index: true, element: <Navigate to="pqr" replace /> },
 
       // F-02 · PQR
-      { path: "pqr", element: <Pendiente titulo="Bandeja de PQR" requisitos="RF-09, CU-07" /> },
+      // RF-09, CU-07
+      { path: "pqr", element: <BandejaPqr /> },
       {
         path: "pqr/:radicado",
         element: <Pendiente titulo="Detalle de PQR" requisitos="CU-07, DE-02, RN-06, SWR-09" />,

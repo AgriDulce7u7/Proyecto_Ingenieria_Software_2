@@ -38,3 +38,33 @@ export function formatearFechaHora(texto) {
   const fecha = aFecha(texto);
   return fecha ? FORMATO_FECHA_HORA.format(fecha) : "";
 }
+
+const FORMATO_DIA_MES_ANIO = new Intl.DateTimeFormat(LOCALE, { day: "numeric", month: "short", year: "numeric" });
+const FORMATO_HORA = new Intl.DateTimeFormat(LOCALE, { hour: "numeric", minute: "2-digit" });
+
+/** Arma "16 sept 2026" con las partes de la fecha, sin los "de" ni los puntos que agrega es-CO. */
+function formatoCorto(fecha) {
+  const partes = Object.fromEntries(
+    FORMATO_DIA_MES_ANIO.formatToParts(fecha).map((parte) => [parte.type, parte.value]),
+  );
+  return `${partes.day} ${partes.month.replace(".", "")} ${partes.year}`;
+}
+
+/** "16 sept 2026" */
+export function formatearFechaCorta(texto) {
+  const fecha = aFecha(texto);
+  return fecha ? formatoCorto(fecha) : "";
+}
+
+const mismoDia = (a, b) =>
+  a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+/** Fecha límite en la bandeja: "Hoy, 5:00 p. m.", "Mañana, 11:59 p. m." o "16 sept 2026". */
+export function formatearFechaLimite(texto, ahora = new Date()) {
+  const fecha = aFecha(texto);
+  if (!fecha) return "";
+  const manana = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() + 1);
+  if (mismoDia(fecha, ahora)) return `Hoy, ${FORMATO_HORA.format(fecha)}`;
+  if (mismoDia(fecha, manana)) return `Mañana, ${FORMATO_HORA.format(fecha)}`;
+  return formatoCorto(fecha);
+}

@@ -1,20 +1,39 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { consultarEstadoPqr, obtenerTiposSolicitud, registrarPqr } from "../api/pqr";
+import {
+  consultarEstadoPqr,
+  listarPqr,
+  obtenerEstados,
+  obtenerGestores,
+  obtenerTiposSolicitud,
+  registrarPqr,
+} from "../api/pqr";
 
 /** Claves de caché de TanStack Query para el módulo PQR, centralizadas para invalidarlas sin errores. */
 export const clavesPqr = {
   todo: ["pqr"],
   tiposSolicitud: ["pqr", "catalogos", "tipos-solicitud"],
+  estados: ["pqr", "catalogos", "estados"],
+  gestores: ["gestores"],
+  bandeja: (filtros) => ["pqr", "bandeja", filtros],
   consultaPublica: (radicado) => ["pqr", "consulta", radicado],
 };
 
-/** Tipos de solicitud (Petición, Queja, Reclamo). Es un catálogo fijo: no se vuelve a pedir en la sesión. */
+// Los catálogos no cambian durante la sesión: se piden una sola vez.
+const CATALOGO = { staleTime: Infinity };
+
+/** Tipos de solicitud (Petición, Queja, Reclamo). */
 export function useTiposSolicitud() {
-  return useQuery({
-    queryKey: clavesPqr.tiposSolicitud,
-    queryFn: obtenerTiposSolicitud,
-    staleTime: Infinity,
-  });
+  return useQuery({ queryKey: clavesPqr.tiposSolicitud, queryFn: obtenerTiposSolicitud, ...CATALOGO });
+}
+
+/** Estados de una PQR, en el orden definido por el backend. */
+export function useEstadosPqr() {
+  return useQuery({ queryKey: clavesPqr.estados, queryFn: obtenerEstados, ...CATALOGO });
+}
+
+/** Gestores activos (selector del gestor actual y filtros). */
+export function useGestores() {
+  return useQuery({ queryKey: clavesPqr.gestores, queryFn: obtenerGestores, staleTime: 5 * 60 * 1000 });
 }
 
 /** Radicación de una PQR desde el portal ciudadano (RF-08). */
@@ -28,5 +47,18 @@ export function useConsultaPqr(radicado) {
     queryKey: clavesPqr.consultaPublica(radicado),
     queryFn: () => consultarEstadoPqr(radicado),
     enabled: Boolean(radicado),
+  });
+}
+
+/**
+ * Bandeja de PQR con los filtros del backend: { estado, tipo, gestorId } (RF-09).
+ * Se refresca cada minuto para reflejar cambios de estado y vencimientos del monitoreo.
+ */
+export function useBandejaPqr(filtros = {}) {
+  return useQuery({
+    queryKey: clavesPqr.bandeja(filtros),
+    queryFn: () => listarPqr(filtros),
+    refetchInterval: 60 * 1000,
+    placeholderData: (anteriores) => anteriores,
   });
 }

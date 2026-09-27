@@ -1,5 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import { obtenerGestores } from "../api/pqr";
+import { useGestores } from "../hooks/usePqr";
 import { useSesion } from "../sesion/useSesion";
 
 /**
@@ -8,11 +7,7 @@ import { useSesion } from "../sesion/useSesion";
  */
 export function SelectorGestor() {
   const { gestor, seleccionarGestor } = useSesion();
-  const { data: gestores = [], isLoading, isError } = useQuery({
-    queryKey: ["gestores"],
-    queryFn: obtenerGestores,
-    staleTime: 5 * 60 * 1000,
-  });
+  const { data: gestores = [], isPending, isError } = useGestores();
 
   const alCambiar = (evento) => {
     const id = Number(evento.target.value);
@@ -21,9 +16,18 @@ export function SelectorGestor() {
 
   return (
     <label className="selector-gestor">
-      <span className="solo-lectores-movil">Gestor</span>
-      <select value={gestor?.id ?? ""} onChange={alCambiar} disabled={isLoading || isError}>
-        <option value="">{isError ? "No disponible" : "Seleccionar…"}</option>
+      <span className="selector-gestor-etiqueta">
+        Gestor
+        <br />
+        actual
+      </span>
+      <select
+        aria-label="Gestor actual"
+        value={gestor?.id ?? ""}
+        onChange={alCambiar}
+        disabled={isPending || isError}
+      >
+        <option value="">{isError ? "No disponible" : "Seleccionar gestor"}</option>
         {gestores.map((g) => (
           <option key={g.id} value={g.id}>
             {g.nombre}

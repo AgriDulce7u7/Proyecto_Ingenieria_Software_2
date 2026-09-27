@@ -1,0 +1,16 @@
+.pagina-no-encontrada {
+  max-width: var(--ancho-lectura);
+  margin: 0 auto;
+  padding: 80px 20px;
+}
+
+.pagina-no-encontrada h1 {
+  margin: 10px 0;
+  font-size: 34px;
+  letter-spacing: -0.035em;
+  color: var(--color-agua-profundo);
+}
+
+.pagina-no-encontrada p {
+  margin-bottom: 24px;
+}

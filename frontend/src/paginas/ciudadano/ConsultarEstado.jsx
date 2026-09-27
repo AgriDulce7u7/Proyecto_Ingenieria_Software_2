@@ -8,7 +8,7 @@ import { Campo } from "../../componentes/ui/Campo";
 import { Etiqueta } from "../../componentes/ui/Etiqueta";
 import { Icono } from "../../componentes/ui/Icono";
 import { useConsultaPqr } from "../../hooks/usePqr";
-import { ESTADO, pasosSeguimiento, tonoEstado } from "../../presentacion/estadoPqr"
+import { ESTADO, pasosSeguimiento, tonoEstado } from "../../presentacion/estadosPqr";
 import { formatearFecha } from "../../presentacion/fechas";
 import { FORMATO_RADICADO, normalizarRadicado } from "./radicado";
 import "./consultar.css";

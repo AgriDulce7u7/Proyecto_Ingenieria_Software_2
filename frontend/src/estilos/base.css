@@ -109,6 +109,24 @@ p {
   }
 }
 
+/* Enlace para saltar la navegación con el teclado: solo visible al recibir el foco */
+.saltar-contenido {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 8px 14px;
+  border-radius: var(--radio-control);
+  font-weight: 650;
+  color: var(--color-superficie);
+  background: var(--color-agua-oscuro);
+  transform: translateY(-150%);
+}
+
+.saltar-contenido:focus {
+  transform: none;
+}
+
 .texto-secundario {
   color: var(--color-tinta-suave);
 }
