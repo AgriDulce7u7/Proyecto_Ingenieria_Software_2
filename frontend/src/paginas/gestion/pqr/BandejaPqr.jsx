@@ -11,7 +11,7 @@ import { useFiltrosBandeja } from "./useFiltrosBandeja";
 import "./bandeja.css";
 
 /**
- * Bandeja de PQR del back-office (RF-09, CU-07): indicadores, filtros y listado ordenado
+ * Bandeja de PQR del back-office (RF-09, CU-06): indicadores, filtros y listado ordenado
  * por fecha límite (el más urgente primero, como lo entrega el backend).
  */
 export function BandejaPqr() {

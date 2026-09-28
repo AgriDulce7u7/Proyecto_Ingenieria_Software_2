@@ -31,7 +31,7 @@ function enfocarPrimerError(formulario) {
 }
 
 /**
- * Radicación de una PQR por el portal ciudadano (RF-08, CU-06).
+ * Radicación de una PQR por el portal ciudadano (RF-08, CU-06, SWR-05, SWR-06).
  * Valida al enviar con las mismas reglas del backend y, desde ahí, revalida en vivo cada campo con error
  * (no al salir del campo: el mensaje desplazaría el botón y el clic de envío podría perderse).
  * Los errores que devuelva el servidor se muestran en su campo. Al radicar, lleva a la constancia.

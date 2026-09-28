@@ -9,7 +9,7 @@ import { ResultadoMonitoreo } from "./ResultadoMonitoreo";
 import "./alertas.css";
 
 /**
- * Alertas del gestor actual (SWR-07, RN-04): asignaciones, avisos de 48 h y vencimientos,
+ * Alertas del gestor actual (RF-09, SWR-07, RN-04): asignaciones, avisos de 48 h y vencimientos,
  * y ejecución a demanda del monitoreo de plazos.
  */
 export function Alertas() {

@@ -16,8 +16,8 @@ import { BandejaPqr } from "./paginas/gestion/pqr/BandejaPqr";
 import { DetallePqr } from "./paginas/gestion/pqr/detalle/DetallePqr";
 
 /**
- * Mapa de pantallas. Cada ruta indica los requisitos del Plan de Requisitos que respalda
- * (matriz de trazabilidad).
+ * Mapa de pantallas. Cada ruta indica los requisitos que respalda, con los identificadores del
+ * student book (RF, CU, RN, DE) y del Plan de Requisitos (SWR), para la matriz de trazabilidad.
  */
 export const enrutador = createBrowserRouter([
   {
@@ -25,11 +25,11 @@ export const enrutador = createBrowserRouter([
     element: <PortalLayout />,
     children: [
       { index: true, element: <Inicio /> },
-      // RF-08, CU-06
+      // RF-08, CU-06, SWR-05, SWR-06
       { path: "radicar", element: <RadicarPqr /> },
-      // RF-08, RN-04
+      // RF-08, SWR-05, SWR-06, RN-04
       { path: "radicar/constancia", element: <Constancia /> },
-      // SWR-08
+      // RF-10, CU-07, SWR-08
       { path: "consultar", element: <ConsultarEstado /> },
     ],
   },
@@ -40,15 +40,15 @@ export const enrutador = createBrowserRouter([
       { index: true, element: <Navigate to="pqr" replace /> },
 
       // F-02 · PQR
-      // RF-09, CU-07
+      // RF-09, CU-06
       { path: "pqr", element: <BandejaPqr /> },
-      // CU-07, DE-02, RN-06, SWR-09
+      // RF-09, CU-06, DE-02, RN-06, SWR-09
       { path: "pqr/:radicado", element: <DetallePqr /> },
-      // SWR-07, RN-04
+      // RF-09, SWR-07, RN-04
       { path: "alertas", element: <Alertas /> },
 
       // F-01 · Facturación
-      // SWR-01, SWR-02, RF-05, CU-03
+      // RF-05, CU-03, SWR-01, SWR-02
       { path: "facturacion", element: <Programacion /> },
       // RF-05, CU-03, SWR-02, SWR-04
       { path: "facturacion/lotes", element: <Lotes /> },
