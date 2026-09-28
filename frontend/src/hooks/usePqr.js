@@ -54,7 +54,7 @@ export function useRegistrarPqr() {
   return useMutation({ mutationFn: registrarPqr });
 }
 
-/** Consulta pública del estado de una PQR por su radicado (SWR-08). No consulta si no hay radicado. */
+/** Consulta pública del estado de una PQR por su radicado (RF-10, CU-07, SWR-08). No consulta si no hay radicado. */
 export function useConsultaPqr(radicado) {
   return useQuery({
     queryKey: clavesPqr.consultaPublica(radicado),
@@ -102,7 +102,7 @@ export function useEjecutarMonitoreo() {
   });
 }
 
-/** Detalle de una PQR para el back-office, con las acciones que permite su estado (CU-07). */
+/** Detalle de una PQR para el back-office, con las acciones que permite su estado (RF-09, CU-06). */
 export function usePqrDetalle(radicado) {
   return useQuery({ queryKey: clavesPqr.detalle(radicado), queryFn: () => obtenerPqr(radicado) });
 }

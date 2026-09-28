@@ -92,7 +92,7 @@ function ResultadoConsulta({ solicitud }) {
 }
 
 /**
- * Consulta pública del estado de una PQR, sin iniciar sesión (SWR-08).
+ * Consulta pública del estado de una PQR, sin iniciar sesión (RF-10, CU-07, SWR-08).
  * El radicado vive en la URL (?radicado=...): se puede compartir, recargar y volver atrás.
  */
 export function ConsultarEstado() {

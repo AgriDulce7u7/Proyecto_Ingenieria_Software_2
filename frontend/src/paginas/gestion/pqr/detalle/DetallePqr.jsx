@@ -148,7 +148,7 @@ function ContenidoDetalle({ pqr }) {
   );
 }
 
-/** Detalle de una PQR en el back-office (CU-07, DE-02, RN-06, SWR-09). */
+/** Detalle de una PQR en el back-office (RF-09, CU-06, DE-02, RN-06, SWR-09). */
 export function DetallePqr() {
   const { radicado } = useParams();
   useTituloPagina(`PQR ${radicado}`);

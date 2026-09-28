@@ -56,7 +56,7 @@ function SinRadicacion() {
 }
 
 /**
- * Constancia de radicación (RF-08, RN-04): número de radicado y plazos calculados por el backend.
+ * Constancia de radicación (RF-08, SWR-05, SWR-06, RN-04): número de radicado y plazos calculados por el backend.
  * Recibe la respuesta de POST /api/pqr por el estado de la navegación, que se conserva al recargar.
  */
 export function Constancia() {
