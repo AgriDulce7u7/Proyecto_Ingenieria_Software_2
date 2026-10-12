@@ -326,9 +326,9 @@ class FacturacionControllerTest {
         }
 
         @Test
-        @DisplayName("GET /contratos con estado inexistente: 400")
+        @DisplayName("GET /contratos con estado inexistente (INACTIVO ya no existe desde la entrega 2): 400")
         void estadoInvalido() throws Exception {
-            esProblema(mvc.perform(get(BASE + "/contratos").param("estado", "CANCELADO")), 400, "Solicitud inválida");
+            esProblema(mvc.perform(get(BASE + "/contratos").param("estado", "INACTIVO")), 400, "Solicitud inválida");
         }
     }
 }

@@ -76,8 +76,8 @@ class ConvertidoresJpaTest {
         @DisplayName("Código desconocido: IllegalStateException que indica el valor y el enum")
         void codigoDesconocido() {
             IllegalStateException error = assertThrows(IllegalStateException.class,
-                    () -> new EstadoContratoConverter().convertToEntityAttribute("cancelado"));
-            assertTrue(error.getMessage().contains("cancelado"));
+                    () -> new EstadoContratoConverter().convertToEntityAttribute("inactivo"));
+            assertTrue(error.getMessage().contains("inactivo"));
             assertTrue(error.getMessage().contains("EstadoContrato"));
         }
 
