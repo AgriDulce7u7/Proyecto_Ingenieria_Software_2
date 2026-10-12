@@ -5,7 +5,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Tarifa;
 import co.edu.uniquindio.epq.comun.excepcion.ReglaNegocioException;
+import co.edu.uniquindio.epq.comun.excepcion.TransicionEstadoInvalidaException;
 import co.edu.uniquindio.epq.comun.persistencia.PeriodoConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -77,6 +80,28 @@ public class Factura {
     @Column(nullable = false, length = 20)
     private EstadoFactura estado;
 
+    // ------------------------------------------------------------------ ciclo de cobro (DE-01, entrega 2)
+
+    @Convert(converter = EstadoCobroFacturaConverter.class)
+    @Column(name = "estado_cobro", nullable = false, length = 20)
+    private EstadoCobroFactura estadoCobro = EstadoCobroFactura.PENDIENTE;
+
+    @Column(name = "fecha_pago")
+    private LocalDateTime fechaPago;
+
+    @Column(name = "motivo_anulacion", length = 500)
+    private String motivoAnulacion;
+
+    @Column(name = "fecha_anulacion")
+    private LocalDateTime fechaAnulacion;
+
+    @Column(name = "anulada_por", length = 150)
+    private String anuladaPor;
+
+    /** Acuerdo de pago vigente que cubre esta factura (RF-12); nulo si no está en un acuerdo. */
+    @Column(name = "acuerdo_pago_id")
+    private Integer acuerdoPagoId;
+
     protected Factura() {
         // Requerido por JPA
     }
@@ -106,6 +131,7 @@ public class Factura {
         factura.fechaGeneracion = fechaGeneracion;
         factura.fechaVencimiento = fechaVencimiento;
         factura.estado = EstadoFactura.GENERADA;
+        factura.estadoCobro = EstadoCobroFactura.PENDIENTE;
         return factura;
     }
 
@@ -129,6 +155,116 @@ public class Factura {
             throw new ReglaNegocioException("La factura %s está en estado '%s' y no requiere sincronización"
                     .formatted(numeroFactura, estado.codigo()));
         }
+    }
+
+    // ------------------------------------------------------------------ comportamiento de cobro (DE-01)
+
+    /** SWR-23 / RF-06: una factura pagada o anulada no admite pagos; tampoco una incluida en un acuerdo vigente. */
+    public void validarPagable() {
+        if (estadoCobro == EstadoCobroFactura.PAGADA) {
+            throw new ReglaNegocioException("La factura %s ya se encuentra pagada".formatted(numeroFactura));
+        }
+        if (estadoCobro == EstadoCobroFactura.ANULADA) {
+            throw new ReglaNegocioException("La factura %s está anulada y no admite pagos".formatted(numeroFactura));
+        }
+        if (acuerdoPagoId != null) {
+            throw new ReglaNegocioException(("La factura %s está incluida en un acuerdo de pago vigente: "
+                    + "el pago se realiza mediante las cuotas del acuerdo").formatted(numeroFactura));
+        }
+    }
+
+    /** RN-05: solo se llama cuando hay confirmación del pago (funcionario o pasarela). */
+    public void registrarPago(LocalDateTime fecha) {
+        validarPagable();
+        cambiarEstadoCobro(EstadoCobroFactura.PAGADA);
+        this.fechaPago = fecha;
+    }
+
+    /** DE-01 vencerPlazo(): la fecha de vencimiento pasó sin pago. Retorna true si cambió. */
+    public boolean vencerSiCorresponde(LocalDate hoy) {
+        if (estadoCobro == EstadoCobroFactura.PENDIENTE && acuerdoPagoId == null && fechaVencimiento.isBefore(hoy)) {
+            cambiarEstadoCobro(EstadoCobroFactura.VENCIDA);
+            return true;
+        }
+        return false;
+    }
+
+    public void anular(String motivo, String usuario, LocalDateTime fecha) {
+        if (motivo == null || motivo.isBlank()) {
+            throw new ReglaNegocioException("La anulación de una factura requiere un motivo");
+        }
+        if (acuerdoPagoId != null) {
+            throw new ReglaNegocioException("La factura %s está incluida en un acuerdo de pago vigente".formatted(numeroFactura));
+        }
+        cambiarEstadoCobro(EstadoCobroFactura.ANULADA);
+        this.motivoAnulacion = motivo.trim();
+        this.anuladaPor = usuario;
+        this.fechaAnulacion = fecha;
+    }
+
+    /** DE-01 generarAcuerdoPago(): la factura vencida queda PENDIENTE cubierta por el acuerdo. */
+    public void incluirEnAcuerdo(Integer acuerdoId) {
+        if (estadoCobro != EstadoCobroFactura.VENCIDA || acuerdoPagoId != null) {
+            throw new ReglaNegocioException("Solo las facturas vencidas sin acuerdo pueden incluirse en un acuerdo de pago");
+        }
+        cambiarEstadoCobro(EstadoCobroFactura.PENDIENTE);
+        this.acuerdoPagoId = acuerdoId;
+    }
+
+    /** RN-07: al incumplirse el acuerdo la factura sale de él y vuelve a estar vencida. */
+    public void liberarDeAcuerdo() {
+        if (acuerdoPagoId == null) {
+            return;
+        }
+        this.acuerdoPagoId = null;
+        if (estadoCobro == EstadoCobroFactura.PENDIENTE) {
+            cambiarEstadoCobro(EstadoCobroFactura.VENCIDA);
+        }
+    }
+
+    /** El acuerdo se cumplió: las facturas que cubría quedan pagadas. */
+    public void marcarPagadaPorAcuerdo(LocalDateTime fecha) {
+        if (acuerdoPagoId == null) {
+            throw new ReglaNegocioException("La factura %s no pertenece a un acuerdo".formatted(numeroFactura));
+        }
+        cambiarEstadoCobro(EstadoCobroFactura.PAGADA);
+        this.fechaPago = fecha;
+    }
+
+    public boolean estaEnMora() {
+        return estadoCobro == EstadoCobroFactura.VENCIDA && acuerdoPagoId == null;
+    }
+
+    private void cambiarEstadoCobro(EstadoCobroFactura destino) {
+        EstadoCobroFactura actual = estadoCobro == null ? EstadoCobroFactura.PENDIENTE : estadoCobro;
+        if (!actual.puedeTransitarA(destino)) {
+            throw new TransicionEstadoInvalidaException(actual.name(), destino.name());
+        }
+        this.estadoCobro = destino;
+    }
+
+    public EstadoCobroFactura getEstadoCobro() {
+        return estadoCobro;
+    }
+
+    public LocalDateTime getFechaPago() {
+        return fechaPago;
+    }
+
+    public String getMotivoAnulacion() {
+        return motivoAnulacion;
+    }
+
+    public LocalDateTime getFechaAnulacion() {
+        return fechaAnulacion;
+    }
+
+    public String getAnuladaPor() {
+        return anuladaPor;
+    }
+
+    public Integer getAcuerdoPagoId() {
+        return acuerdoPagoId;
     }
 
     public Long getId() {

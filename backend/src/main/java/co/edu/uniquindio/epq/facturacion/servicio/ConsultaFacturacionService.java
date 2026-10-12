@@ -2,7 +2,8 @@ package co.edu.uniquindio.epq.facturacion.servicio;
 
 import java.util.List;
 
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.facturacion.dominio.EstadoCobroFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.web.dto.ContratoResponse;
 import co.edu.uniquindio.epq.facturacion.web.dto.FacturaDetalleResponse;
@@ -25,7 +26,13 @@ public interface ConsultaFacturacionService {
     List<FacturaResumenResponse> listarFacturasDelLote(String periodo);
 
     List<FacturaResumenResponse> buscarFacturas(String periodo, String numeroContrato, EstadoFactura estado,
-                                                String documentoCliente);
+                                                String documentoCliente, EstadoCobroFactura estadoCobro);
+
+    /** Firma de la entrega 1 (sin filtro por estado de cobro). */
+    default List<FacturaResumenResponse> buscarFacturas(String periodo, String numeroContrato, EstadoFactura estado,
+                                                        String documentoCliente) {
+        return buscarFacturas(periodo, numeroContrato, estado, documentoCliente, null);
+    }
 
     FacturaDetalleResponse obtenerFactura(String numeroFactura);
 

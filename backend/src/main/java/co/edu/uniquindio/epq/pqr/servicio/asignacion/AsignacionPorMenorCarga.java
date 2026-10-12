@@ -26,4 +26,9 @@ public class AsignacionPorMenorCarga implements EstrategiaAsignacionGestor {
     public Optional<Gestor> seleccionarPara(Pqr pqr) {
         return gestorRepository.buscarGestorConMenorCarga(EstadoPqrTipo.nombresPendientesDeRespuesta());
     }
+
+    @Override
+    public String motivo(Pqr pqr, Gestor gestor) {
+        return "Asignación automática por menor carga";
+    }
 }

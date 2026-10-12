@@ -21,9 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 
-import com.sun.net.httpserver.HttpServer;
-
 import co.edu.uniquindio.epq.facturacion.ErpProperties;
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * Prueba el adaptador contra un servidor HTTP real levantado en un puerto libre de localhost

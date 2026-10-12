@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.stereotype.Component;
 
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
 
 /**
  * Numeración determinista {@code FAC-yyyyMM-NNNNNN} (NNNNNN = id del contrato).

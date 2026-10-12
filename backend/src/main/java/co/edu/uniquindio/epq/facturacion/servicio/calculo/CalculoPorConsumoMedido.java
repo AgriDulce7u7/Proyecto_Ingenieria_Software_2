@@ -5,11 +5,11 @@ import java.math.RoundingMode;
 
 import org.springframework.stereotype.Component;
 
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Tarifa;
 import co.edu.uniquindio.epq.comun.excepcion.ReglaNegocioException;
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
 import co.edu.uniquindio.epq.facturacion.dominio.DetalleLiquidacion;
 import co.edu.uniquindio.epq.facturacion.dominio.LecturaMedidor;
-import co.edu.uniquindio.epq.facturacion.dominio.Tarifa;
 
 /**
  * Estrategia general (SWR-03): {@code valor = consumo × valor por unidad + cargo fijo}.

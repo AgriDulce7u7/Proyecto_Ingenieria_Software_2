@@ -37,7 +37,7 @@ INSERT INTO ciudadano (tipo_documento, numero_documento, nombre_completo, correo
     ('CC', '1094950001', 'Carlos Mario Restrepo', 'carlos.restrepo@correo.com', '3104567890', 'Cra 14 # 20-35, Armenia'),
     ('CC', '41912345',   'Gloria Inés Villegas',  'gloria.villegas@correo.com', '3157894561', 'Calle 5 # 3-12, Salento');
 
--- PQR 1: recién radicada
+-- PQR 1: reclamo recién radicado. Plazo: 15 días hábiles contados desde el día siguiente (RN-04).
 INSERT INTO pqr (radicado, ciudadano_id, tipo_solicitud_id, canal_id, estado_id, gestor_id, asunto, descripcion,
                  fecha_recepcion, fecha_limite_respuesta, fecha_estimada_respuesta)
 VALUES (to_char(NOW(), 'YYYYMM') || '-0001',
@@ -45,19 +45,28 @@ VALUES (to_char(NOW(), 'YYYYMM') || '-0001',
         (SELECT id FROM canal_atencion WHERE nombre = 'Web'),
         (SELECT id FROM estado_pqr WHERE nombre = 'Radicado'), 1,
         'Cobro elevado en la factura', 'La factura del último mes presenta un consumo muy superior al habitual.',
-        NOW() - INTERVAL '1 day', (NOW() + INTERVAL '20 days')::date + TIME '23:59:59', (NOW() + INTERVAL '20 days')::date);
+        NOW() - INTERVAL '1 day',
+        epq_sumar_dias_habiles((NOW() - INTERVAL '1 day')::date, 15) + TIME '23:59:59',
+        epq_sumar_dias_habiles((NOW() - INTERVAL '1 day')::date, 15));
 
--- PQR 2: en trámite y a menos de 48 horas del vencimiento (sirve para demostrar SWR-07)
+-- PQR 2: petición en trámite cuyo plazo (10 días hábiles) vence hoy o el siguiente día hábil.
+-- La fecha de recepción se calcula hacia atrás en días hábiles para que el plazo sea coherente
+-- con la regla RN-04 (sirve para demostrar la alerta de 48 horas, SWR-07).
+WITH limite AS (
+    SELECT CASE WHEN epq_es_dia_habil(CURRENT_DATE) THEN CURRENT_DATE
+                ELSE epq_sumar_dias_habiles(CURRENT_DATE, 1) END AS dia
+)
 INSERT INTO pqr (radicado, ciudadano_id, tipo_solicitud_id, canal_id, estado_id, gestor_id, asunto, descripcion,
                  fecha_recepcion, fecha_limite_respuesta, fecha_estimada_respuesta)
-VALUES (to_char(NOW(), 'YYYYMM') || '-0002',
-        2, (SELECT id FROM tipo_solicitud WHERE nombre = 'Petición'),
-        (SELECT id FROM canal_atencion WHERE nombre = 'Presencial'),
-        (SELECT id FROM estado_pqr WHERE nombre = 'En trámite'), 2,
-        'Solicitud de revisión de medidor', 'Solicito la visita técnica para revisar el medidor de acueducto.',
-        NOW() - INTERVAL '13 days', NOW() + INTERVAL '30 hours', (NOW() + INTERVAL '30 hours')::date);
+SELECT to_char(epq_restar_dias_habiles(l.dia, 10), 'YYYYMM') || '-0050',   -- radicado del mes de recepción (CO-01)
+       2, (SELECT id FROM tipo_solicitud WHERE nombre = 'Petición'),
+       (SELECT id FROM canal_atencion WHERE nombre = 'Presencial'),
+       (SELECT id FROM estado_pqr WHERE nombre = 'En trámite'), 2,
+       'Solicitud de revisión de medidor', 'Solicito la visita técnica para revisar el medidor de acueducto.',
+       epq_restar_dias_habiles(l.dia, 10) + TIME '09:30:00', l.dia + TIME '23:59:59', l.dia
+FROM limite l;
 
--- PQR 3: resuelta
+-- PQR 3: queja resuelta. Plazo: 15 días hábiles.
 INSERT INTO pqr (radicado, ciudadano_id, tipo_solicitud_id, canal_id, estado_id, gestor_id, asunto, descripcion,
                  fecha_recepcion, fecha_limite_respuesta, fecha_estimada_respuesta, fecha_resolucion, respuesta)
 VALUES (to_char(NOW(), 'YYYYMM') || '-0003',
@@ -65,7 +74,9 @@ VALUES (to_char(NOW(), 'YYYYMM') || '-0003',
         (SELECT id FROM canal_atencion WHERE nombre = 'Telefónico'),
         (SELECT id FROM estado_pqr WHERE nombre = 'Resuelto'), 3,
         'Demora en reconexión', 'Pagué la factura y el servicio no ha sido reconectado.',
-        NOW() - INTERVAL '6 days', (NOW() + INTERVAL '15 days')::date + TIME '23:59:59', (NOW() + INTERVAL '15 days')::date,
+        NOW() - INTERVAL '6 days',
+        epq_sumar_dias_habiles((NOW() - INTERVAL '6 days')::date, 15) + TIME '23:59:59',
+        epq_sumar_dias_habiles((NOW() - INTERVAL '6 days')::date, 15),
         NOW() - INTERVAL '2 days', 'Se realizó la reconexión del servicio el día de hoy. Se adjunta orden de trabajo.');
 
 INSERT INTO historial_pqr (pqr_id, estado_id, fecha_cambio, comentario, usuario_cambio)

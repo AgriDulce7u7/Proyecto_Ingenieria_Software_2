@@ -4,6 +4,7 @@ import java.time.YearMonth;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import co.edu.uniquindio.epq.facturacion.dominio.EstadoCobroFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
 
@@ -29,6 +30,10 @@ public final class FacturaSpecifications {
 
     public static Specification<Factura> conEstado(EstadoFactura estado) {
         return (root, query, cb) -> cb.equal(root.get("estado"), estado);
+    }
+
+    public static Specification<Factura> conEstadoCobro(EstadoCobroFactura estadoCobro) {
+        return (root, query, cb) -> cb.equal(root.get("estadoCobro"), estadoCobro);
     }
 
     public static Specification<Factura> delLote(Integer loteId) {

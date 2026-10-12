@@ -35,11 +35,13 @@ import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
 import co.edu.uniquindio.epq.comun.excepcion.ReglaNegocioException;
 import co.edu.uniquindio.epq.comun.excepcion.TransicionEstadoInvalidaException;
 import co.edu.uniquindio.epq.pqr.DatosPruebaPqr;
+import co.edu.uniquindio.epq.pqr.EvidenciaPqrProperties;
 import co.edu.uniquindio.epq.pqr.dominio.EstadoPqrTipo;
 import co.edu.uniquindio.epq.pqr.dominio.Gestor;
 import co.edu.uniquindio.epq.pqr.dominio.Pqr;
 import co.edu.uniquindio.epq.pqr.evento.PqrAsignadaEvento;
 import co.edu.uniquindio.epq.pqr.evento.PqrEstadoCambiadoEvento;
+import co.edu.uniquindio.epq.pqr.repositorio.EvidenciaPqrRepository;
 import co.edu.uniquindio.epq.pqr.repositorio.PqrRepository;
 import co.edu.uniquindio.epq.pqr.servicio.ResolutorCatalogosPqr;
 import co.edu.uniquindio.epq.pqr.web.dto.CerrarPqrRequest;
@@ -66,7 +68,9 @@ class GestionPqrServiceImplTest {
 
     @BeforeEach
     void configurar() {
-        servicio = new GestionPqrServiceImpl(pqrRepository, catalogos, eventos, clock);
+        // La exigencia de evidencias (RN-06) se prueba aparte en GestionPqrEvidenciasTest
+        servicio = new GestionPqrServiceImpl(pqrRepository, catalogos, eventos, clock,
+                mock(EvidenciaPqrRepository.class), new EvidenciaPqrProperties(false, 5_242_880L, List.of("application/pdf")));
         when(catalogos.estado(any())).thenAnswer(inv -> DatosPruebaPqr.estado(inv.getArgument(0)));
         when(catalogos.gestorActivo(1)).thenReturn(laura);
         when(catalogos.gestorActivo(2)).thenReturn(andres);

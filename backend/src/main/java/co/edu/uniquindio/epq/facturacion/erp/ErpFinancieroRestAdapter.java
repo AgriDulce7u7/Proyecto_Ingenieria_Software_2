@@ -11,11 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
 
+import co.edu.uniquindio.epq.facturacion.ErpProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import co.edu.uniquindio.epq.facturacion.ErpProperties;
 
 /**
  * Adaptador REST hacia un ERP financiero real (IS-01). Se activa con {@code app.erp.modo=rest}.

@@ -1,9 +1,9 @@
 package co.edu.uniquindio.epq.comun.config;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
  * Habilita CORS para que el frontend (React) pueda invocar la API REST.
@@ -24,6 +24,8 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOrigins(corsProperties.allowedOrigins().toArray(String[]::new))
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                .allowedHeaders("*");
+                .allowedHeaders("*")
+                // Permite al frontend leer el nombre de los PDF/Excel descargados
+                .exposedHeaders("Content-Disposition");
     }
 }

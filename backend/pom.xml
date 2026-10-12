@@ -13,17 +13,21 @@
 
     <groupId>co.edu.uniquindio</groupId>
     <artifactId>sigca-epq-backend</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <name>SIGCA-EPQ Backend</name>
     <description>
         Backend del prototipo SIGCA-EPQ (Ingeniería de Software 2 - Universidad del Quindío).
-        Funcionalidades: F-01 Generar facturas mensuales de servicio y F-02 Registrar y dar seguimiento a PQR.
+        Entrega 1: F-01 Generar facturas mensuales y F-02 Registrar y dar seguimiento a PQR.
+        Entrega 2: F-03 Usuarios del servicio, F-04 Contratos, F-05 Pagos, F-06 Portal ciudadano,
+        F-07 Cobro persuasivo, F-08 Dashboard gerencial, seguridad RBAC (RF-14) y auditoría (RF-15).
     </description>
 
     <properties>
         <java.version>21</java.version>
         <springdoc.version>2.8.9</springdoc.version>
         <jacoco.version>0.8.13</jacoco.version>
+        <openpdf.version>2.0.3</openpdf.version>
+        <poi.version>5.3.0</poi.version>
     </properties>
 
     <dependencies>
@@ -41,6 +45,27 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <!-- Seguridad: autenticación JWT y control de acceso por roles (RF-14, RNF-05) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+        <!-- Generación de PDF: factura oficial, comprobante de pago y reportes (SWR-22, SWR-27, SWR-29) -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>${openpdf.version}</version>
+        </dependency>
+        <!-- Exportación a Excel del reporte de cartera (SWR-29) -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
         </dependency>
         <!-- Health check (/actuator/health) -->
         <dependency>
@@ -64,6 +89,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

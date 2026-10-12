@@ -26,6 +26,14 @@ spring:
           time_zone: America/Bogota
           batch_size: 50
     show-sql: false
+  mvc:
+    format:                               # parámetros ?desde=2026-01-31 en formato ISO-8601
+      date: iso
+      date-time: iso
+  servlet:
+    multipart:
+      max-file-size: 5MB                  # evidencias de PQR (RN-06, RF-09)
+      max-request-size: 6MB
   jackson:
     time-zone: America/Bogota
     serialization:
@@ -55,8 +63,11 @@ app:
       - http://localhost:5173   # Vite
       - http://localhost:3000   # Create React App
   pqr:
-    horas-alerta-vencimiento: 48          # SWR-07
+    horas-alerta-vencimiento: 48          # SWR-07 / SWR-11 (alerta al gestor y al jefe)
     monitoreo-cron: "0 */15 * * * *"      # cada 15 minutos revisa plazos y vencimientos
+    evidencias:
+      exigir-para-responder: true         # RN-06: no se responde una PQR sin soporte adjunto
+      tamano-maximo-bytes: 5242880        # 5 MB
   facturacion:
     ejecucion-automatica: true            # SWR-01
     cron: "0 0 1 * * *"                   # todos los días a la 01:00 verifica si es el primer día hábil
@@ -69,3 +80,29 @@ app:
     espera-entre-intentos-ms: 200
     simulado:
       tasa-fallo: 0.0                     # 0.0 - 1.0; permite demostrar errores de sincronización
+
+  # ---------------------------------------------------------- Entrega 2
+  seguridad:                              # Autenticación JWT y control de acceso por roles (RF-14, RNF-05)
+    jwt:
+      secreto: ${JWT_SECRET:sigca-epq-clave-de-desarrollo-cambiar-en-produccion-2026}   # mínimo 32 bytes
+      expiracion-minutos: 480             # duración de la sesión (8 h, jornada laboral)
+      emisor: sigca-epq
+    max-intentos-fallidos: 3              # bloqueo temporal tras 3 intentos fallidos (RNF-05)
+    minutos-bloqueo: 15
+  rnec:                                   # IS-03 Registraduría (F-03: validación de identidad, SWR-14)
+    modo: simulado                        # simulado | rest
+    url: http://localhost:9091/api/rnec
+    timeout-segundos: 5
+    simulado-disponible: true             # false simula RNEC caído → usuario queda "pendiente"
+  pasarela:                               # IS-02 Pasarela de pagos (F-05: SWR-21, RN-05)
+    modo: simulada                        # simulada | rest
+    url: http://localhost:9092/api/pasarela
+    timeout-segundos: 30                  # tiempo máximo de espera de la pasarela
+    max-intentos: 2
+  cartera:                                # F-07 Cobro persuasivo (SWR-30 a SWR-32)
+    periodos-para-suspension: 2           # RN-03
+    cuota-minima: 50000
+    min-cuotas: 2
+    max-cuotas: 12
+    dias-primera-cuota: 30
+    monitoreo-cron: "0 30 2 * * *"        # todos los días 02:30 (vencimientos, acuerdos, candidatos)

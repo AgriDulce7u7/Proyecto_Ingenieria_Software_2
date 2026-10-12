@@ -13,4 +13,9 @@ import co.edu.uniquindio.epq.pqr.dominio.Pqr;
 public interface EstrategiaAsignacionGestor {
 
     Optional<Gestor> seleccionarPara(Pqr pqr);
+
+    /** Motivo que queda en el historial de la PQR. */
+    default String motivo(Pqr pqr, Gestor gestor) {
+        return "Asignación automática";
+    }
 }

@@ -3,6 +3,7 @@ package co.edu.uniquindio.epq.pqr.web;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +33,18 @@ import co.edu.uniquindio.epq.pqr.web.dto.RegistrarPqrRequest;
 import co.edu.uniquindio.epq.pqr.web.dto.ResponderPqrRequest;
 import co.edu.uniquindio.epq.pqr.web.dto.ResultadoMonitoreoResponse;
 import co.edu.uniquindio.epq.pqr.web.dto.TomarPqrRequest;
+import co.edu.uniquindio.epq.seguridad.acceso.AccesoGestionPqr;
+import co.edu.uniquindio.epq.seguridad.acceso.AccesoSupervisionPqr;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 /**
  * API REST de PQR (F-02). El controlador solo traduce HTTP ↔ servicios; no contiene lógica de negocio.
+ * <p>
+ * Registro y consulta por radicado son públicos (portal ciudadano). Las demás operaciones exigen un
+ * token JWT del personal de la Oficina de PQR; tomar y responder solo las puede hacer el propio gestor
+ * (o el jefe/administrador).
  */
 @RestController
 @RequestMapping("/api/pqr")
@@ -75,6 +82,7 @@ public class PqrController {
     // ------------------------------------------------------------------ Back-office (Gestor de PQR)
 
     @GetMapping
+    @AccesoGestionPqr
     @Operation(summary = "Listar PQR con filtros opcionales (bandeja del gestor)")
     public List<PqrResumenResponse> listar(@RequestParam(required = false) EstadoPqrTipo estado,
                                            @RequestParam(required = false) TipoSolicitudTipo tipo,
@@ -84,30 +92,35 @@ public class PqrController {
     }
 
     @GetMapping("/{radicado}")
+    @AccesoGestionPqr
     @Operation(summary = "Detalle completo de una PQR")
     public PqrDetalleResponse obtenerDetalle(@PathVariable String radicado) {
         return consultaService.obtenerDetalle(radicado);
     }
 
     @GetMapping("/{radicado}/historial")
+    @AccesoGestionPqr
     @Operation(summary = "Trazabilidad de la PQR (auditoría)", description = "SWR-09")
     public List<HistorialPqrResponse> obtenerHistorial(@PathVariable String radicado) {
         return consultaService.obtenerHistorial(radicado);
     }
 
     @GetMapping("/{radicado}/notificaciones")
+    @AccesoGestionPqr
     @Operation(summary = "Notificaciones enviadas sobre la PQR")
     public List<NotificacionResponse> obtenerNotificaciones(@PathVariable String radicado) {
         return consultaService.obtenerNotificaciones(radicado);
     }
 
     @PatchMapping("/{radicado}/tomar")
+    @PreAuthorize("@autorizacionPqr.puedeActuarComo(#solicitud.gestorId())")
     @Operation(summary = "El gestor toma la PQR para atención (Radicado → En trámite)")
     public PqrDetalleResponse tomar(@PathVariable String radicado, @Valid @RequestBody TomarPqrRequest solicitud) {
         return gestionService.tomar(radicado, solicitud);
     }
 
     @PatchMapping("/{radicado}/reasignar")
+    @AccesoSupervisionPqr
     @Operation(summary = "Reasignar la PQR a otro gestor")
     public PqrDetalleResponse reasignar(@PathVariable String radicado,
                                         @Valid @RequestBody ReasignarPqrRequest solicitud) {
@@ -115,6 +128,7 @@ public class PqrController {
     }
 
     @PatchMapping("/{radicado}/responder")
+    @PreAuthorize("@autorizacionPqr.puedeActuarComo(#solicitud.gestorId())")
     @Operation(summary = "Registrar la respuesta formal (En trámite/Vencido → Resuelto)", description = "RN-06")
     public PqrDetalleResponse responder(@PathVariable String radicado,
                                         @Valid @RequestBody ResponderPqrRequest solicitud) {
@@ -122,12 +136,14 @@ public class PqrController {
     }
 
     @PatchMapping("/{radicado}/cerrar")
+    @AccesoGestionPqr
     @Operation(summary = "Cerrar la PQR (Resuelto → Cerrado)")
     public PqrDetalleResponse cerrar(@PathVariable String radicado, @Valid @RequestBody CerrarPqrRequest solicitud) {
         return gestionService.cerrar(radicado, solicitud);
     }
 
     @PostMapping("/monitoreo")
+    @AccesoSupervisionPqr
     @Operation(summary = "Ejecutar manualmente el monitoreo de plazos",
             description = "Normalmente corre de forma automática. Envía alertas de 48 h (SWR-07) y marca PQR vencidas.")
     public ResultadoMonitoreoResponse ejecutarMonitoreo() {

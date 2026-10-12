@@ -16,8 +16,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContrato;
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContratoConverter;
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContratoConverter;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFacturaConverter;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoLote;

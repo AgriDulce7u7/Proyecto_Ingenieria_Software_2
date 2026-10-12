@@ -22,11 +22,14 @@ import co.edu.uniquindio.epq.pqr.servicio.ResolutorCatalogosPqr;
 import co.edu.uniquindio.epq.pqr.servicio.asignacion.EstrategiaAsignacionGestor;
 import co.edu.uniquindio.epq.pqr.servicio.plazo.CalculadoraPlazoRespuesta;
 import co.edu.uniquindio.epq.pqr.servicio.radicado.GeneradorRadicado;
+import co.edu.uniquindio.epq.pqr.servicio.ubicacion.ResolutorUbicacionPqr;
+import co.edu.uniquindio.epq.pqr.servicio.ubicacion.UbicacionPqr;
 import co.edu.uniquindio.epq.pqr.web.dto.PqrRegistradaResponse;
 import co.edu.uniquindio.epq.pqr.web.dto.RegistrarPqrRequest;
 
 /**
- * Registra una PQR siguiendo DS-02: valida, genera radicado, calcula plazo, asigna gestor y
+ * Registra una PQR siguiendo DS-02: valida (incluido el contrato, CU-06 4a), genera radicado, calcula plazo,
+ * asigna el gestor del municipio (SyR-02b) y
  * publica eventos. La auditoría y las notificaciones las realizan los observadores de eventos,
  * por lo que este servicio no depende de ellos (SRP, bajo acoplamiento).
  */
@@ -43,12 +46,14 @@ public class RegistroPqrServiceImpl implements RegistroPqrService {
     private final EstrategiaAsignacionGestor estrategiaAsignacion;
     private final ApplicationEventPublisher eventos;
     private final Clock clock;
+    private final ResolutorUbicacionPqr resolutorUbicacion;
 
     public RegistroPqrServiceImpl(PqrRepository pqrRepository, CiudadanoRepository ciudadanoRepository,
                                   ResolutorCatalogosPqr catalogos, CalculadoraPlazoRespuesta calculadoraPlazo,
                                   GeneradorRadicado generadorRadicado,
                                   EstrategiaAsignacionGestor estrategiaAsignacion,
-                                  ApplicationEventPublisher eventos, Clock clock) {
+                                  ApplicationEventPublisher eventos, Clock clock,
+                                  ResolutorUbicacionPqr resolutorUbicacion) {
         this.pqrRepository = pqrRepository;
         this.ciudadanoRepository = ciudadanoRepository;
         this.catalogos = catalogos;
@@ -57,11 +62,14 @@ public class RegistroPqrServiceImpl implements RegistroPqrService {
         this.estrategiaAsignacion = estrategiaAsignacion;
         this.eventos = eventos;
         this.clock = clock;
+        this.resolutorUbicacion = resolutorUbicacion;
     }
 
     @Override
     @Transactional
     public PqrRegistradaResponse registrar(RegistrarPqrRequest solicitud) {
+        // CU-06 4a / CO-01: el contrato informado debe existir y estar activo (se valida antes de radicar)
+        UbicacionPqr ubicacion = resolutorUbicacion.resolver(solicitud.numeroContrato(), solicitud.municipioId());
         LocalDateTime ahora = LocalDateTime.now(clock);
         Ciudadano ciudadano = obtenerOCrearCiudadano(solicitud, ahora);
         CanalAtencionTipo canal = solicitud.canal() != null ? solicitud.canal() : CanalAtencionTipo.WEB;
@@ -77,13 +85,14 @@ public class RegistroPqrServiceImpl implements RegistroPqrService {
                 solicitud.descripcion().trim(),
                 ahora,
                 plazo);
+        pqr.ubicar(ubicacion.municipio(), ubicacion.contrato());
         pqrRepository.save(pqr);
         eventos.publishEvent(new PqrRegistradaEvento(pqr.getId(), pqr.getRadicado(), usuarioCiudadano(ciudadano)));
 
         estrategiaAsignacion.seleccionarPara(pqr).ifPresent(gestor -> {
             pqr.asignarA(gestor);
             eventos.publishEvent(new PqrAsignadaEvento(pqr.getId(), gestor.getId(),
-                    "Asignación automática por menor carga", USUARIO_SISTEMA));
+                    estrategiaAsignacion.motivo(pqr, gestor), USUARIO_SISTEMA));
         });
         return PqrMapper.aRegistrada(pqr);
     }
