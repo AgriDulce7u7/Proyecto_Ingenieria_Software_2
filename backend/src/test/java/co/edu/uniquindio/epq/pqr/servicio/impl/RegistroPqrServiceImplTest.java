@@ -51,6 +51,8 @@ import co.edu.uniquindio.epq.pqr.servicio.ResolutorCatalogosPqr;
 import co.edu.uniquindio.epq.pqr.servicio.asignacion.EstrategiaAsignacionGestor;
 import co.edu.uniquindio.epq.pqr.servicio.plazo.CalculadoraPlazoRespuesta;
 import co.edu.uniquindio.epq.pqr.servicio.radicado.GeneradorRadicado;
+import co.edu.uniquindio.epq.pqr.servicio.ubicacion.ResolutorUbicacionPqr;
+import co.edu.uniquindio.epq.pqr.servicio.ubicacion.UbicacionPqr;
 import co.edu.uniquindio.epq.pqr.web.dto.PqrRegistradaResponse;
 import co.edu.uniquindio.epq.pqr.web.dto.RegistrarPqrRequest;
 
@@ -72,6 +74,7 @@ class RegistroPqrServiceImplTest {
     private final GeneradorRadicado generadorRadicado = mock(GeneradorRadicado.class);
     private final EstrategiaAsignacionGestor estrategiaAsignacion = mock(EstrategiaAsignacionGestor.class);
     private final ApplicationEventPublisher eventos = mock(ApplicationEventPublisher.class);
+    private final ResolutorUbicacionPqr resolutorUbicacion = mock(ResolutorUbicacionPqr.class);
 
     private final Gestor laura = gestor(1, "Laura Giraldo", true);
 
@@ -80,7 +83,8 @@ class RegistroPqrServiceImplTest {
     @BeforeEach
     void configurar() {
         servicio = new RegistroPqrServiceImpl(pqrRepository, ciudadanoRepository, catalogos, calculadoraPlazo,
-                generadorRadicado, estrategiaAsignacion, eventos, CLOCK);
+                generadorRadicado, estrategiaAsignacion, eventos, CLOCK, resolutorUbicacion);
+        when(resolutorUbicacion.resolver(any(), any())).thenReturn(UbicacionPqr.vacia());
 
         when(catalogos.estado(any())).thenAnswer(inv -> DatosPruebaPqr.estado(inv.getArgument(0)));
         when(catalogos.tipoSolicitud(any())).thenAnswer(

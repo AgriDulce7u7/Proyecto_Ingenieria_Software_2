@@ -9,11 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
 import co.edu.uniquindio.epq.comun.excepcion.ReglaNegocioException;
+import co.edu.uniquindio.epq.comun.excepcion.TransicionEstadoInvalidaException;
+import co.edu.uniquindio.epq.pqr.EvidenciaPqrProperties;
 import co.edu.uniquindio.epq.pqr.dominio.EstadoPqrTipo;
 import co.edu.uniquindio.epq.pqr.dominio.Gestor;
 import co.edu.uniquindio.epq.pqr.dominio.Pqr;
 import co.edu.uniquindio.epq.pqr.evento.PqrAsignadaEvento;
 import co.edu.uniquindio.epq.pqr.evento.PqrEstadoCambiadoEvento;
+import co.edu.uniquindio.epq.pqr.repositorio.EvidenciaPqrRepository;
 import co.edu.uniquindio.epq.pqr.repositorio.PqrRepository;
 import co.edu.uniquindio.epq.pqr.servicio.GestionPqrService;
 import co.edu.uniquindio.epq.pqr.servicio.PqrMapper;
@@ -36,13 +39,18 @@ public class GestionPqrServiceImpl implements GestionPqrService {
     private final ResolutorCatalogosPqr catalogos;
     private final ApplicationEventPublisher eventos;
     private final Clock clock;
+    private final EvidenciaPqrRepository evidenciaRepository;
+    private final EvidenciaPqrProperties evidencias;
 
     public GestionPqrServiceImpl(PqrRepository pqrRepository, ResolutorCatalogosPqr catalogos,
-                                 ApplicationEventPublisher eventos, Clock clock) {
+                                 ApplicationEventPublisher eventos, Clock clock,
+                                 EvidenciaPqrRepository evidenciaRepository, EvidenciaPqrProperties evidencias) {
         this.pqrRepository = pqrRepository;
         this.catalogos = catalogos;
         this.eventos = eventos;
         this.clock = clock;
+        this.evidenciaRepository = evidenciaRepository;
+        this.evidencias = evidencias;
     }
 
     @Override
@@ -82,6 +90,16 @@ public class GestionPqrServiceImpl implements GestionPqrService {
         Gestor gestor = catalogos.gestorActivo(solicitud.gestorId());
         if (!pqr.esGestionadaPor(gestor)) {
             throw new ReglaNegocioException("Solo el gestor asignado puede responder la PQR " + radicado);
+        }
+        // Primero la máquina de estados (409 si la PQR no admite respuesta) y luego RN-06 / RF-09:
+        // la respuesta debe quedar registrada con evidencia documental adjunta
+        if (!pqr.getEstadoTipo().puedeTransitarA(EstadoPqrTipo.RESUELTO)) {
+            throw new TransicionEstadoInvalidaException(pqr.getEstadoTipo().getNombre(),
+                    EstadoPqrTipo.RESUELTO.getNombre());
+        }
+        if (evidencias.exigirParaResponder() && evidenciaRepository.countByPqrId(pqr.getId()) == 0) {
+            throw new ReglaNegocioException(("La PQR %s no tiene evidencias. Adjunte el soporte documental de la "
+                    + "respuesta (POST /api/pqr/%s/evidencias) antes de responder (RN-06)").formatted(radicado, radicado));
         }
         EstadoPqrTipo anterior = pqr.getEstadoTipo();
         pqr.registrarRespuesta(solicitud.respuesta(), catalogos.estado(EstadoPqrTipo.RESUELTO),

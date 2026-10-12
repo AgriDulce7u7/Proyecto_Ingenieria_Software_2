@@ -21,10 +21,25 @@ public interface GestorRepository extends JpaRepository<Gestor, Integer> {
             SELECT g.* FROM gestor g
             LEFT JOIN pqr p ON p.gestor_id = g.id
                  AND p.estado_id IN (SELECT e.id FROM estado_pqr e WHERE e.nombre IN (:estados))
-            WHERE g.activo = TRUE
+            WHERE g.activo = TRUE AND g.es_jefe = FALSE
             GROUP BY g.id
             ORDER BY COUNT(p.id) ASC, g.id ASC
             LIMIT 1
             """, nativeQuery = true)
     Optional<Gestor> buscarGestorConMenorCarga(@Param("estados") Collection<String> estadosPendientes);
+
+    /**
+     * SyR-02b: gestor activo del municipio con menos PQR pendientes (los jefes no reciben asignaciones).
+     */
+    @Query(value = """
+            SELECT g.* FROM gestor g
+            LEFT JOIN pqr p ON p.gestor_id = g.id
+                 AND p.estado_id IN (SELECT e.id FROM estado_pqr e WHERE e.nombre IN (:estados))
+            WHERE g.activo = TRUE AND g.es_jefe = FALSE AND g.municipio_id = :municipioId
+            GROUP BY g.id
+            ORDER BY COUNT(p.id) ASC, g.id ASC
+            LIMIT 1
+            """, nativeQuery = true)
+    Optional<Gestor> buscarGestorDelMunicipioConMenorCarga(@Param("municipioId") Integer municipioId,
+                                                           @Param("estados") Collection<String> estadosPendientes);
 }

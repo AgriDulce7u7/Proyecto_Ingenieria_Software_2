@@ -84,7 +84,10 @@ public final class PqrMapper {
                 pqr.getFechaResolucion(),
                 pqr.getRespuesta(),
                 pqr.isNotificadoVencimiento(),
-                acciones);
+                acciones,
+                pqr.getMunicipio() != null ? pqr.getMunicipio().getNombre() : null,
+                pqr.getContrato() != null ? pqr.getContrato().getNumeroContrato() : null,
+                pqr.getRespondidaEnPlazo());
     }
 
     public static CiudadanoResponse aCiudadano(Ciudadano c) {
@@ -93,7 +96,8 @@ public final class PqrMapper {
     }
 
     public static GestorResponse aGestor(Gestor g) {
-        return new GestorResponse(g.getId(), g.getNombre(), g.getCorreo(), g.getArea(), g.isActivo());
+        return new GestorResponse(g.getId(), g.getNombre(), g.getCorreo(), g.getArea(), g.isActivo(),
+                g.getMunicipio() != null ? g.getMunicipio().getNombre() : null, g.isEsJefe());
     }
 
     public static HistorialPqrResponse aHistorial(HistorialPqr h) {

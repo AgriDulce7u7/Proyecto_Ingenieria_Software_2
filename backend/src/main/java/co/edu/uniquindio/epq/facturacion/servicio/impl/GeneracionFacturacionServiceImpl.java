@@ -12,11 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.comercial.repositorio.ContratoRepository;
 import co.edu.uniquindio.epq.comun.excepcion.ReglaNegocioException;
 import co.edu.uniquindio.epq.facturacion.FacturacionProperties;
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContrato;
 import co.edu.uniquindio.epq.facturacion.dominio.LoteFacturacion;
-import co.edu.uniquindio.epq.facturacion.repositorio.ContratoRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.FacturaRepository;
 import co.edu.uniquindio.epq.facturacion.servicio.GeneracionFacturacionService;
 import co.edu.uniquindio.epq.facturacion.servicio.SincronizacionErpService;

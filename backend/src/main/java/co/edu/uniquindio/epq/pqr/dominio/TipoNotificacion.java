@@ -11,7 +11,10 @@ public enum TipoNotificacion implements CodigoPersistible {
     ASIGNACION_GESTOR("asignacion_gestor"),
     RESPUESTA_CIUDADANO("respuesta_ciudadano"),
     VENCIMIENTO_48H("vencimiento_48h"),
-    PQR_VENCIDA("pqr_vencida");
+    PQR_VENCIDA("pqr_vencida"),
+    /** SWR-11: aviso al jefe de la Oficina de PQR. */
+    VENCIMIENTO_48H_JEFE("vencimiento_48h_jefe"),
+    PQR_VENCIDA_JEFE("pqr_vencida_jefe");
 
     private final String codigo;
 

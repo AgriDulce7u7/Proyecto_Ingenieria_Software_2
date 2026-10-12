@@ -8,17 +8,17 @@ import java.time.YearMonth;
 import org.springframework.beans.BeanUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import co.edu.uniquindio.epq.facturacion.dominio.Cliente;
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Cliente;
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.comercial.dominio.Medidor;
+import co.edu.uniquindio.epq.comercial.dominio.Servicio;
+import co.edu.uniquindio.epq.comercial.dominio.Tarifa;
 import co.edu.uniquindio.epq.facturacion.dominio.DetalleLiquidacion;
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContrato;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
 import co.edu.uniquindio.epq.facturacion.dominio.LecturaMedidor;
 import co.edu.uniquindio.epq.facturacion.dominio.LoteFacturacion;
-import co.edu.uniquindio.epq.facturacion.dominio.Medidor;
-import co.edu.uniquindio.epq.facturacion.dominio.Servicio;
-import co.edu.uniquindio.epq.facturacion.dominio.Tarifa;
 
 /**
  * Fábrica de entidades del módulo de facturación para pruebas unitarias (Object Mother).

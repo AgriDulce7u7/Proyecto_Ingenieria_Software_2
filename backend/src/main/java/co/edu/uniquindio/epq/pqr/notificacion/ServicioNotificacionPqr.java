@@ -4,6 +4,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
+import co.edu.uniquindio.epq.comun.notificacion.CanalNotificacion;
+import co.edu.uniquindio.epq.comun.notificacion.MensajeNotificacion;
 import co.edu.uniquindio.epq.pqr.dominio.Gestor;
 import co.edu.uniquindio.epq.pqr.dominio.Notificacion;
 import co.edu.uniquindio.epq.pqr.dominio.Pqr;
@@ -85,6 +88,9 @@ public class ServicioNotificacionPqr {
                 .formatted(pqr.getRadicado(), pqr.getFechaLimiteRespuesta().format(FORMATO_FECHA_HORA));
         enviarYRegistrar(pqr, gestor, TipoNotificacion.PQR_VENCIDA, gestor != null ? gestor.getCorreo() : null,
                 "SIGCA-EPQ - PQR VENCIDA " + pqr.getRadicado(), cuerpo);
+        // CU-06 9a: también se notifica al Jefe de la Oficina de PQR
+        notificarJefe(pqr, TipoNotificacion.PQR_VENCIDA_JEFE, "SIGCA-EPQ - [Equipo] PQR VENCIDA " + pqr.getRadicado(),
+                cuerpo);
     }
 
     /** Alerta al gestor cuando faltan pocas horas para el vencimiento (SWR-07). */
@@ -96,6 +102,20 @@ public class ServicioNotificacionPqr {
                 .formatted(pqr.getRadicado(), horasRestantes, pqr.getFechaLimiteRespuesta().format(FORMATO_FECHA_HORA));
         enviarYRegistrar(pqr, gestor, TipoNotificacion.VENCIMIENTO_48H, gestor != null ? gestor.getCorreo() : null,
                 "SIGCA-EPQ - PQR próxima a vencer " + pqr.getRadicado(), cuerpo);
+        // SWR-11 / CU-06 7a: alerta también al jefe inmediato de la Oficina de PQR
+        notificarJefe(pqr, TipoNotificacion.VENCIMIENTO_48H_JEFE,
+                "SIGCA-EPQ - [Equipo] PQR próxima a vencer " + pqr.getRadicado(), cuerpo);
+    }
+
+    /** SWR-11: el jefe recibe la alerta si existe, está activo y no es el mismo gestor asignado. */
+    private void notificarJefe(Pqr pqr, TipoNotificacion tipo, String asunto, String cuerpoGestor) {
+        Gestor gestor = pqr.getGestor();
+        Gestor jefe = gestor == null ? null : gestor.getJefe();
+        if (jefe == null || !jefe.isActivo() || Objects.equals(jefe.getId(), gestor.getId())) {
+            return;
+        }
+        String cuerpo = "PQR asignada a %s. %s".formatted(gestor.getNombre(), cuerpoGestor);
+        enviarYRegistrar(pqr, jefe, tipo, jefe.getCorreo(), asunto, cuerpo);
     }
 
     private void enviarYRegistrar(Pqr pqr, Gestor gestor, TipoNotificacion tipo, String destinatario,

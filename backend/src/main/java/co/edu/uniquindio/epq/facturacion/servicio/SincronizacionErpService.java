@@ -1,7 +1,7 @@
 package co.edu.uniquindio.epq.facturacion.servicio;
 
-import co.edu.uniquindio.epq.facturacion.web.dto.ResultadoSincronizacionResponse;
 import co.edu.uniquindio.epq.facturacion.servicio.sincronizacion.ResultadoSincronizacionFactura;
+import co.edu.uniquindio.epq.facturacion.web.dto.ResultadoSincronizacionResponse;
 
 /**
  * Sincronización de facturas con el ERP financiero (SWR-04, IS-01).

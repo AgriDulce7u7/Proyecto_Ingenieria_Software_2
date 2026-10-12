@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -62,6 +63,7 @@ import co.edu.uniquindio.epq.pqr.web.dto.TomarPqrRequest;
  * traducción de excepciones a ProblemDetail (RFC 7807). Los servicios se reemplazan por mocks.
  */
 @WebMvcTest(PqrController.class)
+@AutoConfigureMockMvc(addFilters = false) // la seguridad (JWT/roles) se prueba aparte; aquí solo el contrato HTTP
 @DisplayName("PqrController - API REST de PQR")
 class PqrControllerTest {
 

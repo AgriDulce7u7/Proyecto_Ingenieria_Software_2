@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
 import co.edu.uniquindio.epq.comun.excepcion.ReglaNegocioException;
 import co.edu.uniquindio.epq.comun.excepcion.TransicionEstadoInvalidaException;
+import co.edu.uniquindio.epq.comun.territorio.Municipio;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -78,6 +80,20 @@ public class Pqr {
     @Column(name = "notificado_vencimiento", nullable = false)
     private boolean notificadoVencimiento;
 
+    /** Municipio de la PQR: define el gestor asignado (SyR-02b). */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "municipio_id")
+    private Municipio municipio;
+
+    /** Contrato reportado por el ciudadano (CU-06 paso 2), opcional. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contrato_id")
+    private Contrato contrato;
+
+    /** SyR-02f: cumplimiento del plazo normativo. Nulo mientras no tenga respuesta ni haya vencido. */
+    @Column(name = "respondida_en_plazo")
+    private Boolean respondidaEnPlazo;
+
     protected Pqr() {
         // Requerido por JPA
     }
@@ -104,6 +120,12 @@ public class Pqr {
         pqr.fechaEstimadaRespuesta = plazo.fechaEstimada();
         pqr.notificadoVencimiento = false;
         return pqr;
+    }
+
+    /** Registra el municipio y el contrato asociados a la solicitud (entrega 2). */
+    public void ubicar(Municipio municipioPqr, Contrato contratoPqr) {
+        this.municipio = municipioPqr;
+        this.contrato = contratoPqr;
     }
 
     /** Asigna (o reasigna) la PQR a un gestor activo mientras siga pendiente de respuesta. */
@@ -141,6 +163,7 @@ public class Pqr {
         cambiarEstado(resuelto);
         this.respuesta = textoRespuesta.trim();
         this.fechaResolucion = fecha;
+        this.respondidaEnPlazo = !fecha.isAfter(fechaLimiteRespuesta);   // SyR-02f
     }
 
     public void cerrar(EstadoPqr cerrado) {
@@ -150,6 +173,7 @@ public class Pqr {
     /** El plazo normativo transcurrió sin respuesta (RN-04). */
     public void marcarVencida(EstadoPqr vencido) {
         cambiarEstado(vencido);
+        this.respondidaEnPlazo = false;   // SyR-02f: incumplimiento reportable a la SSPD
     }
 
     public void marcarAlertaVencimientoEnviada() {
@@ -232,5 +256,17 @@ public class Pqr {
 
     public boolean isNotificadoVencimiento() {
         return notificadoVencimiento;
+    }
+
+    public Municipio getMunicipio() {
+        return municipio;
+    }
+
+    public Contrato getContrato() {
+        return contrato;
+    }
+
+    public Boolean getRespondidaEnPlazo() {
+        return respondidaEnPlazo;
     }
 }

@@ -1,6 +1,6 @@
 package co.edu.uniquindio.epq.facturacion.servicio;
 
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
 import co.edu.uniquindio.epq.facturacion.dominio.SincronizacionErp;
 import co.edu.uniquindio.epq.facturacion.web.dto.ContratoResponse;
@@ -39,7 +39,8 @@ public final class FacturacionMapper {
                 factura.getConsumo(),
                 factura.getTotal(),
                 factura.getFechaVencimiento(),
-                factura.getEstado().name());
+                factura.getEstado().name(),
+                estadoCobro(factura));
     }
 
     public static FacturaDetalleResponse aDetalle(Factura factura) {
@@ -59,7 +60,15 @@ public final class FacturacionMapper {
                 factura.getValorConsumo(),
                 factura.getCargoFijo(),
                 factura.getSubtotal(),
-                factura.getTotal());
+                factura.getTotal(),
+                estadoCobro(factura),
+                factura.getFechaPago(),
+                factura.getMotivoAnulacion(),
+                factura.getAcuerdoPagoId() != null);
+    }
+
+    private static String estadoCobro(Factura factura) {
+        return factura.getEstadoCobro() == null ? null : factura.getEstadoCobro().name();
     }
 
     public static SincronizacionErpResponse aSincronizacion(SincronizacionErp registro) {

@@ -31,6 +31,8 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
+import co.edu.uniquindio.epq.comun.notificacion.CanalNotificacion;
+import co.edu.uniquindio.epq.comun.notificacion.MensajeNotificacion;
 import co.edu.uniquindio.epq.pqr.dominio.EstadoPqrTipo;
 import co.edu.uniquindio.epq.pqr.dominio.Gestor;
 import co.edu.uniquindio.epq.pqr.dominio.Notificacion;

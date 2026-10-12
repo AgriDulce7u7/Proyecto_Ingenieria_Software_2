@@ -12,15 +12,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.comercial.repositorio.ContratoRepository;
 import co.edu.uniquindio.epq.comun.calendario.CalendarioLaboral;
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
 import co.edu.uniquindio.epq.facturacion.FacturacionProperties;
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.facturacion.dominio.EstadoCobroFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
 import co.edu.uniquindio.epq.facturacion.dominio.LoteFacturacion;
-import co.edu.uniquindio.epq.facturacion.repositorio.ContratoRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.FacturaRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.FacturaSpecifications;
 import co.edu.uniquindio.epq.facturacion.repositorio.LoteFacturacionRepository;
@@ -112,7 +113,7 @@ public class ConsultaFacturacionServiceImpl implements ConsultaFacturacionServic
 
     @Override
     public List<FacturaResumenResponse> buscarFacturas(String periodo, String numeroContrato, EstadoFactura estado,
-                                                       String documentoCliente) {
+                                                       String documentoCliente, EstadoCobroFactura estadoCobro) {
         Specification<Factura> criterio = FacturaSpecifications.todas();
         if (periodo != null && !periodo.isBlank()) {
             criterio = criterio.and(FacturaSpecifications.delPeriodo(PeriodoFacturacion.parsear(periodo)));
@@ -122,6 +123,9 @@ public class ConsultaFacturacionServiceImpl implements ConsultaFacturacionServic
         }
         if (estado != null) {
             criterio = criterio.and(FacturaSpecifications.conEstado(estado));
+        }
+        if (estadoCobro != null) {
+            criterio = criterio.and(FacturaSpecifications.conEstadoCobro(estadoCobro));
         }
         if (documentoCliente != null && !documentoCliente.isBlank()) {
             criterio = criterio.and(FacturaSpecifications.delCliente(documentoCliente.trim()));

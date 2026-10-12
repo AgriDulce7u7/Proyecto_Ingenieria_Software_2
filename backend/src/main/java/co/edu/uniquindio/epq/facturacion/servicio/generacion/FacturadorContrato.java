@@ -10,21 +10,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Medidor;
+import co.edu.uniquindio.epq.comercial.dominio.SelectorTarifa;
+import co.edu.uniquindio.epq.comercial.dominio.Tarifa;
+import co.edu.uniquindio.epq.comercial.repositorio.ContratoRepository;
+import co.edu.uniquindio.epq.comercial.repositorio.MedidorRepository;
+import co.edu.uniquindio.epq.comercial.repositorio.TarifaRepository;
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
 import co.edu.uniquindio.epq.facturacion.FacturacionProperties;
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
 import co.edu.uniquindio.epq.facturacion.dominio.DetalleLiquidacion;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
 import co.edu.uniquindio.epq.facturacion.dominio.LecturaMedidor;
 import co.edu.uniquindio.epq.facturacion.dominio.LoteFacturacion;
-import co.edu.uniquindio.epq.facturacion.dominio.Medidor;
-import co.edu.uniquindio.epq.facturacion.dominio.Tarifa;
-import co.edu.uniquindio.epq.facturacion.repositorio.ContratoRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.FacturaRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.LecturaMedidorRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.LoteFacturacionRepository;
-import co.edu.uniquindio.epq.facturacion.repositorio.MedidorRepository;
-import co.edu.uniquindio.epq.facturacion.repositorio.TarifaRepository;
 import co.edu.uniquindio.epq.facturacion.servicio.calculo.SelectorEstrategiaCalculo;
 import co.edu.uniquindio.epq.facturacion.servicio.numeracion.GeneradorNumeroFactura;
 
@@ -95,12 +96,13 @@ public class FacturadorContrato {
 
         // La tarifa aplicable es la vigente al cierre del periodo de consumo (SWR-03).
         LocalDate fechaTarifa = periodo.atEndOfMonth();
-        Optional<Tarifa> tarifa = tarifaRepository.buscarVigentes(contrato.getServicio().getId(), fechaTarifa)
-                .stream().findFirst();
+        // RN-08 / SWR-03: la tarifa vigente más específica para el municipio y estrato del predio
+        Optional<Tarifa> tarifa = SelectorTarifa.masEspecifica(
+                tarifaRepository.buscarVigentes(contrato.getServicio().getId(), fechaTarifa), contrato.getPredio());
         if (tarifa.isEmpty()) {
             return new ResultadoFacturacionContrato(contratoId, contrato.getNumeroContrato(),
                     TipoResultadoFacturacion.SIN_TARIFA, null,
-                    "No hay tarifa vigente de %s al %s".formatted(contrato.getServicio().getNombre(), fechaTarifa));
+                    "No hay tarifa vigente de %s al %s aplicable al predio".formatted(contrato.getServicio().getNombre(), fechaTarifa));
         }
 
         DetalleLiquidacion liquidacion = selectorEstrategia.seleccionar(contrato)

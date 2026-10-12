@@ -49,4 +49,14 @@ public interface PqrRepository extends JpaRepository<Pqr, Long>, JpaSpecificatio
             """)
     List<Pqr> buscarConPlazoVencido(@Param("estados") Collection<String> estados,
                                     @Param("ahora") LocalDateTime ahora);
+
+    // ------------------------------------------------------------------ entrega 2: supervisión (StR-02c, SyR-02f)
+
+    @EntityGraph(attributePaths = {"estado", "tipoSolicitud", "gestor", "gestor.jefe", "municipio"})
+    @Query("SELECT p FROM Pqr p WHERE p.estado.nombre IN :estados ORDER BY p.fechaLimiteRespuesta")
+    List<Pqr> buscarPendientesConGestor(@Param("estados") Collection<String> estados);
+
+    @EntityGraph(attributePaths = {"estado", "tipoSolicitud", "gestor", "municipio"})
+    @Query("SELECT p FROM Pqr p WHERE p.fechaRecepcion >= :desde AND p.fechaRecepcion < :hasta ORDER BY p.fechaRecepcion")
+    List<Pqr> buscarRadicadasEntre(@Param("desde") LocalDateTime desde, @Param("hasta") LocalDateTime hasta);
 }

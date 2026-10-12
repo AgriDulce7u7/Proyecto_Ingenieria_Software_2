@@ -9,11 +9,16 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
@@ -43,6 +48,37 @@ public class ManejadorGlobalExcepciones {
     @ExceptionHandler(ReglaNegocioException.class)
     public ProblemDetail manejarReglaNegocio(ReglaNegocioException ex) {
         return problema(HttpStatus.UNPROCESSABLE_ENTITY, "Regla de negocio incumplida", ex.getMessage());
+    }
+
+    /** Errores de aplicación que conocen su propio código HTTP (entrega 2). */
+    @ExceptionHandler(ExcepcionAplicacion.class)
+    public ProblemDetail manejarExcepcionAplicacion(ExcepcionAplicacion ex) {
+        ProblemDetail detalle = problema(ex.estadoHttp(), ex.titulo(), ex.getMessage());
+        ex.propiedades().forEach(detalle::setProperty);
+        return detalle;
+    }
+
+    /** {@code @PreAuthorize} rechazó la operación: el usuario no tiene el rol requerido (RNF-05). */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail manejarAccesoDenegado(AccessDeniedException ex) {
+        return problema(HttpStatus.FORBIDDEN, "Acceso denegado",
+                "Su rol no tiene permiso para realizar esta operación");
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail manejarNoAutenticado(AuthenticationException ex) {
+        return problema(HttpStatus.UNAUTHORIZED, "No autenticado", "Debe iniciar sesión para continuar");
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ProblemDetail manejarArchivoGrande(MaxUploadSizeExceededException ex) {
+        return problema(HttpStatus.PAYLOAD_TOO_LARGE, "Archivo demasiado grande",
+                "El archivo supera el tamaño máximo permitido");
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class, MissingServletRequestPartException.class})
+    public ProblemDetail manejarParametroFaltante(Exception ex) {
+        return problema(HttpStatus.BAD_REQUEST, "Solicitud incompleta", ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

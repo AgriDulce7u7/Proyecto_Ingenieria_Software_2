@@ -22,15 +22,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContrato;
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
 import co.edu.uniquindio.epq.comun.excepcion.ReglaNegocioException;
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContrato;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.servicio.ConsultaFacturacionService;
 import co.edu.uniquindio.epq.facturacion.servicio.GeneracionFacturacionService;
@@ -50,6 +51,7 @@ import co.edu.uniquindio.epq.facturacion.web.dto.SincronizacionErpResponse;
  * Pruebas de la capa HTTP de facturación: rutas, parámetros, validación y códigos de error.
  */
 @WebMvcTest(FacturacionController.class)
+@AutoConfigureMockMvc(addFilters = false) // la seguridad (JWT/roles) se prueba aparte; aquí solo el contrato HTTP
 @DisplayName("FacturacionController - API REST de facturación")
 class FacturacionControllerTest {
 
@@ -222,7 +224,7 @@ class FacturacionControllerTest {
         @Test
         @DisplayName("GET /facturas con filtros: los pasa al servicio con el enum convertido")
         void buscarConFiltros() throws Exception {
-            when(consultaService.buscarFacturas(any(), any(), any(), any())).thenReturn(List.of(resumen()));
+            when(consultaService.buscarFacturas(any(), any(), any(), any(), any())).thenReturn(List.of(resumen()));
 
             mvc.perform(get(BASE + "/facturas")
                             .param("periodo", PERIODO).param("contrato", "CT-ACU-0001")
@@ -230,14 +232,14 @@ class FacturacionControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$[0].total").value(81783.25));
 
-            verify(consultaService).buscarFacturas(PERIODO, "CT-ACU-0001", EstadoFactura.SINCRONIZADA, "1094950001");
+            verify(consultaService).buscarFacturas(PERIODO, "CT-ACU-0001", EstadoFactura.SINCRONIZADA, "1094950001", null);
         }
 
         @Test
         @DisplayName("GET /facturas con estado inexistente: 400")
         void buscarConEstadoInvalido() throws Exception {
             esProblema(mvc.perform(get(BASE + "/facturas").param("estado", "ANULADA")), 400, "Solicitud inválida");
-            verify(consultaService, never()).buscarFacturas(any(), any(), any(), any());
+            verify(consultaService, never()).buscarFacturas(any(), any(), any(), any(), any());
         }
 
         @Test
@@ -324,9 +326,9 @@ class FacturacionControllerTest {
         }
 
         @Test
-        @DisplayName("GET /contratos con estado inexistente: 400")
+        @DisplayName("GET /contratos con estado inexistente (INACTIVO ya no existe desde la entrega 2): 400")
         void estadoInvalido() throws Exception {
-            esProblema(mvc.perform(get(BASE + "/contratos").param("estado", "CANCELADO")), 400, "Solicitud inválida");
+            esProblema(mvc.perform(get(BASE + "/contratos").param("estado", "INACTIVO")), 400, "Solicitud inválida");
         }
     }
 }

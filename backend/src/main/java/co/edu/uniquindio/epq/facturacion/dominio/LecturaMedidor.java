@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
+import co.edu.uniquindio.epq.comercial.dominio.Medidor;
 import co.edu.uniquindio.epq.comun.persistencia.PeriodoConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

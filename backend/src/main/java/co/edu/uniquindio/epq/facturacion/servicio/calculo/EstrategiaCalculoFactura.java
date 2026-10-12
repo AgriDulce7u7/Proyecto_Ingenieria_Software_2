@@ -1,9 +1,9 @@
 package co.edu.uniquindio.epq.facturacion.servicio.calculo;
 
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Tarifa;
 import co.edu.uniquindio.epq.facturacion.dominio.DetalleLiquidacion;
 import co.edu.uniquindio.epq.facturacion.dominio.LecturaMedidor;
-import co.edu.uniquindio.epq.facturacion.dominio.Tarifa;
 
 /**
  * Patrón <b>Strategy</b>: algoritmo de liquidación de una factura.

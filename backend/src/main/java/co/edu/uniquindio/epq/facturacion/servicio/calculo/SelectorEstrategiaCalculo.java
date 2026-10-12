@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
 
 /**
  * Selecciona la estrategia de cálculo adecuada para un contrato. Spring inyecta todas las

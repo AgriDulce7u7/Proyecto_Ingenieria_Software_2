@@ -8,7 +8,7 @@ import java.time.YearMonth;
 
 import org.junit.jupiter.api.Test;
 
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
 
 class NumeroFacturaPorPeriodoTest {
 

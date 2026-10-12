@@ -40,22 +40,22 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import co.edu.uniquindio.epq.comercial.dominio.Contrato;
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.comercial.dominio.Medidor;
+import co.edu.uniquindio.epq.comercial.dominio.Tarifa;
+import co.edu.uniquindio.epq.comercial.repositorio.ContratoRepository;
+import co.edu.uniquindio.epq.comercial.repositorio.MedidorRepository;
+import co.edu.uniquindio.epq.comercial.repositorio.TarifaRepository;
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
 import co.edu.uniquindio.epq.facturacion.FacturacionProperties;
-import co.edu.uniquindio.epq.facturacion.dominio.Contrato;
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContrato;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
 import co.edu.uniquindio.epq.facturacion.dominio.LecturaMedidor;
 import co.edu.uniquindio.epq.facturacion.dominio.LoteFacturacion;
-import co.edu.uniquindio.epq.facturacion.dominio.Medidor;
-import co.edu.uniquindio.epq.facturacion.dominio.Tarifa;
-import co.edu.uniquindio.epq.facturacion.repositorio.ContratoRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.FacturaRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.LecturaMedidorRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.LoteFacturacionRepository;
-import co.edu.uniquindio.epq.facturacion.repositorio.MedidorRepository;
-import co.edu.uniquindio.epq.facturacion.repositorio.TarifaRepository;
 import co.edu.uniquindio.epq.facturacion.servicio.calculo.CalculoPorConsumoMedido;
 import co.edu.uniquindio.epq.facturacion.servicio.calculo.SelectorEstrategiaCalculo;
 import co.edu.uniquindio.epq.facturacion.servicio.numeracion.GeneradorNumeroFactura;
@@ -183,7 +183,7 @@ class FacturadorContratoTest {
         }
 
         @Test
-        @DisplayName("Con varias tarifas vigentes usa la primera que devuelve el repositorio")
+        @DisplayName("Con varias tarifas vigentes de igual especificidad usa la primera (la más reciente)")
         void usaLaPrimeraTarifaVigente() {
             Tarifa otra = tarifaAcueducto();
             ReflectionTestUtils.setField(otra, "id", 99);
@@ -203,7 +203,7 @@ class FacturadorContratoTest {
     class NoSeFactura {
 
         @ParameterizedTest(name = "Contrato {0} → NO_ACTIVO")
-        @EnumSource(value = EstadoContrato.class, names = {"SUSPENDIDO", "INACTIVO"})
+        @EnumSource(value = EstadoContrato.class, names = {"PENDIENTE", "SUSPENDIDO", "CANCELADO"})
         @DisplayName("Contrato no activo: se excluye sin consultar facturas ni medidor")
         void contratoNoActivo(EstadoContrato estado) {
             ReflectionTestUtils.setField(contrato, "estado", estado);

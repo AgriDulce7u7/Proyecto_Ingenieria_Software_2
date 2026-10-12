@@ -47,5 +47,20 @@ public record RegistrarPqrRequest(
 
         @NotBlank(message = "La descripción es obligatoria")
         @Size(min = 10, max = 5000, message = "La descripción debe tener entre 10 y 5000 caracteres")
-        String descripcion) {
+        String descripcion,
+
+        /* Entrega 2 (CU-06 paso 2, CO-01): número de contrato, opcional. Si se envía debe existir y estar activo. */
+        @Pattern(regexp = "[A-Za-z0-9-]{4,30}", message = "El número de contrato no es válido")
+        String numeroContrato,
+
+        /* Entrega 2 (SyR-02b): municipio de la solicitud; si hay contrato se toma el municipio de su predio. */
+        Integer municipioId) {
+
+    /** Constructor de la entrega 1 (sin contrato ni municipio), conservado por compatibilidad. */
+    public RegistrarPqrRequest(String tipoDocumento, String numeroDocumento, String nombreCompleto, String correo,
+                               String telefono, String direccion, TipoSolicitudTipo tipoSolicitud,
+                               CanalAtencionTipo canal, String asunto, String descripcion) {
+        this(tipoDocumento, numeroDocumento, nombreCompleto, correo, telefono, direccion, tipoSolicitud, canal, asunto,
+                descripcion, null, null);
+    }
 }

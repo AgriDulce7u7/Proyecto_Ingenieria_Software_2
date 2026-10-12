@@ -35,16 +35,16 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import co.edu.uniquindio.epq.comercial.dominio.EstadoContrato;
+import co.edu.uniquindio.epq.comercial.repositorio.ContratoRepository;
 import co.edu.uniquindio.epq.comun.calendario.CalendarioLaboral;
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
 import co.edu.uniquindio.epq.facturacion.FacturacionProperties;
-import co.edu.uniquindio.epq.facturacion.dominio.EstadoContrato;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoFactura;
 import co.edu.uniquindio.epq.facturacion.dominio.EstadoSincronizacion;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
 import co.edu.uniquindio.epq.facturacion.dominio.LoteFacturacion;
 import co.edu.uniquindio.epq.facturacion.dominio.SincronizacionErp;
-import co.edu.uniquindio.epq.facturacion.repositorio.ContratoRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.FacturaRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.LoteFacturacionRepository;
 import co.edu.uniquindio.epq.facturacion.repositorio.SincronizacionErpRepository;
