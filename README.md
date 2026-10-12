@@ -393,8 +393,8 @@ cd backend
 ./mvnw clean test
 ```
 
-En la entrega 1 el resultado fue **328 pruebas, 0 fallos**; la entrega 2 conserva esas pruebas y agrega 46 nuevas
-(dominio de contratos, cobro de facturas, tarifas, mora, acuerdos y cuotas, bloqueo de cuentas, pasarela, disponibilidad
+Resultado esperado: **375 pruebas, 0 fallos** (las 328 de la entrega 1 más las nuevas de la entrega 2:
+dominio de contratos, cobro de facturas, tarifas, mora, acuerdos y cuotas, bloqueo de cuentas, pasarela, disponibilidad
 de la factura, asignación por municipio, evidencias de PQR y plazos en días hábiles). No necesitan la base de datos ni el
 backend en ejecución. El detalle está en [`backend/README.md`](backend/README.md#5-pruebas).
 
@@ -581,7 +581,7 @@ Con la base recién creada, el backend y el frontend en ejecución:
 
 ### Calidad y proceso
 
-- Pruebas unitarias de la entrega 1 (328, 94 % de cobertura) más 46 nuevas, pruebas de capa web y una colección
+- 375 pruebas unitarias (328 de la entrega 1 más las de la entrega 2), pruebas de capa web y una colección
   de Postman con 134 peticiones que cubre F-01 a F-08 y los permisos por rol.
 - ESLint sin advertencias en el frontend.
 - Ramas por funcionalidad, Pull Requests con revisión y Conventional Commits.
