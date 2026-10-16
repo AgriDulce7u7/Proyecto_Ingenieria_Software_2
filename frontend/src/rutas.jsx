@@ -22,6 +22,12 @@ import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
 import { Alertas } from "./paginas/gestion/alertas/Alertas";
+import { Acuerdos } from "./paginas/gestion/cartera/acuerdos/Acuerdos";
+import { DetalleAcuerdo } from "./paginas/gestion/cartera/acuerdos/DetalleAcuerdo";
+import { PagarCuota } from "./paginas/gestion/cartera/acuerdos/PagarCuota";
+import { RegistrarAcuerdo } from "./paginas/gestion/cartera/acuerdos/RegistrarAcuerdo";
+import { CarteraMorosa } from "./paginas/gestion/cartera/CarteraMorosa";
+import { CobroCartera } from "./paginas/gestion/cartera/CobroCartera";
 import { Contratos } from "./paginas/gestion/contratos/Contratos";
 import { DetalleContrato } from "./paginas/gestion/contratos/detalle/DetalleContrato";
 import { RegistrarContrato } from "./paginas/gestion/contratos/RegistrarContrato";
@@ -156,7 +162,22 @@ export const enrutador = createBrowserRouter([
       // RF-06, CU-04, RN-05, SWR-22, SWR-23, SWR-24
       { path: "pagos/nuevo", element: protegida("FACTURACION_OPERAR", <RegistrarPago />) },
       // RF-06, SWR-22
+      // CU-08, RF-12 (pago de una cuota de acuerdo en ventanilla)
+      { path: "pagos/cuota", element: protegida("CARTERA_PAGAR_CUOTA", <PagarCuota />) },
+      // RF-06, SWR-22
       { path: "pagos/:codigo", element: protegida("FACTURACION_CONSULTAR", <Comprobante />) },
+
+      // F-07 · Cobro persuasivo
+      // RF-11, CU-08, SWR-29, SWR-32, RN-03
+      { path: "cartera", element: protegida("CARTERA_REPORTE", <CarteraMorosa />) },
+      // RF-12, CU-08, RN-07
+      { path: "cartera/acuerdos", element: protegida("CARTERA_GESTIONAR", <Acuerdos />) },
+      // RF-12, CU-08, SWR-30, RN-07
+      { path: "cartera/acuerdos/nuevo", element: protegida("CARTERA_GESTIONAR", <RegistrarAcuerdo />) },
+      // RF-12, CU-08, RN-07
+      { path: "cartera/acuerdos/:numero", element: protegida("CARTERA_GESTIONAR", <DetalleAcuerdo />) },
+      // RN-07, SWR-31, SWR-32
+      { path: "cartera/cobro", element: protegida("CARTERA_GESTIONAR", <CobroCartera />) },
     ],
   },
   { path: "*", element: <NoEncontrada /> },

@@ -33,6 +33,8 @@ export function useIntentosPago(numeroFactura) {
  * Registro de un pago presencial o bancario (CU-04, SWR-22 a SWR-24). Responde el comprobante, que se
  * guarda para la pantalla siguiente. La factura pasa a pagada, así que también se refresca la facturación
  * y los contratos (su saldo y la marca de candidato a suspensión dependen de las facturas pendientes).
+ * El refresco no se espera: la pantalla navega al comprobante de inmediato y, si se esperara, el
+ * formulario desaparecería antes porque la factura ya estaría pagada.
  */
 export function useRegistrarPagoPresencial() {
   const clienteConsultas = useQueryClient();
@@ -40,11 +42,9 @@ export function useRegistrarPagoPresencial() {
     mutationFn: registrarPagoPresencial,
     onSuccess: (comprobante) => {
       clienteConsultas.setQueryData(clavesPagos.comprobante(comprobante.codigoPago), comprobante);
-      return Promise.all([
-        clienteConsultas.invalidateQueries({ queryKey: clavesPagos.todo }),
-        clienteConsultas.invalidateQueries({ queryKey: ["facturacion"] }),
-        clienteConsultas.invalidateQueries({ queryKey: ["contratos"] }),
-      ]);
+      [clavesPagos.todo, ["facturacion"], ["contratos"]].forEach((clave) =>
+        clienteConsultas.invalidateQueries({ queryKey: clave }),
+      );
     },
   });
 }

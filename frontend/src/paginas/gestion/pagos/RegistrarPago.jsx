@@ -8,12 +8,13 @@ import { PieFormulario, SeccionFormulario } from "../../../componentes/SeccionFo
 import { Boton } from "../../../componentes/ui/Boton";
 import { Campo } from "../../../componentes/ui/Campo";
 import { Etiqueta } from "../../../componentes/ui/Etiqueta";
-import { Icono } from "../../../componentes/ui/Icono";
 import { useFactura } from "../../../hooks/useFacturacion";
 import { useRegistrarPagoPresencial } from "../../../hooks/usePagos";
 import { formatearMoneda, partesPeriodo, presentarEstadoCobro } from "../../../presentacion/facturacion";
 import { formatearFecha } from "../../../presentacion/fechas";
-import { CANALES_PRESENCIALES, motivoNoPagable, presentarCanal } from "../../../presentacion/pagos";
+import { motivoNoPagable } from "../../../presentacion/pagos";
+import { useSesion } from "../../../sesion/useSesion";
+import { SelectorCanal } from "./SelectorCanal";
 import "./pagos.css";
 
 const MAXIMO_REFERENCIA = 100;
@@ -90,44 +91,6 @@ function ResumenFactura({ factura }) {
         </div>
       </dl>
     </div>
-  );
-}
-
-/** Canal del pago como opciones de radio: caja (PRESENCIAL) o consignación (BANCO) (SWR-24). */
-function SelectorCanal({ valor, error, onCambiar }) {
-  return (
-    <fieldset className="pago-canales formulario-campo-completo" aria-invalid={error ? true : undefined}>
-      <legend>
-        Canal del pago <b aria-hidden="true">*</b>
-      </legend>
-      <div>
-        {CANALES_PRESENCIALES.map((codigo) => {
-          const canal = presentarCanal(codigo);
-          return (
-            <label key={codigo} className="pago-canal">
-              <input
-                type="radio"
-                name="canal"
-                value={codigo}
-                checked={valor === codigo}
-                aria-invalid={error ? true : undefined}
-                onChange={(evento) => onCambiar(evento.target.value)}
-              />
-              <span>
-                <strong>{canal.etiqueta}</strong>
-                <small>{canal.detalle}</small>
-              </span>
-            </label>
-          );
-        })}
-      </div>
-      {error && (
-        <small className="campo-error">
-          <Icono nombre="alerta" tamano={14} />
-          {error}
-        </small>
-      )}
-    </fieldset>
   );
 }
 
@@ -217,6 +180,7 @@ function FormularioPago({ factura }) {
 /** Resultado de la búsqueda: la factura encontrada o por qué no se puede pagar (SWR-23). */
 function ResultadoFactura({ numero }) {
   const factura = useFactura(numero);
+  const puedePagarCuota = useSesion().puede("CARTERA_PAGAR_CUOTA");
   const motivo = factura.data ? motivoNoPagable(factura.data) : null;
 
   return (
@@ -244,6 +208,11 @@ function ResultadoFactura({ numero }) {
           <p>
             <strong>No se puede registrar el pago.</strong> {motivo}
           </p>
+          {factura.data.enAcuerdoDePago && puedePagarCuota && (
+            <p>
+              <Link to="/gestion/pagos/cuota">Registre el pago de la cuota del acuerdo</Link>.
+            </p>
+          )}
         </div>
       )}
     </>

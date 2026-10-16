@@ -85,7 +85,9 @@ export function useActualizarContacto() {
 /**
  * Pago en línea de una factura (CU-04, DS-03). Responde el comprobante, que se guarda para la pantalla
  * siguiente. Haya o no pago, se refresca todo el portal: un intento rechazado no cambia la factura,
- * pero uno aprobado cambia el saldo, la factura y la lista de pagos.
+ * pero uno aprobado cambia el saldo, la factura y la lista de pagos. El refresco no se espera: la
+ * pantalla navega al comprobante de inmediato y, si se esperara, el formulario desaparecería antes
+ * porque la factura ya estaría pagada.
  */
 export function usePagarEnLinea(numeroFactura) {
   const clienteConsultas = useQueryClient();
@@ -94,6 +96,8 @@ export function usePagarEnLinea(numeroFactura) {
     onSuccess: (comprobante) => {
       clienteConsultas.setQueryData(clavesPortal.comprobante(comprobante.codigoPago), comprobante);
     },
-    onSettled: () => clienteConsultas.invalidateQueries({ queryKey: clavesPortal.todo }),
+    onSettled: () => {
+      clienteConsultas.invalidateQueries({ queryKey: clavesPortal.todo });
+    },
   });
 }

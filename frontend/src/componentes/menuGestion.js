@@ -13,6 +13,9 @@ export const MENU_GESTION = [
   { a: "/gestion/facturacion/lotes", texto: "Lotes de facturación", icono: "capas", capacidad: "FACTURACION_CONSULTAR" },
   { a: "/gestion/facturacion/facturas", texto: "Facturas", icono: "documento", capacidad: "FACTURACION_CONSULTAR" },
   { a: "/gestion/pagos", texto: "Pagos", icono: "tarjeta", capacidad: "FACTURACION_CONSULTAR" },
+  { a: "/gestion/cartera", texto: "Cartera morosa", icono: "billetera", fin: true, capacidad: "CARTERA_REPORTE" },
+  { a: "/gestion/cartera/acuerdos", texto: "Acuerdos de pago", icono: "acuerdo", capacidad: "CARTERA_GESTIONAR" },
+  { a: "/gestion/cartera/cobro", texto: "Cobro y monitoreo", icono: "reloj", capacidad: "CARTERA_GESTIONAR" },
 ];
 
 /** Opciones del menú que puede usar el usuario, según su función `puede` de la sesión. */

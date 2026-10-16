@@ -53,7 +53,9 @@ export function Pagos() {
     "desde",
     "hasta",
   ]);
-  const puedeRegistrar = useSesion().puede("FACTURACION_OPERAR");
+  const { puede } = useSesion();
+  const puedeRegistrar = puede("FACTURACION_OPERAR");
+  const puedePagarCuota = puede("CARTERA_PAGAR_CUOTA");
   const rangoInvalido = Boolean(filtros.desde && filtros.hasta && filtros.desde > filtros.hasta);
   const pagos = usePagos(
     { canal: filtros.canal, desde: filtros.desde, hasta: filtros.hasta },
@@ -71,10 +73,19 @@ export function Pagos() {
         titulo="Pagos"
         descripcion="Pagos en caja, por consignación y en línea, con su comprobante. Cada factura se paga completa una sola vez."
         accion={
-          puedeRegistrar && (
-            <Boton a="/gestion/pagos/nuevo" icono="mas">
-              Registrar pago
-            </Boton>
+          (puedeRegistrar || puedePagarCuota) && (
+            <div className="pagos-acciones">
+              {puedePagarCuota && (
+                <Boton a="/gestion/pagos/cuota" variante="secundario" icono="acuerdo">
+                  Pago de cuota
+                </Boton>
+              )}
+              {puedeRegistrar && (
+                <Boton a="/gestion/pagos/nuevo" icono="mas">
+                  Registrar pago
+                </Boton>
+              )}
+            </div>
           )
         }
       />
