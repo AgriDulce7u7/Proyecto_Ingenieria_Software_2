@@ -1,0 +1,116 @@
+/* Comprobante de pago con formato de recibo (mobile-first). Mismo bloque oscuro de la programación de facturación. */
+
+.recibo {
+  overflow: hidden;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-grande);
+}
+
+.recibo-cabecera {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+  padding: 24px 20px;
+  color: var(--color-superficie);
+  background: var(--color-agua-profundo);
+}
+
+.recibo-cabecera::after {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -80px;
+  width: 240px;
+  height: 240px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 44% 56%;
+  transform: rotate(25deg);
+}
+
+.recibo-cabecera .antetitulo {
+  margin-top: 14px;
+  color: #83cedd;
+}
+
+.recibo-confirmado {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--color-agua-profundo);
+  background: #83cedd;
+  border-radius: 999px;
+}
+
+.recibo-valor {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.recibo-cabecera p {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  color: #bfd6db;
+}
+
+.recibo-datos {
+  padding: 6px 20px;
+}
+
+/* Cada dato en una línea, como en un recibo impreso: término a la izquierda, valor a la derecha */
+.recibo-datos div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--color-borde);
+}
+
+.recibo-datos div:last-child {
+  border-bottom: 0;
+}
+
+.recibo-datos dt {
+  flex: none;
+  font-size: 12px;
+  color: var(--color-tinta-tenue);
+}
+
+.recibo-datos dd {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.recibo-enlace {
+  color: var(--color-agua);
+}
+
+.recibo-enlace:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 37.5rem) {
+  .recibo-cabecera {
+    padding: 28px;
+  }
+
+  .recibo-valor {
+    font-size: 44px;
+  }
+
+  .recibo-datos {
+    padding: 8px 28px;
+  }
+}

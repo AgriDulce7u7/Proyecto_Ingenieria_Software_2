@@ -10,15 +10,18 @@ import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
 import { Alertas } from "./paginas/gestion/alertas/Alertas";
-import { Cumplimiento } from "./paginas/gestion/cumplimiento/Cumplimiento";
 import { Contratos } from "./paginas/gestion/contratos/Contratos";
 import { DetalleContrato } from "./paginas/gestion/contratos/detalle/DetalleContrato";
 import { RegistrarContrato } from "./paginas/gestion/contratos/RegistrarContrato";
+import { Cumplimiento } from "./paginas/gestion/cumplimiento/Cumplimiento";
 import { DetalleLote } from "./paginas/gestion/facturacion/DetalleLote";
 import { DetalleFactura } from "./paginas/gestion/facturacion/factura/DetalleFactura";
 import { Facturas } from "./paginas/gestion/facturacion/Facturas";
 import { Lotes } from "./paginas/gestion/facturacion/Lotes";
 import { Programacion } from "./paginas/gestion/facturacion/Programacion";
+import { Comprobante } from "./paginas/gestion/pagos/Comprobante";
+import { Pagos } from "./paginas/gestion/pagos/Pagos";
+import { RegistrarPago } from "./paginas/gestion/pagos/RegistrarPago";
 import { BandejaPqr } from "./paginas/gestion/pqr/BandejaPqr";
 import { DetallePqr } from "./paginas/gestion/pqr/detalle/DetallePqr";
 import { Supervision } from "./paginas/gestion/supervision/Supervision";
@@ -74,9 +77,15 @@ export const enrutador = createBrowserRouter([
       { path: "supervision", element: protegida("PQR_SUPERVISAR", <Supervision />) },
       // SyR-02f, RN-04
       { path: "cumplimiento", element: protegida("PQR_INDICADORES", <Cumplimiento />) },
-            // F-03 · Usuarios del servicio
+
+      // F-03 · Usuarios del servicio
       // RF-03, SWR-16
       { path: "usuarios", element: protegida("COMERCIAL_CONSULTAR", <Usuarios />) },
+      // RF-01, CU-01, SWR-12, SWR-13, SWR-14
+      { path: "usuarios/nuevo", element: protegida("COMERCIAL_GESTIONAR", <RegistrarUsuario />) },
+      // RF-02, RF-03, SWR-14, SWR-15
+      { path: "usuarios/:codigo", element: protegida("COMERCIAL_CONSULTAR", <PerfilUsuario />) },
+
       // F-04 · Contratos de servicio
       // RF-04, CU-02, SWR-20
       { path: "contratos", element: protegida("COMERCIAL_CONSULTAR", <Contratos />) },
@@ -84,10 +93,7 @@ export const enrutador = createBrowserRouter([
       { path: "contratos/nuevo", element: protegida("COMERCIAL_GESTIONAR", <RegistrarContrato />) },
       // RF-04, CU-02, SWR-18, SWR-19, SWR-20
       { path: "contratos/:numero", element: protegida("COMERCIAL_CONSULTAR", <DetalleContrato />) },
-      // RF-01, CU-01, SWR-12, SWR-13, SWR-14
-      { path: "usuarios/nuevo", element: protegida("COMERCIAL_GESTIONAR", <RegistrarUsuario />) },
-      // RF-02, RF-03, SWR-14, SWR-15
-      { path: "usuarios/:codigo", element: protegida("COMERCIAL_CONSULTAR", <PerfilUsuario />) },
+
       // F-01 · Facturación
       // RF-05, CU-03, SWR-01, SWR-02
       { path: "facturacion", element: protegida("FACTURACION_CONSULTAR", <Programacion />) },
@@ -99,6 +105,14 @@ export const enrutador = createBrowserRouter([
       { path: "facturacion/facturas", element: protegida("FACTURACION_CONSULTAR", <Facturas />) },
       // RF-05, SWR-03, SWR-04
       { path: "facturacion/facturas/:numero", element: protegida("FACTURACION_CONSULTAR", <DetalleFactura />) },
+
+      // F-05 · Pagos
+      // RF-06, CU-04, SWR-24
+      { path: "pagos", element: protegida("FACTURACION_CONSULTAR", <Pagos />) },
+      // RF-06, CU-04, RN-05, SWR-22, SWR-23, SWR-24
+      { path: "pagos/nuevo", element: protegida("FACTURACION_OPERAR", <RegistrarPago />) },
+      // RF-06, SWR-22
+      { path: "pagos/:codigo", element: protegida("FACTURACION_CONSULTAR", <Comprobante />) },
     ],
   },
   { path: "*", element: <NoEncontrada /> },

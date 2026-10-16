@@ -1,0 +1,379 @@
+/* Pagos (mobile-first). El listado usa los estilos de la bandeja y el comprobante los del detalle de PQR. */
+
+/* ---------------------------------------------------------------- listado */
+
+.bandeja-metricas .pagos-metrica-moneda {
+  font-size: 20px;
+  color: var(--color-agua-oscuro);
+}
+
+.pagos-fecha {
+  display: flex;
+  flex: 1 1 calc(50% - 5px);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio-control);
+}
+
+.pagos-fecha:focus-within {
+  outline: 3px solid rgb(11 110 138 / 28%);
+  outline-offset: 2px;
+}
+
+.pagos-fecha:has([aria-invalid="true"]) {
+  border-color: var(--color-vencido);
+}
+
+.pagos-fecha span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-tinta-tenue);
+}
+
+.pagos-fecha input {
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--color-tinta);
+  outline: 0;
+}
+
+.pagos-filtros select {
+  flex-basis: 100%;
+}
+
+.pagos-enlace {
+  color: var(--color-agua);
+}
+
+.pagos-enlace:hover {
+  text-decoration: underline;
+}
+
+.bandeja-tabla .pagos-valor {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-tinta);
+}
+
+@media (min-width: 37.5rem) {
+  .pagos-filtros {
+    flex-wrap: wrap;
+  }
+
+  .pagos-filtros .bandeja-buscador {
+    flex: 1 1 100%;
+  }
+
+  .pagos-filtros select,
+  .pagos-fecha {
+    flex: 1 1 0;
+  }
+
+  .bandeja-metricas .pagos-metrica-moneda {
+    font-size: 22px;
+  }
+}
+
+@media (min-width: 75rem) {
+  .pagos-filtros {
+    flex-wrap: nowrap;
+  }
+
+  .pagos-filtros .bandeja-buscador {
+    flex: 1 1 auto;
+  }
+
+  .pagos-filtros select,
+  .pagos-fecha {
+    flex: 0 1 auto;
+  }
+
+  .pagos-fecha {
+    width: 185px;
+  }
+}
+
+/* ---------------------------------------------------------------- registro */
+
+.pago-buscar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pago-factura {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-borde);
+  border-radius: var(--radio-panel);
+}
+
+.pago-factura-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pago-factura-numero {
+  font-size: 18px;
+  font-weight: 750;
+  color: var(--color-agua-profundo);
+}
+
+.pago-factura-numero:hover {
+  text-decoration: underline;
+}
+
+.pago-factura-datos strong {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.pago-factura-datos small {
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+}
+
+.pago-factura-total {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
+
+.pago-factura-total dt {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.pago-factura-total div:first-child dd {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-agua-oscuro);
+}
+
+.pago-factura-total dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pago-canales {
+  min-width: 0;
+}
+
+.pago-canales legend {
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+
+.pago-canales legend b {
+  color: var(--color-vencido);
+}
+
+.pago-canales > div {
+  display: grid;
+  gap: 8px;
+}
+
+.pago-canal {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio-control);
+  cursor: pointer;
+}
+
+.pago-canal:hover {
+  background: var(--color-agua-suave);
+}
+
+.pago-canal:has(input:checked) {
+  background: var(--color-agua-claro);
+  border-color: var(--color-agua);
+}
+
+.pago-canales[aria-invalid="true"] .pago-canal {
+  border-color: var(--color-vencido);
+}
+
+.pago-canal input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--color-agua);
+}
+
+.pago-canal > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pago-canal strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.pago-canal small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.pago-valor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-control);
+}
+
+.pago-valor span {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+
+.pago-valor strong {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-agua-oscuro);
+}
+
+.pago-valor small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+@media (min-width: 37.5rem) {
+  .pago-buscar {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .pago-buscar .campo {
+    flex: 1;
+  }
+
+  /* El botón queda a la altura del control, debajo de la etiqueta */
+  .pago-buscar .boton {
+    margin-top: 25px;
+  }
+
+  .pago-factura {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pago-factura-total {
+    flex: none;
+    flex-direction: column;
+    text-align: right;
+  }
+
+  .pago-factura-total dd {
+    justify-content: flex-end;
+  }
+
+  .pago-canales > div {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------- comprobante */
+
+.comprobante-contenido {
+  max-width: 720px;
+}
+
+/* ---------------------------------------------------------------- pagos de una factura */
+
+.pagos-factura-pago {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  background: var(--color-exito-claro);
+  border-radius: var(--radio-control);
+}
+
+.pagos-factura-pago > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pagos-factura-pago strong {
+  font-size: 13px;
+}
+
+.pagos-factura-pago small {
+  font-size: 11px;
+  color: var(--color-tinta-suave);
+}
+
+.pagos-factura-intentos {
+  display: flex;
+  flex-direction: column;
+  margin-top: 14px;
+}
+
+.pagos-factura-intentos h3 {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.pagos-factura-intentos li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.pagos-factura-intentos li:last-child {
+  border-bottom: 0;
+}
+
+.pagos-factura-intentos li > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pagos-factura-intentos p {
+  font-size: 12px;
+  color: var(--color-tinta);
+}
+
+.pagos-factura-intentos small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.pagos-factura-vacio {
+  font-size: 13px;
+}

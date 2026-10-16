@@ -44,6 +44,12 @@ const TRAZOS = {
       <path d="M14 3v5h5M9 12h6M9 18c1-2 2-2 3 0s2 2 3 0" />
     </>
   ),
+    tarjeta: (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3 10h18M7 15h4" />
+    </>
+  ),
     grafica: (
     <>
       <path d="M4 4v16h16" />

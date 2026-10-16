@@ -12,6 +12,7 @@ export const MENU_GESTION = [
   { a: "/gestion/facturacion", texto: "Facturación", icono: "recibo", fin: true, capacidad: "FACTURACION_CONSULTAR" },
   { a: "/gestion/facturacion/lotes", texto: "Lotes de facturación", icono: "capas", capacidad: "FACTURACION_CONSULTAR" },
   { a: "/gestion/facturacion/facturas", texto: "Facturas", icono: "documento", capacidad: "FACTURACION_CONSULTAR" },
+  { a: "/gestion/pagos", texto: "Pagos", icono: "tarjeta", capacidad: "FACTURACION_CONSULTAR" },
 ];
 
 /** Opciones del menú que puede usar el usuario, según su función `puede` de la sesión. */

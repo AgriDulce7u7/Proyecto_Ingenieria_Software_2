@@ -20,8 +20,10 @@ import {
   puedeSincronizarse,
 } from "../../../../presentacion/facturacion";
 import { formatearFecha, formatearFechaHora } from "../../../../presentacion/fechas";
+import { motivoNoPagable } from "../../../../presentacion/pagos";
 import { enmascararDocumento } from "../../../../presentacion/texto";
 import { useSesion } from "../../../../sesion/useSesion";
+import { PagosFactura } from "../../pagos/PagosFactura";
 import { AvisoCobro } from "./AvisoCobro";
 import { AvisoErp } from "./AvisoErp";
 import { BitacoraErp } from "./BitacoraErp";
@@ -170,6 +172,11 @@ function ContenidoFactura({ factura }) {
         </div>
         <div className="detalle-factura-acciones">
           <DescargarPdf numeroFactura={factura.numeroFactura} onError={setErrorPdf} />
+          {puedeOperar && !motivoNoPagable(factura) && (
+            <Boton a={`/gestion/pagos/nuevo?factura=${factura.numeroFactura}`} icono="tarjeta">
+              Registrar pago
+            </Boton>
+          )}
           {puedeOperar && puedeAnularse(factura) && (
             <Boton variante="peligro" onClick={abrirAnulacion}>
               Anular
@@ -246,6 +253,7 @@ function ContenidoFactura({ factura }) {
           </section>
 
           <Consumo factura={factura} />
+          <PagosFactura numeroFactura={factura.numeroFactura} />
           <BitacoraErp numeroFactura={factura.numeroFactura} />
         </div>
 
