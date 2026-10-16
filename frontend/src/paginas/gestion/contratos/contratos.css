@@ -1,0 +1,228 @@
+/* Contratos de servicio (mobile-first). Listado y detalle usan los estilos de la bandeja y del detalle de PQR. */
+
+.contratos-volver {
+  margin-bottom: 18px;
+}
+
+/* ---------------------------------------------------------------- listado */
+
+.contratos-casilla {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+  cursor: pointer;
+}
+
+.contratos-casilla input,
+.contrato-casilla input,
+.contrato-predio input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--color-agua);
+}
+
+.contratos-alerta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 650;
+  color: var(--color-vencido);
+  white-space: nowrap;
+}
+
+.contratos-al-dia {
+  color: var(--color-tinta-tenue);
+}
+
+@media (min-width: 37.5rem) {
+  .contratos-filtros {
+    flex-wrap: wrap;
+  }
+
+  .contratos-filtros .bandeja-buscador {
+    flex: 1 1 100%;
+  }
+
+  .contratos-casilla {
+    flex: 0 0 auto;
+  }
+}
+
+@media (min-width: 75rem) {
+  .contratos-filtros {
+    flex-wrap: nowrap;
+  }
+
+  .contratos-filtros .bandeja-buscador {
+    flex: 1 1 auto;
+  }
+}
+
+/* ---------------------------------------------------------------- registro */
+
+.contrato-volver-usuarios {
+  margin-top: 16px;
+}
+
+.contrato-predios {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.contrato-predios legend {
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+
+.contrato-predios legend b {
+  color: var(--color-vencido);
+}
+
+.contrato-predio {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio-control);
+  cursor: pointer;
+}
+
+.contrato-predio:hover {
+  background: var(--color-agua-suave);
+}
+
+.contrato-predio:has(input:checked) {
+  background: var(--color-agua-claro);
+  border-color: var(--color-agua);
+}
+
+.contrato-predios[aria-invalid="true"] .contrato-predio {
+  border-color: var(--color-vencido);
+}
+
+.contrato-predio > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.contrato-predio strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.contrato-predio small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+/* Tarifa que se aplicará (SWR-18) */
+.contrato-tarifa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding: 14px 16px;
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-borde);
+  border-radius: var(--radio-panel);
+}
+
+.contrato-tarifa > div {
+  display: flex;
+  flex: 1 1 200px;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--color-tinta);
+}
+
+.contrato-tarifa > div strong {
+  font-size: 14px;
+}
+
+.contrato-tarifa > div small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.contrato-tarifa dl {
+  display: flex;
+  gap: 22px;
+}
+
+.contrato-tarifa dt {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.contrato-tarifa dd {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-agua-oscuro);
+}
+
+.contrato-tarifa-vacia {
+  color: var(--color-tinta-tenue);
+  background: var(--color-fondo);
+  border-style: dashed;
+  border-color: var(--color-borde-control);
+}
+
+.contrato-tarifa-vacia p {
+  font-size: 13px;
+}
+
+.contrato-casilla {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 4px;
+  cursor: pointer;
+}
+
+.contrato-casilla > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contrato-casilla strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.contrato-casilla small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+/* ---------------------------------------------------------------- detalle */
+
+.contrato-enlace-perfil {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-agua);
+}
+
+.contrato-enlace-perfil:hover {
+  text-decoration: underline;
+}
+
+.contrato-vacio {
+  font-size: 13px;
+}

@@ -38,6 +38,12 @@ const TRAZOS = {
       <path d="M5 20h14" />
     </>
   ),
+    contrato: (
+    <>
+      <path d="M6 3h8l4 4v14H6z" />
+      <path d="M14 3v5h5M9 12h6M9 18c1-2 2-2 3 0s2 2 3 0" />
+    </>
+  ),
     grafica: (
     <>
       <path d="M4 4v16h16" />

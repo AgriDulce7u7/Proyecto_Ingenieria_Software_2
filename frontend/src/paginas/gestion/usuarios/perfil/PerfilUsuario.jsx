@@ -74,13 +74,23 @@ function Predios({ usuario, puedeGestionar, onAgregar }) {
   );
 }
 
-/** Contratos del usuario con su estado (SWR-20). Cada uno lleva a su detalle (F-04). */
-function Contratos({ usuario }) {
+/**
+ * Contratos del usuario con su estado (SWR-20). Cada uno lleva a su detalle; el asesor crea uno nuevo
+ * desde aquí cuando el usuario está activo y tiene predios (F-04).
+ */
+function Contratos({ usuario, puedeGestionar }) {
+  const puedeCrear = puedeGestionar && usuario.activo && usuario.predios.length > 0;
   return (
     <section className="panel" aria-labelledby="contratos-titulo">
       <div className="panel-titulo">
         <h2 id="contratos-titulo">Contratos</h2>
-        <span className="panel-nota">{usuario.contratos.length} registrados</span>
+        {puedeCrear ? (
+          <Boton a={`/gestion/contratos/nuevo?usuario=${usuario.codigoInterno}`} variante="discreto" icono="mas">
+            Nuevo contrato
+          </Boton>
+        ) : (
+          <span className="panel-nota">{usuario.contratos.length} registrados</span>
+        )}
       </div>
       {usuario.contratos.length === 0 ? (
         <p className="perfil-vacio">El usuario aún no tiene contratos de servicio.</p>
@@ -227,7 +237,7 @@ function ContenidoPerfil({ usuario }) {
             />
           </section>
           <Predios usuario={usuario} puedeGestionar={puedeGestionar} onAgregar={() => setDialogo("predio")} />
-          <Contratos usuario={usuario} />
+          <Contratos usuario={usuario} puedeGestionar={puedeGestionar} />
         </div>
 
         <aside className="detalle-lateral">

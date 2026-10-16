@@ -11,6 +11,9 @@ import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
 import { Alertas } from "./paginas/gestion/alertas/Alertas";
 import { Cumplimiento } from "./paginas/gestion/cumplimiento/Cumplimiento";
+import { Contratos } from "./paginas/gestion/contratos/Contratos";
+import { DetalleContrato } from "./paginas/gestion/contratos/detalle/DetalleContrato";
+import { RegistrarContrato } from "./paginas/gestion/contratos/RegistrarContrato";
 import { DetalleLote } from "./paginas/gestion/facturacion/DetalleLote";
 import { DetalleFactura } from "./paginas/gestion/facturacion/factura/DetalleFactura";
 import { Facturas } from "./paginas/gestion/facturacion/Facturas";
@@ -74,6 +77,13 @@ export const enrutador = createBrowserRouter([
             // F-03 · Usuarios del servicio
       // RF-03, SWR-16
       { path: "usuarios", element: protegida("COMERCIAL_CONSULTAR", <Usuarios />) },
+      // F-04 · Contratos de servicio
+      // RF-04, CU-02, SWR-20
+      { path: "contratos", element: protegida("COMERCIAL_CONSULTAR", <Contratos />) },
+      // RF-04, CU-02, RN-01, RN-08, SWR-17, SWR-18, SWR-19
+      { path: "contratos/nuevo", element: protegida("COMERCIAL_GESTIONAR", <RegistrarContrato />) },
+      // RF-04, CU-02, SWR-18, SWR-19, SWR-20
+      { path: "contratos/:numero", element: protegida("COMERCIAL_CONSULTAR", <DetalleContrato />) },
       // RF-01, CU-01, SWR-12, SWR-13, SWR-14
       { path: "usuarios/nuevo", element: protegida("COMERCIAL_GESTIONAR", <RegistrarUsuario />) },
       // RF-02, RF-03, SWR-14, SWR-15

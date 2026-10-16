@@ -8,6 +8,7 @@ export const MENU_GESTION = [
   { a: "/gestion/supervision", texto: "Supervisión", icono: "personas", capacidad: "PQR_SUPERVISAR" },
   { a: "/gestion/cumplimiento", texto: "Cumplimiento", icono: "grafica", capacidad: "PQR_INDICADORES" },
   { a: "/gestion/usuarios", texto: "Usuarios", icono: "personas", capacidad: "COMERCIAL_CONSULTAR" },
+  { a: "/gestion/contratos", texto: "Contratos", icono: "contrato", capacidad: "COMERCIAL_CONSULTAR" },
   { a: "/gestion/facturacion", texto: "Facturación", icono: "recibo", fin: true, capacidad: "FACTURACION_CONSULTAR" },
   { a: "/gestion/facturacion/lotes", texto: "Lotes de facturación", icono: "capas", capacidad: "FACTURACION_CONSULTAR" },
   { a: "/gestion/facturacion/facturas", texto: "Facturas", icono: "documento", capacidad: "FACTURACION_CONSULTAR" },
