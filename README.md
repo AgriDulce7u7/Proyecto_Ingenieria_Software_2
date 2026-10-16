@@ -3,8 +3,8 @@
 Prototipo del **Sistema de Información para la Gestión Comercial y Atención al Cliente** de
 **Empresas Públicas del Quindío (EPQ)**, desarrollado en la asignatura **Ingeniería de Software 2** de la
 Universidad del Quindío. Continúa el análisis del proyecto de Ingeniería de Software 1 (student book).
-La **entrega 1** implementó F-01 y F-02; la **entrega 2** implementa en el backend **todas las funcionalidades**
-del Plan de Requisitos (F-01 a F-08), con autenticación y control de acceso por roles:
+La **entrega 1** implementó F-01 y F-02; la **entrega 2** implementa **todas las funcionalidades** del Plan de
+Requisitos (F-01 a F-08) en el backend y en el frontend, con autenticación y control de acceso por roles:
 
 | Funcionalidad | Descripción | Requisitos |
 |---|---|---|
@@ -70,7 +70,7 @@ del Plan de Requisitos (F-01 a F-08), con autenticación y control de acceso por
 | Documento | Contenido |
 |---|---|
 | [`backend/README.md`](backend/README.md) | Usuarios de prueba, matriz de permisos por rol, endpoints, arquitectura, patrones, SOLID, decisiones, cambios para el frontend y limitaciones |
-| [`frontend/README.md`](frontend/README.md) | Pantallas, arquitectura del frontend, sistema visual, accesibilidad y convenciones |
+| [`frontend/README.md`](frontend/README.md) | Usuarios de prueba, pantallas por rol con sus requisitos, arquitectura del frontend, sesión y permisos, sistema visual, accesibilidad y convenciones |
 
 ---
 
@@ -134,8 +134,9 @@ flowchart LR
     api -- "HTTP / JSON" --> erp
 ```
 
-- **Aplicación web:** portal ciudadano público (radicar y consultar PQR) y back-office de funcionarios
-  (PQR y facturación).
+- **Aplicación web:** portal ciudadano público (radicar y consultar PQR), portal de autogestión «Mi cuenta»
+  para el ciudadano (facturas, historial y pago en línea) y back-office de funcionarios con menú por rol
+  (F-01 a F-08 y administración). Cada pantalla se descarga la primera vez que se abre.
 - **API REST:** organizada por funcionalidad (`facturacion/`, `pqr/`, `comercial/`, `pagos/`, `portal/`,
   `cartera/`, `dashboard/`) con lo transversal en `comun/`, `seguridad/` y `auditoria/`. Autenticación sin estado
   con JWT. Tareas programadas: monitoreo de plazos de PQR cada 15 minutos, facturación diaria a la 1:00 a. m. y
@@ -145,12 +146,12 @@ flowchart LR
 
 ### 3.3 Organización del código
 
-Ambos proyectos se organizan **por funcionalidad** (PQR y facturación), con capas dentro de cada módulo:
+Ambos proyectos se organizan **por funcionalidad**, con capas dentro de cada módulo:
 
 | Proyecto | Módulos | Capas dentro de cada módulo |
 |---|---|---|
 | Backend | `facturacion/`, `pqr/`, `comercial/`, `pagos/`, `portal/`, `cartera/`, `dashboard/`, `seguridad/`, `auditoria/`, `comun/` | `dominio`, `repositorio`, `servicio`, `web`, `evento`, `tarea` |
-| Frontend | `paginas/ciudadano/`, `paginas/gestion/pqr/`, `paginas/gestion/facturacion/` | Página, componentes propios y estilos; acceso a datos en `api/` y `hooks/` por módulo |
+| Frontend | `paginas/ciudadano/` (con `cuenta/`), `paginas/acceso/` y `paginas/gestion/` (`dashboard`, `pqr`, `alertas`, `supervision`, `cumplimiento`, `usuarios`, `contratos`, `facturacion`, `pagos`, `cartera`, `administracion`) | Página, componentes propios y estilos; acceso a datos en `api/` y `hooks/` por módulo; sesión y permisos en `sesion/` |
 
 ---
 
@@ -266,19 +267,20 @@ npm run dev
 La aplicación queda en `http://localhost:5173`. La documentación completa está en
 [`frontend/README.md`](frontend/README.md).
 
-> **Entrega 2:** el backend ahora exige un token JWT en las rutas de back-office (el portal público de PQR sigue
-> sin login). La pantalla de login y el envío del encabezado `Authorization: Bearer` se están incorporando en el
-> frontend; los cambios de contrato que debe tener en cuenta están en
-> [`backend/README.md` → Cambios que afectan al frontend](backend/README.md#cambios-que-afectan-al-frontend).
+Los funcionarios entran por **Acceso funcionarios** (`/acceso`) con los usuarios del seed (contraseña
+`Epq2026*`) y los ciudadanos por **Ingresar a Mi cuenta** (`/ingresar`, contraseña `Ciudadano2026*`). La tabla
+de usuarios y la pantalla inicial de cada rol están en
+[`frontend/README.md` → Usuarios de prueba](frontend/README.md#2-usuarios-de-prueba-y-acceso).
 
 ---
 
 ## 5. Matriz de trazabilidad
 
 Relaciona cada requisito del Plan de Requisitos (SWR) y del student book (RF, CU, RN, DE) con su
-implementación y con las pruebas que lo verifican. Los endpoints tienen el prefijo `/api`. Las carpetas de Postman
-usan la numeración de la entrega 2 (sección 6.3); para F-03 a F-08 la columna de pantalla se omite porque el
-frontend de la entrega 2 está en construcción.
+implementación y con las pruebas que lo verifican. Los endpoints tienen el prefijo `/api` y las pantallas son
+las del frontend (la ruta de cada una está en [`frontend/README.md` → Pantallas](frontend/README.md#3-pantallas-y-trazabilidad)
+y como comentario en `frontend/src/rutas.jsx`). Las carpetas de Postman usan la numeración de la entrega 2
+(sección 6.3).
 
 ### F-01 · Generar facturas mensuales (RF-05, CU-03)
 
@@ -289,8 +291,8 @@ frontend de la entrega 2 está en construcción.
 | **SWR-03** Cálculo por lectura, consumo y tarifa por servicio y **estrato** | `FacturadorContrato`, `SelectorTarifa`, `CalculoPorConsumoMedido`, `SelectorEstrategiaCalculo`, `NumeroFacturaPorPeriodo` | `GET /facturacion/facturas/{numero}` | Facturas, Detalle de factura | `FacturadorContratoTest`, `SelectorTarifaTest`, `CalculoPorConsumoMedidoTest`, `NumeroFacturaPorPeriodoTest` | 06 · Detalle de factura (estrato 3: $77.595) |
 | **SWR-04** Sincronización con el ERP (IS-01) | `SincronizadorFacturaErp`, `ErpFinancieroGateway` (simulado y REST), `SincronizacionErpServiceImpl` | `POST /facturacion/facturas/{numero}/sincronizacion`, `POST /facturacion/lotes/{periodo}/sincronizacion`, `GET /facturacion/facturas/{numero}/sincronizaciones` | Facturas, Detalle del lote, Detalle de factura | `SincronizadorFacturaErpTest`, `SincronizacionErpServiceImplTest`, `ErpFinancieroSimuladoAdapterTest`, `ErpFinancieroRestAdapterTest` | 06 · Bitácora y reintento del lote; 07 · Factura ya sincronizada |
 | Contratos no activos, sin lectura o sin tarifa no se facturan | `FacturadorContrato` | `POST /facturacion/lotes` | Resultado del lote en Facturación | `FacturadorContratoTest` | 06 · Incidencia de `CT-ACU-0005` |
-| **SWR-10** Auditoría de la generación masiva | `GeneracionFacturacionAuditada` (Decorator), `ServicioAuditoria` | `POST /facturacion/lotes`, `GET /admin/auditoria?accion=GENERAR_LOTE_FACTURAS` | — | — | 13 · Log de auditoría |
-| Estado de cobro (DE-01), anulación y PDF (SWR-27) | `Factura`, `EstadoCobroFactura`, `AnulacionFacturaServiceImpl`, `FacturaPdf` | `POST /facturacion/facturas/{numero}/anulacion`, `GET …/pdf` | — | `FacturaCobroTest` | 09 · Anular factura; Factura en PDF |
+| **SWR-10** Auditoría de la generación masiva | `GeneracionFacturacionAuditada` (Decorator), `ServicioAuditoria` | `POST /facturacion/lotes`, `GET /admin/auditoria?accion=GENERAR_LOTE_FACTURAS` | Auditoría (operación «Generación de lote de facturas») | — | 13 · Log de auditoría |
+| Estado de cobro (DE-01), anulación y PDF (SWR-27) | `Factura`, `EstadoCobroFactura`, `AnulacionFacturaServiceImpl`, `FacturaPdf` | `POST /facturacion/facturas/{numero}/anulacion`, `GET …/pdf` | Detalle de factura (Anular, Descargar PDF) | `FacturaCobroTest` | 09 · Anular factura; Factura en PDF |
 | Generar de nuevo no duplica facturas (permite reintentar, SWR-01) | `FacturadorContrato`, `GeneracionFacturacionServiceImpl` | `POST /facturacion/lotes` | Facturación | `FacturadorContratoTest`, `GeneracionFacturacionServiceImplTest` | 06 · Generar lote otra vez |
 
 ### F-02 · Registrar y dar seguimiento a PQR (RF-08, RF-09, RF-10)
@@ -303,8 +305,8 @@ frontend de la entrega 2 está en construcción.
 | **RF-08 / SyR-02b** Asignación al gestor del municipio (por contrato o municipio), con respaldo por menor carga | `AsignacionPorMunicipio`, `AsignacionPorMenorCarga`, `ResolutorUbicacionPqr` | `POST /pqr` | Bandeja, Detalle | `AsignacionPorMunicipioTest`, `AsignacionPorMenorCargaTest`, `RegistroPqrServiceImplTest` | 05 · PQR de Salento y PQR con contrato |
 | **RF-09 / CU-06 / DE-02** Tomar, reasignar, responder y cerrar | `GestionPqrServiceImpl`, `Pqr`, `EstadoPqrTipo` | `PATCH /pqr/{radicado}/tomar`, `/reasignar`, `/responder`, `/cerrar` | Bandeja, Detalle de PQR | `GestionPqrServiceImplTest`, `PqrTest`, `EstadoPqrTipoTest`, `PqrControllerTest` | 03 · Pasos 5 a 8; 04 · Transiciones inválidas (409) y reglas (422) |
 | **RN-06** Respuesta formal con **evidencia adjunta** | `Pqr.registrarRespuesta`, `EvidenciaPqrServiceImpl`, `GestionPqrServiceImpl` | `POST/GET /pqr/{radicado}/evidencias`, `PATCH /pqr/{radicado}/responder` | Diálogo Responder | `GestionPqrEvidenciasTest`, `PqrTest`, `GestionPqrServiceImplTest` | 03 · Responder sin evidencia (422) y adjuntar; 04 · Respuesta muy corta |
-| **SWR-11** Alerta de 48 h también al Jefe de la Oficina de PQR | `ServicioNotificacionPqr.notificarJefe`, `SupervisionPqrServiceImpl` | `POST /pqr/monitoreo`, `GET /pqr/supervision/alertas` | — | `ServicioNotificacionPqrTest` | 05 · Alertas del equipo |
-| **SyR-02f** Cumplimiento del plazo para el reporte a la SSPD | `Pqr.respondidaEnPlazo`, `SupervisionPqrServiceImpl` | `GET /pqr/indicadores/cumplimiento[/exportar]` | — | — | 05 · Indicador y exportación a Excel |
+| **SWR-11** Alerta de 48 h también al Jefe de la Oficina de PQR | `ServicioNotificacionPqr.notificarJefe`, `SupervisionPqrServiceImpl` | `POST /pqr/monitoreo`, `GET /pqr/supervision/alertas` | Supervisión del equipo | `ServicioNotificacionPqrTest` | 05 · Alertas del equipo |
+| **SyR-02f** Cumplimiento del plazo para el reporte a la SSPD | `Pqr.respondidaEnPlazo`, `SupervisionPqrServiceImpl` | `GET /pqr/indicadores/cumplimiento[/exportar]` | Cumplimiento de plazos (exportar PDF o Excel) | — | 05 · Indicador y exportación a Excel |
 | **SWR-07** Alerta 48 horas antes del vencimiento | `MonitoreoPlazosPqrServiceImpl`, `MonitoreoPlazosPqrTarea`, `ServicioNotificacionPqr` | `POST /pqr/monitoreo`, `GET /gestores/{id}/notificaciones` | Alertas, Bandeja (plazo en ámbar), Detalle | `MonitoreoPlazosPqrServiceImplTest`, `MonitoreoPlazosPqrTareaTest`, `ServicioNotificacionPqrTest` | 03 · Ejecutar monitoreo |
 | **RN-04** Marcado de PQR vencidas | `MonitoreoPlazosPqrServiceImpl`, `Pqr.marcarVencida` | `POST /pqr/monitoreo` | Alertas, Bandeja (métrica de vencidas) | `MonitoreoPlazosPqrServiceImplTest`, `PqrTest` | 03 · Ejecutar monitoreo |
 | **RF-10 / CU-07 / SWR-08** Consulta pública sin login | `ConsultaPqrServiceImpl` | `GET /pqr/consulta/{radicado}` | Consulta de estado | `ConsultaPqrServiceImplTest`, `PqrControllerTest` | 03 · Consulta pública; 04 · Radicado inexistente |
@@ -313,66 +315,68 @@ frontend de la entrega 2 está en construcción.
 
 ### F-03 · Registrar usuario del servicio (RF-01 a RF-03, CU-01)
 
-| Requisito | Backend | Endpoint | Pruebas unitarias | Postman |
-|---|---|---|---|---|
-| **SWR-12** Identificación única | `GestionUsuariosServiceImpl`, índice único en `cliente.numero_documento` | `POST /usuarios-servicio` (409 con el perfil) | — | 08 · Identificación existente |
-| **SWR-13** Datos obligatorios | `RegistrarUsuarioRequest` (Bean Validation) | `POST /usuarios-servicio` | — | 08 · Registrar usuario |
-| **SWR-14** RNEC no disponible → pendiente con advertencia | `ValidadorIdentidadRnec` (simulado/REST), `Cliente.registrarValidacion` | `POST /usuarios-servicio`, `POST …/{codigo}/validacion-rnec` | — | 08 · Registrar usuario (validado) |
-| **SWR-15** Solo Asesor y Administrador modifican, con auditoría | `@AccesoComercial`, `Cliente.actualizarDatos` → `CambioDato` | `PUT /usuarios-servicio/{codigo}` | — | 01 · Casos 403 |
-| **SWR-16** Búsqueda por identificación, nombre o dirección | `ConsultaUsuariosServiceImpl`, índices en `03_schema_entrega2.sql` | `GET /usuarios-servicio?…` | — | 08 · Buscar usuarios |
+| Requisito | Backend | Endpoint | Pantalla | Pruebas unitarias | Postman |
+|---|---|---|---|---|---|
+| **SWR-12** Identificación única | `GestionUsuariosServiceImpl`, índice único en `cliente.numero_documento` | `POST /usuarios-servicio` (409 con el perfil) | Registrar usuario (aviso con enlace al perfil existente) | — | 08 · Identificación existente |
+| **SWR-13** Datos obligatorios | `RegistrarUsuarioRequest` (Bean Validation) | `POST /usuarios-servicio` | Registrar usuario (validación por campo) | — | 08 · Registrar usuario |
+| **SWR-14** RNEC no disponible → pendiente con advertencia | `ValidadorIdentidadRnec` (simulado/REST), `Cliente.registrarValidacion` | `POST /usuarios-servicio`, `POST …/{codigo}/validacion-rnec` | Registrar usuario, Perfil (Validar de nuevo) | — | 08 · Registrar usuario (validado) |
+| **SWR-15** Solo Asesor y Administrador modifican, con auditoría | `@AccesoComercial`, `Cliente.actualizarDatos` → `CambioDato` | `PUT /usuarios-servicio/{codigo}` | Perfil (Editar datos, Desactivar; ocultos para otros roles) | — | 01 · Casos 403 |
+| **SWR-16** Búsqueda por identificación, nombre o dirección | `ConsultaUsuariosServiceImpl`, índices en `03_schema_entrega2.sql` | `GET /usuarios-servicio?…` | Usuarios | — | 08 · Buscar usuarios |
 
 ### F-04 · Gestionar contrato de servicio (RF-04, CU-02)
 
-| Requisito | Backend | Endpoint | Pruebas unitarias | Postman |
-|---|---|---|---|---|
-| **SWR-17 / RN-01** Un contrato activo por predio y servicio | `GestionContratosServiceImpl`, índice único parcial | `POST /contratos` (409) | — | 08 · Contrato duplicado |
-| **SWR-18 / RN-08** Tarifa por servicio, municipio y estrato | `SelectorTarifa`, `Tarifa.especificidad` | `POST /contratos`, `GET /tarifas/aplicable` | `SelectorTarifaTest` | 08 · Registrar contrato; Tarifa aplicable |
-| **SWR-19** Medidor obligatorio para acueducto y gas | `Contrato.activar`, `TipoServicio.requiereMedidor` | `PATCH /contratos/{n}/estado`, `PUT /contratos/{n}/medidor` | `ContratoTest` | 08 · Activar sin medidor (422); Asignar medidor |
-| **SWR-20** Cambio de estado con motivo e historial | `EstadoContrato` (State), `HistorialContrato` | `PATCH /contratos/{n}/estado`, `GET …/historial` | `ContratoTest` | 08 · Suspender; Historial |
+| Requisito | Backend | Endpoint | Pantalla | Pruebas unitarias | Postman |
+|---|---|---|---|---|---|
+| **SWR-17 / RN-01** Un contrato activo por predio y servicio | `GestionContratosServiceImpl`, índice único parcial | `POST /contratos` (409) | Registrar contrato | — | 08 · Contrato duplicado |
+| **SWR-18 / RN-08** Tarifa por servicio, municipio y estrato | `SelectorTarifa`, `Tarifa.especificidad` | `POST /contratos`, `GET /tarifas/aplicable` | Registrar contrato (tarifa aplicable), Detalle del contrato | `SelectorTarifaTest` | 08 · Registrar contrato; Tarifa aplicable |
+| **SWR-19** Medidor obligatorio para acueducto y gas | `Contrato.activar`, `TipoServicio.requiereMedidor` | `PATCH /contratos/{n}/estado`, `PUT /contratos/{n}/medidor` | Detalle del contrato (Asignar medidor, Activar) | `ContratoTest` | 08 · Activar sin medidor (422); Asignar medidor |
+| **SWR-20** Cambio de estado con motivo e historial | `EstadoContrato` (State), `HistorialContrato` | `PATCH /contratos/{n}/estado`, `GET …/historial` | Contratos, Detalle del contrato (historial) | `ContratoTest` | 08 · Suspender; Historial |
 
 ### F-05 · Registrar pago de factura (RF-06, CU-04)
 
-| Requisito | Backend | Endpoint | Pruebas unitarias | Postman |
-|---|---|---|---|---|
-| **SWR-21 / RN-05** Pagada solo con confirmación de la pasarela | `RegistroPagoServiceImpl`, `ProcesadorTransaccionesPasarela`, `PasarelaPagosGateway` | `POST /portal/facturas/{n}/pago-en-linea` | `PasarelaPagosSimuladaAdapterTest` | 10 · Pago rechazado (402) y aprobado |
-| **SWR-22** Comprobante electrónico inmediato | `ComprobantePagoPdf`, `ComprobantePagoResponse` | `GET /pagos/{codigo}/comprobante[/pdf]` | — | 09 · Comprobante y PDF |
-| **SWR-23** Rechazar pagos sobre facturas pagadas | `Factura.validarPagable`, bloqueo `PESSIMISTIC_WRITE`, `pago.factura_id` único | `POST /pagos/presenciales` (422) | `FacturaCobroTest` | 09 · Pagar dos veces |
-| **SWR-24** Canal del pago | `CanalPago` | `POST /pagos/presenciales`, `GET /pagos?canal=` | — | 09 · Registrar pago presencial |
+| Requisito | Backend | Endpoint | Pantalla | Pruebas unitarias | Postman |
+|---|---|---|---|---|---|
+| **SWR-21 / RN-05** Pagada solo con confirmación de la pasarela | `RegistroPagoServiceImpl`, `ProcesadorTransaccionesPasarela`, `PasarelaPagosGateway` | `POST /portal/facturas/{n}/pago-en-linea` | Mi cuenta → Pago en línea (rechazo y reintento sin perder los datos) | `PasarelaPagosSimuladaAdapterTest` | 10 · Pago rechazado (402) y aprobado |
+| **SWR-22** Comprobante electrónico inmediato | `ComprobantePagoPdf`, `ComprobantePagoResponse` | `GET /pagos/{codigo}/comprobante[/pdf]` | Comprobante (back-office y Mi cuenta), con PDF | — | 09 · Comprobante y PDF |
+| **SWR-23** Rechazar pagos sobre facturas pagadas | `Factura.validarPagable`, bloqueo `PESSIMISTIC_WRITE`, `pago.factura_id` único | `POST /pagos/presenciales` (422) | Registrar pago (motivo por el que la factura no se puede pagar) | `FacturaCobroTest` | 09 · Pagar dos veces |
+| **SWR-24** Canal del pago | `CanalPago` | `POST /pagos/presenciales`, `GET /pagos?canal=` | Pagos (filtro por canal), Registrar pago | — | 09 · Registrar pago presencial |
 
 ### F-06 · Consultar factura e historial de consumos (RF-07, CU-05)
 
-| Requisito | Backend | Endpoint | Pruebas unitarias | Postman |
-|---|---|---|---|---|
-| **SWR-25** Detalle de la factura actual | `PortalCiudadanoServiceImpl`, `FacturaDetalleResponse` | `GET /portal/contratos/{n}/factura-actual` | — | 10 · Factura actual |
-| **SWR-26** Historial de 24 meses (gráfica y tabla) | `PortalCiudadanoServiceImpl` | `GET /portal/contratos/{n}/historial-consumos` | — | 10 · Historial de consumos |
-| **SWR-27** PDF con el formato de EPQ | `FacturaPdf`, `DocumentoPdfEpq` (Template Method) | `GET /portal/facturas/{n}/pdf` | — | 09 · Factura en PDF |
-| **SWR-28** Fecha estimada si aún no se ha generado | `CalculadoraDisponibilidadFactura` | `GET /portal/contratos/{n}/factura-actual` | `CalculadoraDisponibilidadFacturaTest` | 10 · Factura actual |
+| Requisito | Backend | Endpoint | Pantalla | Pruebas unitarias | Postman |
+|---|---|---|---|---|---|
+| **SWR-25** Detalle de la factura actual | `PortalCiudadanoServiceImpl`, `FacturaDetalleResponse` | `GET /portal/contratos/{n}/factura-actual` | Mi cuenta → Servicio, Detalle de factura | — | 10 · Factura actual |
+| **SWR-26** Historial de 24 meses (gráfica y tabla) | `PortalCiudadanoServiceImpl` | `GET /portal/contratos/{n}/historial-consumos` | Mi cuenta → Servicio (gráfica y tabla) | — | 10 · Historial de consumos |
+| **SWR-27** PDF con el formato de EPQ | `FacturaPdf`, `DocumentoPdfEpq` (Template Method) | `GET /portal/facturas/{n}/pdf` | Mi cuenta → Facturas y Detalle de factura | — | 09 · Factura en PDF |
+| **SWR-28** Fecha estimada si aún no se ha generado | `CalculadoraDisponibilidadFactura` | `GET /portal/contratos/{n}/factura-actual` | Mi cuenta → Servicio (aviso con la fecha estimada) | `CalculadoraDisponibilidadFacturaTest` | 10 · Factura actual |
+| **CU-01** Activación de la cuenta del portal | `ServicioAutenticacionImpl` | `POST /auth/ciudadano/activacion` | Activar mi cuenta | — | — |
 
 ### F-07 · Gestionar cobro persuasivo (RF-11, RF-12, CU-08)
 
-| Requisito | Backend | Endpoint | Pruebas unitarias | Postman |
-|---|---|---|---|---|
-| **SWR-29** Reporte de mora en PDF y Excel, solo Gestor de Cartera y Gerente | `ConsultaCarteraJdbc`, `ReporteCarteraServiceImpl`, `FabricaExportadores`, `@AccesoReporteCartera` | `GET /cartera/morosos[/exportar]` | `CalculadoraMoraTest`, `FormatoExportacionTest` | 11 · Reporte, exportación y permisos |
-| **SWR-30** Cuotas y fechas automáticas | `PlanCuotasMensualesIguales` (Strategy `PoliticaCuotas`) | `GET /cartera/acuerdos/simulacion`, `POST /cartera/acuerdos` | `PlanCuotasMensualesIgualesTest`, `AcuerdoPagoTest` | 11 · Simular y registrar acuerdo |
-| **SWR-31 / RN-07** Acuerdo incumplido reactiva el cobro coercitivo | `PasoIncumplimientoAcuerdos`, `PasoProcesosCobro`, `AcuerdoPago.marcarIncumplido` | `POST /cartera/monitoreo`, `GET /cartera/procesos-cobro` | `AcuerdoPagoTest`, `FacturaCobroTest` | 11 · Monitoreo; Procesos de cobro |
-| **SWR-32 / RN-03** Candidatos a suspensión y aviso al Gestor de Cartera | `PasoCandidatosSuspension`, `CalculadoraMora` | `GET /cartera/candidatos-suspension` | `CalculadoraMoraTest` | 11 · Candidatos a suspensión |
+| Requisito | Backend | Endpoint | Pantalla | Pruebas unitarias | Postman |
+|---|---|---|---|---|---|
+| **SWR-29** Reporte de mora en PDF y Excel, solo Gestor de Cartera y Gerente | `ConsultaCarteraJdbc`, `ReporteCarteraServiceImpl`, `FabricaExportadores`, `@AccesoReporteCartera` | `GET /cartera/morosos[/exportar]` | Cartera morosa (filtros, deuda por antigüedad, PDF y Excel) | `CalculadoraMoraTest`, `FormatoExportacionTest` | 11 · Reporte, exportación y permisos |
+| **SWR-30** Cuotas y fechas automáticas | `PlanCuotasMensualesIguales` (Strategy `PoliticaCuotas`) | `GET /cartera/acuerdos/simulacion`, `POST /cartera/acuerdos` | Nuevo acuerdo (simulación del plan), Detalle del acuerdo | `PlanCuotasMensualesIgualesTest`, `AcuerdoPagoTest` | 11 · Simular y registrar acuerdo |
+| **RF-12** Pago de cuotas en orden | `AcuerdoPagoServiceImpl`, `AcuerdoPago` | `POST /cartera/acuerdos/{n}/cuotas/{c}/pago` | Detalle del acuerdo (pago de la cuota siguiente), Pago de cuota | `AcuerdoPagoTest` | 11 · Pagar la cuota 2 antes que la 1 (422); Pagar cuota 1 |
+| **SWR-31 / RN-07** Acuerdo incumplido reactiva el cobro coercitivo | `PasoIncumplimientoAcuerdos`, `PasoProcesosCobro`, `AcuerdoPago.marcarIncumplido` | `POST /cartera/monitoreo`, `GET /cartera/procesos-cobro` | Cobro y monitoreo, Acuerdos de pago | `AcuerdoPagoTest`, `FacturaCobroTest` | 11 · Monitoreo; Procesos de cobro |
+| **SWR-32 / RN-03** Candidatos a suspensión y aviso al Gestor de Cartera | `PasoCandidatosSuspension`, `CalculadoraMora` | `GET /cartera/candidatos-suspension` | Cartera morosa (filtro y marca de candidatos), Contratos | `CalculadoraMoraTest` | 11 · Candidatos a suspensión |
 
 ### F-08 · Consultar dashboard gerencial (RF-13, CU-09)
 
-| Requisito | Backend | Endpoint | Pruebas unitarias | Postman |
-|---|---|---|---|---|
-| **SWR-33** Solo Gerente y Directivo | `@AccesoGerencial` | `GET /dashboard` | — | 01 · Asesor → 403 |
-| **SWR-34** Indicadores al día sin intervención manual | `ProveedorIndicadores` (comercial, facturación, cartera, PQR) calculados en cada consulta | `GET /dashboard`, `GET /dashboard/categoria` | — | 12 · Indicadores consolidados |
-| **SWR-35** Tendencia de 12 meses por indicador | Series SQL de 12 meses en cada proveedor | `GET /dashboard` | — | 12 · Tendencia de 12 meses |
+| Requisito | Backend | Endpoint | Pantalla | Pruebas unitarias | Postman |
+|---|---|---|---|---|---|
+| **SWR-33** Solo Gerente y Directivo | `@AccesoGerencial` | `GET /dashboard` | Dashboard (solo en el menú de Gerente y Directivo) | — | 01 · Asesor → 403 |
+| **SWR-34** Indicadores al día sin intervención manual | `ProveedorIndicadores` (comercial, facturación, cartera, PQR) calculados en cada consulta | `GET /dashboard`, `GET /dashboard/categoria` | Dashboard (se actualiza cada 5 minutos y con Actualizar) | — | 12 · Indicadores consolidados |
+| **SWR-35** Tendencia de 12 meses por indicador | Series SQL de 12 meses en cada proveedor | `GET /dashboard` | Dashboard (gráfica, tabla y variación) | — | 12 · Tendencia de 12 meses |
 
 ### Transversal · Seguridad y auditoría (RF-14, RF-15, RNF-05)
 
-| Requisito | Backend | Endpoint | Pruebas unitarias | Postman |
-|---|---|---|---|---|
-| Autenticación con JWT y bloqueo tras 3 intentos | `ServicioAutenticacionImpl`, `VerificadorCredenciales`, `ControlAcceso`, `ProveedorTokenJwt` | `POST /auth/login`, `POST /auth/ciudadano/login` | `ControlAccesoTest` | 01 · Logins, 401 |
-| Control de acceso por rol | `ConfiguracionSeguridad`, meta-anotaciones `@Acceso…`, `AutorizacionPqr` | Todos | — | 01, 05, 11 · Casos 403 |
-| Administración de funcionarios y roles | `AdministracionFuncionariosServiceImpl` | `/admin/funcionarios`, `/admin/roles` | — | 13 · Crear, cambiar rol, desactivar |
-| Log de auditoría | `ServicioAuditoriaJpa`, `ConsultaAuditoriaServiceImpl` | `GET /admin/auditoria` | — | 13 · Log de auditoría |
+| Requisito | Backend | Endpoint | Pantalla | Pruebas unitarias | Postman |
+|---|---|---|---|---|---|
+| Autenticación con JWT y bloqueo tras 3 intentos | `ServicioAutenticacionImpl`, `VerificadorCredenciales`, `ControlAcceso`, `ProveedorTokenJwt` | `POST /auth/login`, `POST /auth/ciudadano/login` | Acceso funcionarios, Ingresar a Mi cuenta | `ControlAccesoTest` | 01 · Logins, 401 |
+| Control de acceso por rol | `ConfiguracionSeguridad`, meta-anotaciones `@Acceso…`, `AutorizacionPqr` | Todos | Menú y rutas por capacidad (`sesion/capacidades.js`), pantalla «No tiene acceso» | — | 01, 05, 11 · Casos 403 |
+| **CU-10** Administración de funcionarios y roles | `AdministracionFuncionariosServiceImpl` | `/admin/funcionarios`, `/admin/roles` | Funcionarios, Nuevo funcionario, Detalle del funcionario, Roles y permisos | — | 13 · Crear, cambiar rol, desactivar |
+| **CU-11** Log de auditoría | `ServicioAuditoriaJpa`, `ConsultaAuditoriaServiceImpl` | `GET /admin/auditoria`, `GET /admin/auditoria/catalogo` | Auditoría, Cambios en la cuenta (detalle del funcionario) | — | 13 · Log de auditoría; Catálogo de módulos y acciones |
 
 ---
 
@@ -384,7 +388,7 @@ El sistema se valida en tres niveles complementarios:
 |---|---|---|---|
 | Unitarias y de capa web | JUnit 5, Mockito, MockMvc | Reglas de negocio, servicios, controladores, validaciones y manejo de errores, de forma aislada | No |
 | Funcionales de la API | Postman | Flujos completos de extremo a extremo contra el backend real y PostgreSQL | Sí |
-| Manuales de extremo a extremo | Frontend | Recorridos completos de F-01 y F-02 desde la interfaz (F-03 a F-08 cuando el frontend de la entrega 2 esté listo) | Sí |
+| Manuales de extremo a extremo | Frontend | Recorridos completos de F-01 a F-08 desde la interfaz, con cada rol, en escritorio y en celular | Sí |
 
 ### 6.1 Pruebas unitarias
 
@@ -489,10 +493,19 @@ Con la base recién creada, el backend y el frontend en ejecución:
    (0 generadas, 6 existentes) y revisar el lote y la factura de `CT-ACU-0001`.
 5. **F-01 · ERP con fallos:** con la tasa de fallo en 0.5 (sección 4.2), generar el lote en una base nueva y
    reintentar la sincronización por factura y por lote.
-6. **F-03 a F-08 (Swagger o Postman, mientras se completa el frontend):** registrar un usuario y un contrato sin
-   medidor, asignarle el medidor y activarlo; pagar una factura en caja y otra desde el portal con la tarjeta
-   `4111111111111111`; ejecutar el monitoreo de cartera y registrar un acuerdo para `CT-ACU-0004`; consultar el
-   dashboard como `gerente`.
+6. **F-03 y F-04 (`asesor`):** registrar un usuario con su predio, crear un contrato de acueducto sin medidor,
+   intentar activarlo (422), asignarle el medidor y activarlo; revisar su historial.
+7. **F-05 (`asesor`):** registrar en caja el pago de una factura pendiente, abrir el comprobante y descargar el PDF;
+   intentar pagarla de nuevo (la pantalla explica por qué no se puede).
+8. **F-06 (ciudadano `7548123`):** ingresar a Mi cuenta, revisar la factura actual y el historial de 24 meses, y
+   pagar en línea con `4000000000000002` (rechazo) y luego con `4111111111111111` (aprobado). Activar la cuenta
+   de `1098765432` con `smorales@correo.com`.
+9. **F-07 (`cartera`):** en Cartera morosa abrir el acuerdo de `CT-ACU-0004`, cambiar el número de cuotas,
+   registrarlo y pagar la cuota 1; en Cobro y monitoreo ejecutar el monitoreo y verificar que el acuerdo de
+   `CT-GAS-0001` queda incumplido. Como `asesor`, pagar una cuota desde Pagos → Pago de cuota.
+10. **F-08 (`gerente`):** revisar el dashboard, cambiar de indicador y pulsar Actualizar después de registrar un pago.
+11. **Administración (`admin`):** crear un funcionario, bloquearlo con tres intentos fallidos, desbloquearlo,
+    cambiarle el rol y revisar todo en Auditoría.
 
 ---
 
@@ -522,9 +535,12 @@ Con la base recién creada, el backend y el frontend en ejecución:
 |---|---|---|
 | **Adapter** | `api/cliente.js` | Traduce las respuestas y los errores RFC 7807 del backend a `ErrorApi` |
 | **Custom hooks** | `hooks/` | Encapsular la obtención de datos y la lógica reutilizable (filtros en la URL, título de página) |
-| **Provider / Context** | `sesion/` | Gestor actual disponible en toda la aplicación, preparado para el login |
+| **Provider / Context** | `sesion/SesionProvider.jsx` | Sesión JWT y permisos disponibles en toda la aplicación |
+| **Observer** | `sesion/almacenSesion.js` | Avisa a la interfaz cuando el token vence o el backend responde 401 |
+| **Guard** | `RutaProtegida`, `RutaCiudadano` | Protegen las rutas por sesión y por capacidad del rol |
+| **Lazy loading** | `rutas.jsx` con `React.lazy` y `Suspense` | Cada pantalla se descarga al abrirla; el paquete principal queda liviano |
 | **Composición de componentes** | `paginas/` compone `componentes/` | Las páginas orquestan; los componentes solo muestran |
-| **Query key factory** | `clavesPqr`, `clavesFacturacion` | Claves de caché centralizadas para refrescar los datos correctos tras cada acción |
+| **Query key factory** | `clavesPqr`, `clavesFacturacion`, `clavesCartera`, `clavesAdministracion`… | Claves de caché centralizadas para refrescar los datos correctos tras cada acción |
 | **Interfaz dirigida por el servidor** | Detalle de PQR con `accionesDisponibles` | Los botones los decide el backend; la interfaz no duplica la máquina de estados |
 
 ---
@@ -578,6 +594,9 @@ Con la base recién creada, el backend y el frontend en ejecución:
 - **Accesibilidad orientada a WCAG 2.1 AA** (RNF-03): etiquetas, errores asociados a su campo, foco en el
   primer error, diálogos nativos, enlace para saltar al contenido y navegación completa con teclado.
 - **Estado en la URL:** filtros y paginación que se conservan al navegar y se pueden compartir.
+- **Permisos en un solo lugar:** `sesion/capacidades.js` decide menú, rutas y botones por rol; el backend
+  sigue siendo quien autoriza.
+- **Carga diferida:** cada pantalla en su propio archivo; el paquete principal pasó de más de 500 kB a unos 270 kB.
 
 ### Calidad y proceso
 
@@ -627,7 +646,7 @@ vuelve a Pendiente mientras el acuerdo esté vigente y regresa a Vencida si se i
 | RN-08 | Tarifa según la fórmula de la CRA | Tarifa vigente más específica por servicio, municipio y estrato; no modela el uso del predio |
 | Sesión | Cierre de sesión | Los JWT expiran a las 8 horas; no hay lista de revocación ni segundo factor |
 | Notificaciones | Correo y SMS | Canal de correo simulado: se registran en `notificacion` / `notificacion_sistema` y en el log |
-| Frontend | Pantallas de F-03 a F-08 y login | El backend está completo; las pantallas las incorpora el integrante a cargo del frontend |
+| Frontend | Pruebas automatizadas de la interfaz | Las pantallas se verificaron con recorridos manuales en escritorio y celular; las pruebas con Vitest y Testing Library quedan planeadas |
 
 ---
 
@@ -641,6 +660,8 @@ vuelve a Pendiente mientras el acuerdo esté vigente y regresa a Vencida si se i
 | `Port 8080 was already in use` al levantar el backend | Otra instancia del backend sigue corriendo | `netstat -ano \| findstr :8080`, identifica el PID y detenlo con `taskkill //PID <pid> //F` |
 | Hay datos incompletos o faltan tablas | El volumen ya existía antes de agregar algún script | `docker compose down -v && docker compose up -d` |
 | El frontend muestra "Sin conexión" | El backend no está en ejecución o `VITE_API_URL` no apunta a él | Levanta el backend y revisa `frontend/.env`; reinicia `npm run dev` tras cambiarlo |
+| El frontend vuelve al login con «Su sesión venció» | El token cumplió 8 horas o el backend se reinició con otro `JWT_SECRET` | Inicia sesión de nuevo |
+| Una opción del menú no aparece | El rol no tiene esa capacidad | Entra con el rol indicado en [`frontend/README.md` → Pantallas](frontend/README.md#3-pantallas-y-trazabilidad) |
 | Postman responde `getaddrinfo ENOTFOUND {{baseUrl}}` | No hay entorno seleccionado | Selecciona **SIGCA-EPQ Local** en el editor y en el Runner |
 | Los conteos de facturación en Postman no coinciden | La base ya tenía lotes generados | Recrea la base con `docker compose down -v && docker compose up -d` |
 | Faltan tablas como `funcionario` o `municipio` | La base se creó con los scripts de la entrega 1 | `docker compose down -v && docker compose up -d` |
