@@ -1,0 +1,410 @@
+/* Administración (mobile-first): funcionarios, roles y auditoría.
+   Los listados usan los estilos de la bandeja; el detalle, los del detalle de PQR. */
+
+.admin-volver {
+  margin-bottom: 18px;
+}
+
+.admin-enlace {
+  font-weight: 650;
+  color: var(--color-agua);
+}
+
+.admin-enlace:hover {
+  text-decoration: underline;
+}
+
+.admin-vacio,
+.admin-sin-dato {
+  font-size: 13px;
+  color: var(--color-tinta-tenue);
+}
+
+.admin-casilla {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+  cursor: pointer;
+}
+
+.admin-casilla input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--color-agua);
+}
+
+/* ---------------------------------------------------------------- funcionarios */
+
+.admin-nombre {
+  font-weight: 650;
+  color: var(--color-tinta);
+}
+
+.admin-nombre:hover {
+  color: var(--color-agua);
+  text-decoration: underline;
+}
+
+.admin-correo {
+  overflow-wrap: anywhere;
+}
+
+/* Permisos del rol: lista con marca de verificación */
+.admin-permisos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-linea);
+  border-radius: var(--radio-control);
+}
+
+.admin-permisos ul {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-permisos li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-tinta);
+}
+
+.admin-permisos li .icono {
+  flex: none;
+  margin-top: 2px;
+  color: var(--color-exito);
+}
+
+.admin-permisos p {
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+}
+
+.admin-gestor {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--color-tinta-suave);
+}
+
+.admin-dialogo-nota {
+  font-size: 13px;
+  color: var(--color-tinta-suave);
+}
+
+.admin-boton-ancho.boton {
+  width: 100%;
+  margin-top: 16px;
+}
+
+/* Las columnas del detalle no crecen más que la pantalla (detalles largos de la auditoría) */
+.admin-rejilla > * {
+  min-width: 0;
+}
+
+/* Cambios en la cuenta: línea de tiempo simple */
+.admin-cambios {
+  display: grid;
+  gap: 0;
+}
+
+.admin-cambios li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0 12px 16px;
+  border-left: 2px solid var(--color-agua-linea);
+}
+
+.admin-cambios li + li {
+  border-top: 1px solid var(--color-borde-suave);
+}
+
+.admin-cambios li:first-child {
+  border-left-color: var(--color-agua);
+}
+
+.admin-cambios strong {
+  font-size: 13px;
+}
+
+.admin-cambios small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.admin-cambios p {
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+  overflow-wrap: anywhere;
+}
+
+/* Contraseña temporal: campo, acciones y reglas */
+.admin-contrasena {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-contrasena-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-reglas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 12px;
+}
+
+.admin-reglas li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.admin-reglas li[data-cumple="true"] {
+  font-weight: 600;
+  color: var(--color-exito);
+}
+
+/* ---------------------------------------------------------------- roles */
+
+.admin-roles {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-rol {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-rol-cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-rol-cabecera h2 {
+  font-size: 15px;
+}
+
+.admin-rol-cabecera span {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.admin-rol .admin-permisos {
+  flex: 1;
+}
+
+.admin-rol-pie {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--color-agua);
+}
+
+.admin-rol-pie:hover {
+  text-decoration: underline;
+}
+
+.admin-ciudadano {
+  margin-top: 18px;
+}
+
+/* ---------------------------------------------------------------- auditoría */
+
+.bandeja-filtros.auditoria-filtros .admin-filtro-usuario {
+  flex: 1 1 100%;
+}
+
+.auditoria-fecha-filtro {
+  display: flex;
+  flex: 1 1 calc(50% - 5px);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio-control);
+}
+
+.auditoria-fecha-filtro:focus-within {
+  outline: 3px solid rgb(11 110 138 / 28%);
+  outline-offset: 2px;
+}
+
+.auditoria-fecha-filtro:has([aria-invalid="true"]) {
+  border-color: var(--color-vencido);
+}
+
+.auditoria-fecha-filtro span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-tinta-tenue);
+}
+
+.auditoria-fecha-filtro input {
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--color-tinta);
+  outline: 0;
+}
+
+.auditoria-entidad {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 14px 0;
+  padding: 8px 8px 8px 12px;
+  font-size: 12px;
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-linea);
+  border-radius: var(--radio-control);
+}
+
+.auditoria-entidad button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--color-tinta-suave);
+  border-radius: 6px;
+}
+
+.auditoria-entidad button:hover {
+  color: var(--color-agua);
+  background: var(--color-superficie);
+}
+
+.bandeja-tabla.auditoria-tabla tr {
+  cursor: auto;
+}
+
+.auditoria-fecha {
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+
+.auditoria-accion {
+  font-weight: 650;
+  color: var(--color-tinta);
+}
+
+.auditoria-detalle {
+  overflow-wrap: anywhere;
+}
+
+/* Tarjeta móvil: fecha y resultado arriba; usuario, operación, registro y detalle a lo ancho */
+@media (max-width: 56.249rem) {
+  .bandeja-tabla.auditoria-tabla tr {
+    grid-template-columns: 1fr auto;
+  }
+
+  .bandeja-tabla.auditoria-tabla td,
+  .bandeja-tabla.auditoria-tabla td:nth-child(1),
+  .bandeja-tabla.auditoria-tabla td:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+
+  .bandeja-tabla.auditoria-tabla td:first-child {
+    grid-column: 1;
+  }
+
+  .bandeja-tabla.auditoria-tabla td:last-child {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+  }
+
+  .bandeja-tabla.auditoria-tabla td.auditoria-detalle {
+    font-size: 12px;
+    color: var(--color-tinta);
+  }
+
+  /* Registro en una sola línea ("Factura FAC-…"); sin registro, la celda no ocupa espacio */
+  .bandeja-tabla.auditoria-tabla td:nth-child(4) .bandeja-celda-doble {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .bandeja-tabla.auditoria-tabla td:has(> .admin-sin-dato) {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- tableta */
+
+@media (min-width: 37.5rem) {
+  .admin-roles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bandeja-filtros.auditoria-filtros {
+    flex-wrap: wrap;
+  }
+
+  .bandeja-filtros.auditoria-filtros .admin-filtro-usuario {
+    flex: 1 1 100%;
+  }
+
+  .bandeja-filtros.auditoria-filtros select {
+    flex: 1 1 calc(50% - 5px);
+  }
+
+  .auditoria-fecha-filtro {
+    flex: 0 1 190px;
+  }
+
+  .admin-casilla {
+    flex: 0 0 auto;
+  }
+}
+
+/* ---------------------------------------------------------------- escritorio */
+
+@media (min-width: 56.25rem) {
+  .admin-roles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .bandeja-filtros.auditoria-filtros .admin-filtro-usuario {
+    flex: 1 1 260px;
+  }
+
+  .bandeja-filtros.auditoria-filtros select {
+    flex: 1 1 200px;
+  }
+
+  .bandeja-filtros.auditoria-filtros .boton {
+    margin-left: auto;
+  }
+
+  .bandeja-tabla.auditoria-tabla td.auditoria-detalle {
+    min-width: 280px;
+    max-width: 440px;
+    white-space: normal;
+  }
+
+  .bandeja-tabla.admin-tabla td.admin-correo {
+    overflow-wrap: normal;
+  }
+}

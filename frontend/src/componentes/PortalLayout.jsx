@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, ScrollRestoration } from "react-router-dom";
 import { useSesion } from "../sesion/useSesion";
+import { CargaPagina } from "./CargaPagina";
 import { Boton } from "./ui/Boton";
 import { Logo } from "./ui/Logo";
 import "./portal.css";
@@ -63,7 +64,9 @@ export function PortalLayout() {
       </header>
 
       <main id="contenido" tabIndex={-1} className="portal-contenido">
-        <Outlet />
+        <CargaPagina>
+          <Outlet />
+        </CargaPagina>
       </main>
 
       <footer className="portal-pie">

@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, NavLink, Outlet, ScrollRestoration } from "react-router-dom";
 import { useSesion } from "../sesion/useSesion";
+import { CargaPagina } from "./CargaPagina";
 import { menuPermitido } from "./menuGestion";
 import { Icono } from "./ui/Icono";
 import { Logo } from "./ui/Logo";
@@ -118,7 +119,9 @@ export function BackofficeLayout() {
         </header>
 
         <main id="contenido-gestion" tabIndex={-1} className="gestion-contenido">
-          <Outlet />
+                    <CargaPagina>
+            <Outlet />
+          </CargaPagina>
         </main>
       </div>
       <ScrollRestoration />

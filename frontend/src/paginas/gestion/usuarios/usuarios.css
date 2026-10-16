@@ -1,12 +1,12 @@
 /* Usuarios del servicio (mobile-first). La búsqueda y la tabla usan los estilos de la bandeja. */
 
 /* En la bandeja el botón Limpiar se oculta en móvil; aquí Buscar siempre se ve */
-.usuarios-busqueda .boton {
+.bandeja-filtros.usuarios-busqueda .boton {
   display: inline-flex;
   flex: 1 1 100%;
 }
 
-.usuarios-busqueda select {
+.bandeja-filtros.usuarios-busqueda select {
   flex: 1 1 100%;
 }
 
@@ -32,19 +32,19 @@
 }
 
 @media (min-width: 37.5rem) {
-  .usuarios-busqueda {
+  .bandeja-filtros.usuarios-busqueda {
     flex-wrap: wrap;
   }
 
-  .usuarios-busqueda select {
+  .bandeja-filtros.usuarios-busqueda select {
     flex: 0 0 190px;
   }
 
-  .usuarios-busqueda .bandeja-buscador {
+  .bandeja-filtros.usuarios-busqueda .bandeja-buscador {
     flex: 1 1 0;
   }
 
-  .usuarios-busqueda .boton {
+  .bandeja-filtros.usuarios-busqueda .boton {
     flex: none;
   }
 }

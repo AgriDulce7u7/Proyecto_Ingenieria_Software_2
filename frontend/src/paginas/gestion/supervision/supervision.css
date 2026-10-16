@@ -27,7 +27,7 @@
   border-radius: 50%;
 }
 
-.supervision-tabla small {
+.bandeja-tabla.supervision-tabla small {
   font-size: 11px;
   color: var(--color-tinta-tenue);
 }
@@ -104,15 +104,15 @@
 
 @media (min-width: 56.25rem) {
   /* El asunto pasa a dos líneas para que la fecha límite quepa junto a la carga del equipo */
-  .supervision-tabla td:nth-child(2) small {
+  .bandeja-tabla.supervision-tabla td:nth-child(2) small {
     display: block;
     max-width: 210px;
     white-space: normal;
   }
 
-  .supervision-tabla th,
-  .supervision-tabla td,
-  .supervision-tabla td:nth-child(n + 3):not(:last-child) {
+  .bandeja-tabla.supervision-tabla th,
+  .bandeja-tabla.supervision-tabla td,
+  .bandeja-tabla.supervision-tabla td:nth-child(n + 3):not(:last-child) {
     padding-inline: 12px;
   }
 

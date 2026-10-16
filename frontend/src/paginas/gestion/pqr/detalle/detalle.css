@@ -93,11 +93,6 @@
   gap: 14px;
 }
 
-.panel-nota {
-  font-size: 11px;
-  color: var(--color-tinta-tenue);
-}
-
 .detalle-texto {
   font-size: 14px;
   color: #394b54;

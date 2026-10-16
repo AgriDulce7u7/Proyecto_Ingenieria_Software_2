@@ -3,6 +3,7 @@
  * (sesion/capacidades.js): el menú muestra solo las que el rol puede usar.
  */
 export const MENU_GESTION = [
+  { a: "/gestion/dashboard", texto: "Dashboard", icono: "tablero", capacidad: "DASHBOARD" },
   { a: "/gestion/pqr", texto: "Gestión de PQR", icono: "documento", capacidad: "PQR_ATENDER" },
   { a: "/gestion/alertas", texto: "Alertas", icono: "campana", capacidad: "PQR_ATENDER" },
   { a: "/gestion/supervision", texto: "Supervisión", icono: "personas", capacidad: "PQR_SUPERVISAR" },
@@ -16,6 +17,9 @@ export const MENU_GESTION = [
   { a: "/gestion/cartera", texto: "Cartera morosa", icono: "billetera", fin: true, capacidad: "CARTERA_REPORTE" },
   { a: "/gestion/cartera/acuerdos", texto: "Acuerdos de pago", icono: "acuerdo", capacidad: "CARTERA_GESTIONAR" },
   { a: "/gestion/cartera/cobro", texto: "Cobro y monitoreo", icono: "reloj", capacidad: "CARTERA_GESTIONAR" },
+  { a: "/gestion/administracion/funcionarios", texto: "Funcionarios", icono: "escudo", capacidad: "ADMINISTRACION" },
+  { a: "/gestion/administracion/roles", texto: "Roles y permisos", icono: "llave", capacidad: "ADMINISTRACION" },
+  { a: "/gestion/administracion/auditoria", texto: "Auditoría", icono: "historial", capacidad: "ADMINISTRACION" },
 ];
 
 /** Opciones del menú que puede usar el usuario, según su función `puede` de la sesión. */

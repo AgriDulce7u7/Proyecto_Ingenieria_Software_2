@@ -1,7 +1,9 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { CargaPagina } from "../../../componentes/CargaPagina";
 import { Boton } from "../../../componentes/ui/Boton";
 import { primerNombre } from "../../../presentacion/portal";
 import { useSesion } from "../../../sesion/useSesion";
+import "../../../componentes/pagina-portal.css";
 import "./cuenta.css";
 
 const PESTANAS = [
@@ -58,8 +60,9 @@ export function CuentaLayout() {
           </NavLink>
         ))}
       </nav>
-
-      <Outlet />
+      <CargaPagina>
+        <Outlet />
+      </CargaPagina>
     </div>
   );
 }

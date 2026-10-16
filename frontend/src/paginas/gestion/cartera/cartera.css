@@ -133,13 +133,13 @@
 
 /* En la tarjeta móvil la acción va abajo, a lo ancho, para no apretar la columna de datos */
 @media (max-width: 56.249rem) {
-  .cartera-tabla td:last-child {
+  .bandeja-tabla.cartera-tabla td:last-child {
     grid-column: 1 / -1;
     grid-row: auto;
     justify-self: start;
   }
 
-  .cartera-tabla td:last-child .bandeja-ver {
+  .bandeja-tabla.cartera-tabla td:last-child .bandeja-ver {
     display: none;
   }
 }
@@ -422,11 +422,11 @@
     align-items: flex-end;
   }
 
-  .cartera-filtros {
+  .bandeja-filtros.bandeja-filtros.cartera-filtros {
     flex-wrap: wrap;
   }
 
-  .cartera-filtros .bandeja-buscador {
+  .bandeja-filtros.bandeja-filtros.cartera-filtros .bandeja-buscador {
     flex: 1 1 100%;
   }
 
@@ -464,21 +464,21 @@
 /* ---------------------------------------------------------------- escritorio */
 
 @media (min-width: 56.25rem) {
-  .cobro-tabla td:nth-child(3) {
+  .bandeja-tabla.cobro-tabla td:nth-child(3) {
     max-width: 360px;
   }
 
-  .cobro-tabla .cobro-motivo {
+  .bandeja-tabla.cobro-tabla .cobro-motivo {
     display: block;
   }
 }
 
 @media (min-width: 75rem) {
-  .cartera-filtros {
+  .bandeja-filtros.bandeja-filtros.cartera-filtros {
     flex-wrap: nowrap;
   }
 
-  .cartera-filtros .bandeja-buscador {
+  .bandeja-filtros.cartera-filtros .bandeja-buscador {
     flex: 1 1 auto;
   }
 }

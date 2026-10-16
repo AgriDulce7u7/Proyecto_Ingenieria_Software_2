@@ -13,6 +13,18 @@
   flex: 1 1 auto;
 }
 
+/* En escritorio los dos botones del encabezado van en una sola fila */
+@media (min-width: 56.25rem) {
+  .pagos-acciones {
+    flex-wrap: nowrap;
+    flex: none;
+  }
+
+  .pagos-acciones .boton {
+    flex: none;
+  }
+}
+
 .bandeja-metricas .pagos-metrica-moneda {
   font-size: 20px;
   color: var(--color-agua-oscuro);
@@ -53,7 +65,7 @@
   outline: 0;
 }
 
-.pagos-filtros select {
+.bandeja-filtros.bandeja-filtros.pagos-filtros select {
   flex-basis: 100%;
 }
 
@@ -72,15 +84,15 @@
 }
 
 @media (min-width: 37.5rem) {
-  .pagos-filtros {
+  .bandeja-filtros.pagos-filtros {
     flex-wrap: wrap;
   }
 
-  .pagos-filtros .bandeja-buscador {
+  .bandeja-filtros.pagos-filtros .bandeja-buscador {
     flex: 1 1 100%;
   }
 
-  .pagos-filtros select,
+  .bandeja-filtros.pagos-filtros select,
   .pagos-fecha {
     flex: 1 1 0;
   }
@@ -91,15 +103,15 @@
 }
 
 @media (min-width: 75rem) {
-  .pagos-filtros {
+  .bandeja-filtros.pagos-filtros {
     flex-wrap: nowrap;
   }
 
-  .pagos-filtros .bandeja-buscador {
+  .bandeja-filtros.pagos-filtros .bandeja-buscador {
     flex: 1 1 auto;
   }
 
-  .pagos-filtros select,
+  .bandeja-filtros.pagos-filtros select,
   .pagos-fecha {
     flex: 0 1 auto;
   }

@@ -46,18 +46,27 @@
   color: var(--color-superficie);
 }
 
+/* Con muchas opciones (el administrador ve 16) el menú se desplaza y el pie queda fijo abajo */
+.gestion-lateral nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 22%) transparent;
+}
+
 .gestion-lateral nav ul {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 22px 12px;
+  gap: 3px;
+  padding: 16px 12px;
 }
 
 .gestion-lateral nav a {
   display: flex;
   align-items: center;
   gap: 11px;
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 13px;
   border-left: 3px solid transparent;
   border-radius: 7px;
@@ -295,6 +304,12 @@
 .panel h2 {
   margin-bottom: 18px;
   font-size: 16px;
+}
+
+/* Nota al lado del título de un panel (cantidad, fecha). Es global porque la usan pantallas de varias secciones. */
+.panel-nota {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
 }
 
 .panel-titulo {

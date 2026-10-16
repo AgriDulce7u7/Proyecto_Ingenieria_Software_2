@@ -41,11 +41,11 @@
 }
 
 @media (min-width: 37.5rem) {
-  .contratos-filtros {
+  .bandeja-filtros.bandeja-filtros.contratos-filtros {
     flex-wrap: wrap;
   }
 
-  .contratos-filtros .bandeja-buscador {
+  .bandeja-filtros.bandeja-filtros.contratos-filtros .bandeja-buscador {
     flex: 1 1 100%;
   }
 
@@ -55,11 +55,11 @@
 }
 
 @media (min-width: 75rem) {
-  .contratos-filtros {
+  .bandeja-filtros.bandeja-filtros.contratos-filtros {
     flex-wrap: nowrap;
   }
 
-  .contratos-filtros .bandeja-buscador {
+  .bandeja-filtros.bandeja-filtros.contratos-filtros .bandeja-buscador {
     flex: 1 1 auto;
   }
 }

@@ -1,3 +1,4 @@
+import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import { BackofficeLayout } from "./componentes/BackofficeLayout";
 import { InicioGestion } from "./componentes/InicioGestion";
@@ -5,47 +6,7 @@ import { NoEncontrada } from "./componentes/NoEncontrada";
 import { PortalLayout } from "./componentes/PortalLayout";
 import { RutaCiudadano } from "./componentes/RutaCiudadano";
 import { RutaProtegida } from "./componentes/RutaProtegida";
-import { IniciarSesion } from "./paginas/acceso/IniciarSesion";
-import { Constancia } from "./paginas/ciudadano/Constancia";
-import { ActivarCuenta } from "./paginas/ciudadano/cuenta/ActivarCuenta";
-import { ComprobanteCiudadano } from "./paginas/ciudadano/cuenta/ComprobanteCiudadano";
-import { ContratoCiudadano } from "./paginas/ciudadano/cuenta/ContratoCiudadano";
-import { CuentaLayout } from "./paginas/ciudadano/cuenta/CuentaLayout";
-import { FacturaCiudadano } from "./paginas/ciudadano/cuenta/FacturaCiudadano";
-import { FacturasCiudadano } from "./paginas/ciudadano/cuenta/FacturasCiudadano";
-import { IngresarCiudadano } from "./paginas/ciudadano/cuenta/IngresarCiudadano";
-import { MisDatos } from "./paginas/ciudadano/cuenta/MisDatos";
-import { PagarFactura } from "./paginas/ciudadano/cuenta/PagarFactura";
-import { PagosCiudadano } from "./paginas/ciudadano/cuenta/PagosCiudadano";
-import { Resumen } from "./paginas/ciudadano/cuenta/Resumen";
-import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
-import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
-import { Alertas } from "./paginas/gestion/alertas/Alertas";
-import { Acuerdos } from "./paginas/gestion/cartera/acuerdos/Acuerdos";
-import { DetalleAcuerdo } from "./paginas/gestion/cartera/acuerdos/DetalleAcuerdo";
-import { PagarCuota } from "./paginas/gestion/cartera/acuerdos/PagarCuota";
-import { RegistrarAcuerdo } from "./paginas/gestion/cartera/acuerdos/RegistrarAcuerdo";
-import { CarteraMorosa } from "./paginas/gestion/cartera/CarteraMorosa";
-import { CobroCartera } from "./paginas/gestion/cartera/CobroCartera";
-import { Contratos } from "./paginas/gestion/contratos/Contratos";
-import { DetalleContrato } from "./paginas/gestion/contratos/detalle/DetalleContrato";
-import { RegistrarContrato } from "./paginas/gestion/contratos/RegistrarContrato";
-import { Cumplimiento } from "./paginas/gestion/cumplimiento/Cumplimiento";
-import { DetalleLote } from "./paginas/gestion/facturacion/DetalleLote";
-import { DetalleFactura } from "./paginas/gestion/facturacion/factura/DetalleFactura";
-import { Facturas } from "./paginas/gestion/facturacion/Facturas";
-import { Lotes } from "./paginas/gestion/facturacion/Lotes";
-import { Programacion } from "./paginas/gestion/facturacion/Programacion";
-import { Comprobante } from "./paginas/gestion/pagos/Comprobante";
-import { Pagos } from "./paginas/gestion/pagos/Pagos";
-import { RegistrarPago } from "./paginas/gestion/pagos/RegistrarPago";
-import { BandejaPqr } from "./paginas/gestion/pqr/BandejaPqr";
-import { DetallePqr } from "./paginas/gestion/pqr/detalle/DetallePqr";
-import { Supervision } from "./paginas/gestion/supervision/Supervision";
-import { PerfilUsuario } from "./paginas/gestion/usuarios/perfil/PerfilUsuario";
-import { RegistrarUsuario } from "./paginas/gestion/usuarios/RegistrarUsuario";
-import { Usuarios } from "./paginas/gestion/usuarios/Usuarios";
 
 /**
  * Mapa de pantallas. Cada ruta indica los requisitos que respalda, con los identificadores del
@@ -53,7 +14,73 @@ import { Usuarios } from "./paginas/gestion/usuarios/Usuarios";
  *
  * El back-office exige sesión de funcionario y cada pantalla, la capacidad de su rol
  * (sesion/capacidades.js). El backend vuelve a verificar los permisos en cada petición.
+ *
+ * Carga diferida: los layouts y la página de inicio van en el paquete principal; cada pantalla se
+ * descarga la primera vez que se abre, en su propio archivo. Así un ciudadano no descarga el
+ * back-office y la primera carga es más liviana. Mientras llega, el layout muestra CargaPagina.
  */
+
+/** Pantalla que se descarga al abrirla. `nombre` es el componente que exporta el módulo. */
+const diferida = (importar, nombre) => lazy(() => importar().then((modulo) => ({ default: modulo[nombre] })));
+
+// Portal ciudadano
+const RadicarPqr = diferida(() => import("./paginas/ciudadano/RadicarPqr"), "RadicarPqr");
+const Constancia = diferida(() => import("./paginas/ciudadano/Constancia"), "Constancia");
+const ConsultarEstado = diferida(() => import("./paginas/ciudadano/ConsultarEstado"), "ConsultarEstado");
+const IniciarSesion = diferida(() => import("./paginas/acceso/IniciarSesion"), "IniciarSesion");
+const IngresarCiudadano = diferida(() => import("./paginas/ciudadano/cuenta/IngresarCiudadano"), "IngresarCiudadano");
+const ActivarCuenta = diferida(() => import("./paginas/ciudadano/cuenta/ActivarCuenta"), "ActivarCuenta");
+const CuentaLayout = diferida(() => import("./paginas/ciudadano/cuenta/CuentaLayout"), "CuentaLayout");
+const Resumen = diferida(() => import("./paginas/ciudadano/cuenta/Resumen"), "Resumen");
+const ContratoCiudadano = diferida(() => import("./paginas/ciudadano/cuenta/ContratoCiudadano"), "ContratoCiudadano");
+const FacturasCiudadano = diferida(() => import("./paginas/ciudadano/cuenta/FacturasCiudadano"), "FacturasCiudadano");
+const FacturaCiudadano = diferida(() => import("./paginas/ciudadano/cuenta/FacturaCiudadano"), "FacturaCiudadano");
+const PagarFactura = diferida(() => import("./paginas/ciudadano/cuenta/PagarFactura"), "PagarFactura");
+const PagosCiudadano = diferida(() => import("./paginas/ciudadano/cuenta/PagosCiudadano"), "PagosCiudadano");
+const ComprobanteCiudadano = diferida(
+  () => import("./paginas/ciudadano/cuenta/ComprobanteCiudadano"),
+  "ComprobanteCiudadano",
+);
+const MisDatos = diferida(() => import("./paginas/ciudadano/cuenta/MisDatos"), "MisDatos");
+
+// Back-office
+const Dashboard = diferida(() => import("./paginas/gestion/dashboard/Dashboard"), "Dashboard");
+const BandejaPqr = diferida(() => import("./paginas/gestion/pqr/BandejaPqr"), "BandejaPqr");
+const DetallePqr = diferida(() => import("./paginas/gestion/pqr/detalle/DetallePqr"), "DetallePqr");
+const Alertas = diferida(() => import("./paginas/gestion/alertas/Alertas"), "Alertas");
+const Supervision = diferida(() => import("./paginas/gestion/supervision/Supervision"), "Supervision");
+const Cumplimiento = diferida(() => import("./paginas/gestion/cumplimiento/Cumplimiento"), "Cumplimiento");
+const Usuarios = diferida(() => import("./paginas/gestion/usuarios/Usuarios"), "Usuarios");
+const RegistrarUsuario = diferida(() => import("./paginas/gestion/usuarios/RegistrarUsuario"), "RegistrarUsuario");
+const PerfilUsuario = diferida(() => import("./paginas/gestion/usuarios/perfil/PerfilUsuario"), "PerfilUsuario");
+const Contratos = diferida(() => import("./paginas/gestion/contratos/Contratos"), "Contratos");
+const RegistrarContrato = diferida(() => import("./paginas/gestion/contratos/RegistrarContrato"), "RegistrarContrato");
+const DetalleContrato = diferida(() => import("./paginas/gestion/contratos/detalle/DetalleContrato"), "DetalleContrato");
+const Programacion = diferida(() => import("./paginas/gestion/facturacion/Programacion"), "Programacion");
+const Lotes = diferida(() => import("./paginas/gestion/facturacion/Lotes"), "Lotes");
+const DetalleLote = diferida(() => import("./paginas/gestion/facturacion/DetalleLote"), "DetalleLote");
+const Facturas = diferida(() => import("./paginas/gestion/facturacion/Facturas"), "Facturas");
+const DetalleFactura = diferida(() => import("./paginas/gestion/facturacion/factura/DetalleFactura"), "DetalleFactura");
+const Pagos = diferida(() => import("./paginas/gestion/pagos/Pagos"), "Pagos");
+const RegistrarPago = diferida(() => import("./paginas/gestion/pagos/RegistrarPago"), "RegistrarPago");
+const Comprobante = diferida(() => import("./paginas/gestion/pagos/Comprobante"), "Comprobante");
+const PagarCuota = diferida(() => import("./paginas/gestion/cartera/acuerdos/PagarCuota"), "PagarCuota");
+const CarteraMorosa = diferida(() => import("./paginas/gestion/cartera/CarteraMorosa"), "CarteraMorosa");
+const Acuerdos = diferida(() => import("./paginas/gestion/cartera/acuerdos/Acuerdos"), "Acuerdos");
+const RegistrarAcuerdo = diferida(() => import("./paginas/gestion/cartera/acuerdos/RegistrarAcuerdo"), "RegistrarAcuerdo");
+const DetalleAcuerdo = diferida(() => import("./paginas/gestion/cartera/acuerdos/DetalleAcuerdo"), "DetalleAcuerdo");
+const CobroCartera = diferida(() => import("./paginas/gestion/cartera/CobroCartera"), "CobroCartera");
+const Funcionarios = diferida(() => import("./paginas/gestion/administracion/Funcionarios"), "Funcionarios");
+const RegistrarFuncionario = diferida(
+  () => import("./paginas/gestion/administracion/RegistrarFuncionario"),
+  "RegistrarFuncionario",
+);
+const DetalleFuncionario = diferida(
+  () => import("./paginas/gestion/administracion/DetalleFuncionario"),
+  "DetalleFuncionario",
+);
+const Roles = diferida(() => import("./paginas/gestion/administracion/Roles"), "Roles");
+const Auditoria = diferida(() => import("./paginas/gestion/administracion/Auditoria"), "Auditoria");
 
 /** Pantalla del back-office que exige una capacidad del rol. */
 const protegida = (capacidad, pagina) => <RutaProtegida capacidad={capacidad}>{pagina}</RutaProtegida>;
@@ -116,6 +143,10 @@ export const enrutador = createBrowserRouter([
     children: [
       { index: true, element: <InicioGestion /> },
 
+      // F-08 · Dashboard gerencial
+      // RF-13, CU-09, SWR-33, SWR-34, SWR-35
+      { path: "dashboard", element: protegida("DASHBOARD", <Dashboard />) },
+
       // F-02 · PQR
       // RF-09, CU-06
       { path: "pqr", element: protegida("PQR_ATENDER", <BandejaPqr />) },
@@ -161,7 +192,6 @@ export const enrutador = createBrowserRouter([
       { path: "pagos", element: protegida("FACTURACION_CONSULTAR", <Pagos />) },
       // RF-06, CU-04, RN-05, SWR-22, SWR-23, SWR-24
       { path: "pagos/nuevo", element: protegida("FACTURACION_OPERAR", <RegistrarPago />) },
-      // RF-06, SWR-22
       // CU-08, RF-12 (pago de una cuota de acuerdo en ventanilla)
       { path: "pagos/cuota", element: protegida("CARTERA_PAGAR_CUOTA", <PagarCuota />) },
       // RF-06, SWR-22
@@ -178,6 +208,18 @@ export const enrutador = createBrowserRouter([
       { path: "cartera/acuerdos/:numero", element: protegida("CARTERA_GESTIONAR", <DetalleAcuerdo />) },
       // RN-07, SWR-31, SWR-32
       { path: "cartera/cobro", element: protegida("CARTERA_GESTIONAR", <CobroCartera />) },
+
+      // Administración
+      // RF-14, CU-10, RNF-05
+      { path: "administracion/funcionarios", element: protegida("ADMINISTRACION", <Funcionarios />) },
+      // RF-14, CU-10
+      { path: "administracion/funcionarios/nuevo", element: protegida("ADMINISTRACION", <RegistrarFuncionario />) },
+      // RF-14, RF-15, CU-10
+      { path: "administracion/funcionarios/:id", element: protegida("ADMINISTRACION", <DetalleFuncionario />) },
+      // RF-14, RNF-05
+      { path: "administracion/roles", element: protegida("ADMINISTRACION", <Roles />) },
+      // RF-15, CU-11
+      { path: "administracion/auditoria", element: protegida("ADMINISTRACION", <Auditoria />) },
     ],
   },
   { path: "*", element: <NoEncontrada /> },
