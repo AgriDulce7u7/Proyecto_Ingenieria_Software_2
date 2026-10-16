@@ -3,17 +3,22 @@ import { Boton } from "../../../../componentes/ui/Boton";
 import { Dialogo } from "../../../../componentes/ui/Dialogo";
 import { useCerrarPqr, useReasignarPqr, useResponderPqr, useTomarPqr } from "../../../../hooks/usePqr";
 import { esPendiente } from "../../../../presentacion/estadosPqr";
+import { gestorQueResponde, gestorQueToma } from "../../../../sesion/actuacionPqr";
 import { useSesion } from "../../../../sesion/useSesion";
 import { DialogoCerrar } from "./DialogoCerrar";
 import { DialogoReasignar } from "./DialogoReasignar";
 import { DialogoResponder } from "./DialogoResponder";
 
 /**
- * Acciones del ciclo de vida de la PQR (DE-02). Los botones salen de `accionesDisponibles`,
- * que calcula el backend según el estado: la interfaz no duplica la máquina de estados.
+ * Acciones del ciclo de vida de la PQR (DE-02). Los estados posibles salen de `accionesDisponibles`,
+ * que calcula el backend: la interfaz no duplica la máquina de estados. Quién puede hacer cada acción
+ * sale del rol del usuario que inició sesión (RNF-05):
+ * - tomar y responder: el gestor a su nombre; el jefe y el administrador, a nombre de cualquier gestor;
+ * - reasignar: solo el jefe de PQR y el administrador;
+ * - cerrar: cualquier usuario que atiende PQR.
  */
 export function AccionesPqr({ pqr, onResultado }) {
-  const { gestor, usuario } = useSesion();
+  const { usuario, puede } = useSesion();
   const [dialogo, setDialogo] = useState(null);
   const acciones = {
     tomar: useTomarPqr(pqr.radicado),
@@ -22,14 +27,17 @@ export function AccionesPqr({ pqr, onResultado }) {
     cerrar: useCerrarPqr(pqr.radicado),
   };
 
-  const puede = {
-    tomar: pqr.accionesDisponibles.includes("EN_TRAMITE"),
+  const idParaTomar = gestorQueToma(usuario, pqr);
+  const permite = {
+    tomar: pqr.accionesDisponibles.includes("EN_TRAMITE") && idParaTomar !== null,
     responder: pqr.accionesDisponibles.includes("RESUELTO"),
     cerrar: pqr.accionesDisponibles.includes("CERRADO"),
-    reasignar: esPendiente(pqr.estado),
+    reasignar: esPendiente(pqr.estado) && puede("PQR_SUPERVISAR"),
   };
+  // El administrador no tiene registro de gestor: una PQR sin asignar primero se reasigna
+  const sinGestorParaTomar = pqr.accionesDisponibles.includes("EN_TRAMITE") && idParaTomar === null;
 
-  if (!Object.values(puede).some(Boolean)) return null;
+  if (!Object.values(permite).some(Boolean)) return null;
 
   const abrir = (nombre) => {
     acciones[nombre].reset();
@@ -43,39 +51,33 @@ export function AccionesPqr({ pqr, onResultado }) {
 
   const tomar = () =>
     acciones.tomar.mutate(
-      { gestorId: gestor.id },
+      { gestorId: idParaTomar },
       {
-        onSuccess: () => onResultado({ tipo: "exito", mensaje: "Tomó la solicitud: ahora está en trámite y a su cargo." }),
+        onSuccess: (detalle) =>
+          onResultado({
+            tipo: "exito",
+            mensaje: `La solicitud quedó en trámite a cargo de ${detalle.gestor?.nombre ?? "usted"}.`,
+          }),
         onError: (error) => onResultado({ tipo: "error", error }),
       },
     );
 
-  const sinGestor = !gestor;
-
   return (
     <div className="detalle-acciones">
-      {puede.reasignar && (
-        <Boton variante="secundario" onClick={() => abrir("reasignar")} disabled={sinGestor}>
+      {permite.reasignar && (
+        <Boton variante="secundario" onClick={() => abrir("reasignar")}>
           Reasignar
         </Boton>
       )}
-      {puede.tomar && (
-        <Boton onClick={tomar} disabled={sinGestor || acciones.tomar.isPending}>
+      {permite.tomar && (
+        <Boton onClick={tomar} disabled={acciones.tomar.isPending}>
           {acciones.tomar.isPending ? "Tomando…" : "Tomar solicitud"}
         </Boton>
       )}
-      {puede.responder && (
-        <Boton onClick={() => abrir("responder")} disabled={sinGestor}>
-          Responder solicitud
-        </Boton>
-      )}
-      {puede.cerrar && (
-        <Boton onClick={() => abrir("cerrar")} disabled={sinGestor}>
-          Cerrar solicitud
-        </Boton>
-      )}
-      {sinGestor && (
-        <p className="detalle-acciones-nota">Seleccione su nombre en Gestor actual para gestionar la solicitud.</p>
+      {permite.responder && <Boton onClick={() => abrir("responder")}>Responder solicitud</Boton>}
+      {permite.cerrar && <Boton onClick={() => abrir("cerrar")}>Cerrar solicitud</Boton>}
+      {sinGestorParaTomar && permite.reasignar && (
+        <p className="detalle-acciones-nota">Para iniciar el trámite, asigne la solicitud a un gestor.</p>
       )}
 
       <Dialogo
@@ -86,7 +88,7 @@ export function AccionesPqr({ pqr, onResultado }) {
       >
         <DialogoReasignar
           pqr={pqr}
-          usuario={usuario}
+          usuario={usuario.usuario}
           accion={acciones.reasignar}
           onListo={terminar}
           onCancelar={cerrarDialogo}
@@ -98,10 +100,10 @@ export function AccionesPqr({ pqr, onResultado }) {
         antetitulo={pqr.radicado}
         titulo="Responder solicitud"
       >
-        {gestor && (
+        {dialogo === "responder" && (
           <DialogoResponder
             pqr={pqr}
-            gestor={gestor}
+            gestorId={gestorQueResponde(usuario, pqr)}
             accion={acciones.responder}
             onListo={terminar}
             onCancelar={cerrarDialogo}
@@ -109,7 +111,12 @@ export function AccionesPqr({ pqr, onResultado }) {
         )}
       </Dialogo>
       <Dialogo abierto={dialogo === "cerrar"} onCerrar={cerrarDialogo} antetitulo={pqr.radicado} titulo="Cerrar PQR">
-        <DialogoCerrar usuario={usuario} accion={acciones.cerrar} onListo={terminar} onCancelar={cerrarDialogo} />
+        <DialogoCerrar
+          usuario={usuario.usuario}
+          accion={acciones.cerrar}
+          onListo={terminar}
+          onCancelar={cerrarDialogo}
+        />
       </Dialogo>
     </div>
   );

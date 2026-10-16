@@ -11,6 +11,7 @@ import { esPendiente, situacionPlazo, tonoEstado } from "../../../../presentacio
 import { formatearFecha, formatearFechaHora, formatearFechaLimite } from "../../../../presentacion/fechas";
 import { enmascararDocumento } from "../../../../presentacion/texto";
 import { AccionesPqr } from "./AccionesPqr";
+import { EvidenciasPqr } from "./EvidenciasPqr";
 import { HistorialPqr } from "./HistorialPqr";
 import { NotificacionesPqr } from "./NotificacionesPqr";
 import "./detalle.css";
@@ -29,6 +30,13 @@ function Datos({ filas }) {
         ))}
     </dl>
   );
+}
+
+/** respondidaEnPlazo llega en null mientras la PQR sigue abierta y dentro del plazo. */
+function textoCumplimiento(respondidaEnPlazo) {
+  if (respondidaEnPlazo === true) return "Respondida dentro del plazo";
+  if (respondidaEnPlazo === false) return "Fuera del plazo";
+  return null;
 }
 
 /** Aviso de la alerta de 48 horas al gestor (SWR-07) mientras la PQR está pendiente. */
@@ -105,6 +113,7 @@ function ContenidoDetalle({ pqr }) {
             </section>
           )}
 
+          <EvidenciasPqr pqr={pqr} />
           <HistorialPqr radicado={pqr.radicado} />
         </div>
 
@@ -130,12 +139,19 @@ function ContenidoDetalle({ pqr }) {
             <Datos
               filas={[
                 { termino: "Gestor asignado", valor: pqr.gestor?.nombre ?? "Sin asignar" },
+                { termino: "Municipio", valor: pqr.municipio },
+                { termino: "Contrato", valor: pqr.numeroContrato, clase: "cifra" },
                 {
                   termino: "Fecha límite",
                   valor: formatearFechaHora(pqr.fechaLimiteRespuesta),
                   clase: esPendiente(pqr.estado) && plazo !== "en-plazo" ? `detalle-dato-${plazo}` : undefined,
                 },
                 { termino: "Respuesta estimada", valor: formatearFecha(pqr.fechaEstimadaRespuesta) },
+                {
+                  termino: "Cumplimiento del plazo",
+                  valor: textoCumplimiento(pqr.respondidaEnPlazo),
+                  clase: pqr.respondidaEnPlazo === false ? "detalle-dato-vencido" : undefined,
+                },
               ]}
             />
           </section>
@@ -148,7 +164,7 @@ function ContenidoDetalle({ pqr }) {
   );
 }
 
-/** Detalle de una PQR en el back-office (RF-09, CU-06, DE-02, RN-06, SWR-09). */
+/** Detalle de una PQR en el back-office (RF-09, CU-06, DE-02, RN-06, SWR-09), con sus evidencias. */
 export function DetallePqr() {
   const { radicado } = useParams();
   useTituloPagina(`PQR ${radicado}`);

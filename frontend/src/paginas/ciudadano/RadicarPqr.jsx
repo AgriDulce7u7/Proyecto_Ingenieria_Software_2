@@ -6,7 +6,8 @@ import { Boton } from "../../componentes/ui/Boton";
 import { Campo } from "../../componentes/ui/Campo";
 import { Icono } from "../../componentes/ui/Icono";
 import { useRegistrarPqr, useTiposSolicitud } from "../../hooks/usePqr";
-import { LIMITES, PQR_VACIA, TIPOS_DOCUMENTO, aSolicitudPqr, validarCampo, validarPqr } from "./ValidacionPqr";
+import { useMunicipios } from "../../hooks/useTerritorio";
+import { LIMITES, PQR_VACIA, TIPOS_DOCUMENTO, aSolicitudPqr, validarCampo, validarPqr } from "./validacionPqr";
 import "./radicar.css";
 
 /** Bloque numerado del formulario (1. Datos personales, 2. Información de la solicitud). */
@@ -31,7 +32,8 @@ function enfocarPrimerError(formulario) {
 }
 
 /**
- * Radicación de una PQR por el portal ciudadano (RF-08, CU-06, SWR-05, SWR-06).
+ * Radicación de una PQR por el portal ciudadano (RF-08, CU-06, SWR-05, SWR-06). Desde la entrega 2
+ * admite el municipio y el número de contrato (opcionales) para asignar la solicitud por territorio.
  * Valida al enviar con las mismas reglas del backend y, desde ahí, revalida en vivo cada campo con error
  * (no al salir del campo: el mensaje desplazaría el botón y el clic de envío podría perderse).
  * Los errores que devuelva el servidor se muestran en su campo. Al radicar, lleva a la constancia.
@@ -42,6 +44,7 @@ export function RadicarPqr() {
   const [datos, setDatos] = useState(PQR_VACIA);
   const [errores, setErrores] = useState({});
   const tiposSolicitud = useTiposSolicitud();
+  const municipios = useMunicipios();
   const registro = useRegistrarPqr();
 
   const errorGeneral = registro.error && !registro.error.esValidacion ? registro.error : null;
@@ -150,6 +153,28 @@ export function RadicarPqr() {
           titulo="Información de la solicitud"
           descripcion="Sea claro y específico para que podamos ayudarle mejor."
         >
+          <Campo
+            etiqueta="Municipio"
+            como="select"
+            disabled={municipios.isPending || municipios.isError}
+            ayuda="Su solicitud se asigna al gestor de este municipio."
+            {...propsCampo("municipioId")}
+          >
+            <option value="">{municipios.isPending ? "Cargando…" : "Seleccione el municipio (opcional)"}</option>
+            {municipios.data?.map((municipio) => (
+              <option key={municipio.id} value={municipio.id}>
+                {municipio.nombre}
+              </option>
+            ))}
+          </Campo>
+          <Campo
+            etiqueta="Número de contrato"
+            placeholder="Aparece en su factura (opcional)"
+            autoComplete="off"
+            maxLength={30}
+            ayuda="Si lo indica, tomamos el municipio de su predio."
+            {...propsCampo("numeroContrato")}
+          />
           <Campo
             etiqueta="Tipo de solicitud"
             como="select"

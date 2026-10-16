@@ -93,11 +93,6 @@
   gap: 14px;
 }
 
-.panel-nota {
-  font-size: 11px;
-  color: var(--color-tinta-tenue);
-}
-
 .detalle-texto {
   font-size: 14px;
   color: #394b54;
@@ -251,6 +246,173 @@
 
 .detalle-notificaciones small strong {
   color: var(--color-vencido);
+}
+
+/* ---------------------------------------------------------------- evidencias */
+
+.evidencias-vacio {
+  font-size: 13px;
+  color: var(--color-tinta-suave);
+}
+
+.evidencias-lista li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.evidencias-lista li:first-child {
+  padding-top: 0;
+}
+
+.evidencia-fila {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  color: var(--color-agua);
+}
+
+.evidencia-fila-datos {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-tinta);
+}
+
+.evidencia-fila-datos strong {
+  display: block;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.evidencia-fila-datos p {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+}
+
+.evidencia-fila-datos small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.evidencia-descargar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-linea);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.evidencia-descargar:hover {
+  background: var(--color-agua-claro);
+}
+
+.evidencia-descargar:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.evidencia-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.evidencia-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* El control real queda oculto pero accesible: la zona punteada es su etiqueta */
+.evidencia-selector-control {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.evidencia-selector-zona {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 14px;
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+  border: 1.5px dashed var(--color-agua-borde);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.evidencia-selector-zona:hover {
+  background: var(--color-agua-claro);
+}
+
+.evidencia-selector-control:focus-visible + .evidencia-selector-zona {
+  outline: 3px solid var(--color-agua);
+  outline-offset: 2px;
+}
+
+.evidencia-selector-control[aria-invalid="true"] + .evidencia-selector-zona {
+  border-color: var(--color-vencido);
+  background: var(--color-vencido-claro);
+}
+
+.evidencia-selector-zona span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.evidencia-selector-zona strong {
+  font-size: 13px;
+  color: var(--color-tinta);
+  overflow-wrap: anywhere;
+}
+
+.evidencia-selector-zona small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.evidencia-formulario-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+/* ---------------------------------------------------------------- soporte en el diálogo de respuesta */
+
+.responder-soporte {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-exito);
+}
+
+.responder-sin-soporte {
+  padding: 14px;
+  font-size: 13px;
+  background: var(--color-plazo-claro);
+  border: 1px solid #ecd7a9;
+  border-radius: 12px;
+}
+
+.responder-sin-soporte .evidencia-formulario {
+  margin-top: 10px;
 }
 
 /* ---------------------------------------------------------------- tableta */

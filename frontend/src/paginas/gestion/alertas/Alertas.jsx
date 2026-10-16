@@ -9,38 +9,42 @@ import { ResultadoMonitoreo } from "./ResultadoMonitoreo";
 import "./alertas.css";
 
 /**
- * Alertas del gestor actual (RF-09, SWR-07, RN-04): asignaciones, avisos de 48 h y vencimientos,
- * y ejecución a demanda del monitoreo de plazos.
+ * Alertas del usuario que inició sesión (RF-09, SWR-07, RN-04): asignaciones, avisos de 48 h y
+ * vencimientos de su registro de gestor. El jefe de PQR y el administrador además pueden ejecutar
+ * a demanda el monitoreo de plazos.
  */
 export function Alertas() {
-  const { gestor } = useSesion();
-  const notificaciones = useNotificacionesGestor(gestor?.id);
+  const { usuario, puede } = useSesion();
+  const gestorId = usuario.gestorId ?? null;
+  const notificaciones = useNotificacionesGestor(gestorId);
   const monitoreo = useEjecutarMonitoreo();
 
   return (
     <>
       <EncabezadoGestion
-        antetitulo={gestor?.nombre}
+        antetitulo={usuario.nombre}
         titulo="Alertas"
         descripcion="Eventos que requieren su atención."
         accion={
-          <Boton icono="sincronizar" onClick={() => monitoreo.mutate()} disabled={monitoreo.isPending}>
-            {monitoreo.isPending ? "Ejecutando…" : "Ejecutar monitoreo"}
-          </Boton>
+          puede("PQR_SUPERVISAR") && (
+            <Boton icono="sincronizar" onClick={() => monitoreo.mutate()} disabled={monitoreo.isPending}>
+              {monitoreo.isPending ? "Ejecutando…" : "Ejecutar monitoreo"}
+            </Boton>
+          )
         }
       />
 
       {monitoreo.data && <ResultadoMonitoreo resultado={monitoreo.data} />}
       <MensajeError error={monitoreo.error} />
 
-      {!gestor && (
+      {gestorId === null && (
         <div className="alertas-vacio">
-          <p>Seleccione su nombre en <strong>Gestor actual</strong>, en la parte superior, para ver sus alertas.</p>
+          <p>Su usuario no está registrado como gestor de PQR, así que no recibe alertas de solicitudes asignadas.</p>
         </div>
       )}
 
-      {gestor && notificaciones.isPending && <Cargando texto="Cargando alertas…" />}
-      {gestor && <MensajeError error={notificaciones.error} />}
+      {gestorId !== null && notificaciones.isPending && <Cargando texto="Cargando alertas…" />}
+      <MensajeError error={notificaciones.error} />
 
       {notificaciones.data?.length === 0 && (
         <div className="alertas-vacio">
@@ -49,7 +53,7 @@ export function Alertas() {
       )}
 
       {notificaciones.data?.length > 0 && (
-        <ul className="alertas-lista" aria-label={`Alertas de ${gestor.nombre}`}>
+        <ul className="alertas-lista" aria-label={`Alertas de ${usuario.nombre}`}>
           {notificaciones.data.map((notificacion) => (
             <FilaAlerta key={notificacion.id} notificacion={notificacion} />
           ))}

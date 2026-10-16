@@ -1,0 +1,115 @@
+/* Perfil del usuario del servicio. El encabezado, la rejilla y los datos usan los estilos del detalle de PQR. */
+
+.perfil-vacio {
+  font-size: 13px;
+}
+
+.perfil-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 0;
+  color: var(--color-agua);
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.perfil-lista li:first-child {
+  padding-top: 0;
+}
+
+.perfil-lista li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.perfil-lista li > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  color: var(--color-tinta);
+}
+
+.perfil-lista strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.perfil-lista small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.perfil-lista-estado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.perfil-alerta {
+  font-weight: 650;
+  color: var(--color-vencido) !important;
+}
+
+.perfil-enlace {
+  font-size: 13px;
+  font-weight: 750;
+  color: var(--color-agua);
+}
+
+.perfil-enlace:hover {
+  text-decoration: underline;
+}
+
+/* Validación de identidad: el borde izquierdo repite el tono del estado */
+.perfil-identidad {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border-left: 4px solid var(--color-borde);
+}
+
+.perfil-identidad h2 {
+  margin-bottom: 4px;
+}
+
+.perfil-identidad p {
+  font-size: 12px;
+}
+
+.perfil-identidad small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.perfil-identidad-exito {
+  border-left-color: var(--color-exito);
+}
+
+.perfil-identidad-advertencia {
+  border-left-color: var(--color-plazo);
+}
+
+.perfil-identidad-peligro {
+  border-left-color: var(--color-vencido);
+}
+
+/* ---------------------------------------------------------------- diálogos */
+
+.perfil-dialogo-nota {
+  font-size: 13px;
+}
+
+.perfil-dialogo-fila {
+  display: grid;
+  gap: 18px;
+}
+
+@media (min-width: 37.5rem) {
+  .perfil-dialogo-fila {
+    grid-template-columns: 1fr 1fr;
+  }
+}

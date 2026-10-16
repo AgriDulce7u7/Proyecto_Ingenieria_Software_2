@@ -1,0 +1,484 @@
+/* Cobro persuasivo (mobile-first): cartera morosa, acuerdos de pago, cuotas, cobro y monitoreo.
+   Los listados usan los estilos de la bandeja; el registro, los de los pagos. */
+
+.detalle-volver-cartera {
+  margin-bottom: 18px;
+}
+
+/* ---------------------------------------------------------------- cartera morosa */
+
+.bandeja-metricas .cartera-metrica-moneda {
+  font-size: 20px;
+  color: var(--color-agua-oscuro);
+}
+
+.cartera-exportar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cartera-exportar > div {
+  display: flex;
+  gap: 8px;
+}
+
+.cartera-rangos {
+  margin-bottom: 18px;
+}
+
+.cartera-rangos ul {
+  display: grid;
+  gap: 14px;
+}
+
+.cartera-rango-cabecera {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.cartera-rango-cabecera strong {
+  font-weight: 650;
+}
+
+.cartera-rango-cabecera span {
+  font-weight: 700;
+}
+
+.cartera-rango-barra {
+  height: 8px;
+  overflow: hidden;
+  background: var(--color-borde-suave);
+  border-radius: 4px;
+}
+
+.cartera-rango-barra span {
+  display: block;
+  height: 100%;
+  background: var(--color-agua);
+  border-radius: 4px;
+}
+
+.cartera-rango-barra span[data-tono="advertencia"] {
+  background: var(--color-plazo);
+}
+
+.cartera-rango-barra span[data-tono="peligro"] {
+  background: var(--color-vencido);
+}
+
+.cartera-casilla {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+  cursor: pointer;
+}
+
+.cartera-casilla input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--color-agua);
+}
+
+.cartera-usuario {
+  font-weight: 650;
+  color: var(--color-tinta);
+}
+
+.cartera-usuario:hover {
+  color: var(--color-agua);
+  text-decoration: underline;
+}
+
+.bandeja-tabla .cartera-deuda {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-tinta);
+}
+
+.cartera-periodos {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-tinta);
+}
+
+.cartera-candidato {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 650;
+  color: var(--color-vencido);
+  white-space: nowrap;
+}
+
+.cartera-sin-gestion {
+  color: var(--color-tinta-tenue);
+}
+
+.cartera-accion.boton {
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+/* En la tarjeta móvil la acción va abajo, a lo ancho, para no apretar la columna de datos */
+@media (max-width: 56.249rem) {
+  .bandeja-tabla.cartera-tabla td:last-child {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    justify-self: start;
+  }
+
+  .bandeja-tabla.cartera-tabla td:last-child .bandeja-ver {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- acuerdos */
+
+.acuerdos-avance {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 110px;
+}
+
+.acuerdos-avance-barra {
+  height: 6px;
+  overflow: hidden;
+  background: var(--color-borde-suave);
+  border-radius: 3px;
+}
+
+.acuerdos-avance-barra span {
+  display: block;
+  height: 100%;
+  background: var(--color-exito);
+  border-radius: 3px;
+}
+
+.acuerdos-avance small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.acuerdo-facturas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 13px;
+}
+
+.pago-factura-datos .acuerdo-facturas {
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.acuerdo-plan {
+  transition: opacity 0.15s;
+}
+
+.acuerdo-plan-actualizando {
+  opacity: 0.55;
+}
+
+.detalle-datos .acuerdo-observacion {
+  font-weight: 450;
+  white-space: pre-line;
+}
+
+/* Saldo del acuerdo: mismo bloque oscuro del sistema visual */
+.acuerdo-saldo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 20px;
+  color: var(--color-superficie);
+  background: var(--color-agua-profundo);
+  border-radius: var(--radio-grande);
+}
+
+.acuerdo-saldo .antetitulo {
+  color: #83cedd;
+}
+
+.acuerdo-saldo-valor {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.acuerdo-saldo-barra {
+  height: 8px;
+  margin: 6px 0 4px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 16%);
+  border-radius: 4px;
+}
+
+.acuerdo-saldo-barra span {
+  display: block;
+  height: 100%;
+  background: #83cedd;
+  border-radius: 4px;
+}
+
+.acuerdo-saldo p {
+  font-size: 12px;
+  color: #bfd6db;
+}
+
+/* ---------------------------------------------------------------- cuotas */
+
+/* Las columnas del detalle no crecen más que la pantalla: la tabla de cuotas se desplaza dentro de su panel */
+.acuerdo-rejilla > * {
+  min-width: 0;
+}
+
+.cuotas-contenedor {
+  overflow-x: auto;
+}
+
+.cuotas-tabla {
+  width: 100%;
+  font-size: 13px;
+  border-collapse: collapse;
+}
+
+.cuotas-tabla th,
+.cuotas-tabla td {
+  padding: 10px 8px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.cuotas-tabla thead th {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--color-tinta-suave);
+}
+
+.cuotas-tabla tbody tr:last-child th,
+.cuotas-tabla tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.cuotas-tabla tr[data-siguiente] {
+  background: var(--color-agua-suave);
+}
+
+.cuotas-tabla tr[data-siguiente] th {
+  box-shadow: inset 3px 0 0 var(--color-agua);
+}
+
+.cuotas-pago small {
+  display: block;
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+/* Pago de cuota en ventanilla */
+.cuota-panel {
+  max-width: 760px;
+}
+
+.cuota-identificacion {
+  display: grid;
+  gap: 14px;
+}
+
+.cuota-resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cuota-resumen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cuota-resumen dt {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.cuota-resumen dd {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cuota-resultado-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---------------------------------------------------------------- cobro y monitoreo */
+
+.cobro-monitoreo {
+  margin-bottom: 18px;
+}
+
+.cobro-monitoreo-cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.cobro-monitoreo-cabecera h2 {
+  margin-bottom: 4px;
+}
+
+.cobro-monitoreo-cabecera p {
+  font-size: 13px;
+}
+
+.cobro-monitoreo-icono {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+  border-radius: 12px;
+}
+
+.cobro-monitoreo-resultado {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-borde-suave);
+}
+
+.cobro-monitoreo-resultado ol {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cobro-monitoreo-resultado li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-control);
+}
+
+.cobro-monitoreo-resultado li[data-fallo] {
+  background: var(--color-vencido-claro);
+  border-color: #f2c2bc;
+}
+
+.cobro-paso-cifra {
+  display: grid;
+  flex: none;
+  place-items: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 8px;
+  font-size: 15px;
+  font-weight: 750;
+  color: var(--color-agua-oscuro);
+  background: var(--color-info-claro);
+  border-radius: 999px;
+}
+
+.cobro-monitoreo-resultado strong {
+  font-size: 13px;
+}
+
+.cobro-monitoreo-resultado p {
+  margin-top: 2px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.cobro-motivo {
+  color: var(--color-tinta);
+  white-space: normal;
+}
+
+/* ---------------------------------------------------------------- tableta */
+
+@media (min-width: 37.5rem) {
+  .cartera-exportar {
+    align-items: flex-end;
+  }
+
+  .bandeja-filtros.bandeja-filtros.cartera-filtros {
+    flex-wrap: wrap;
+  }
+
+  .bandeja-filtros.bandeja-filtros.cartera-filtros .bandeja-buscador {
+    flex: 1 1 100%;
+  }
+
+  .cartera-casilla {
+    flex: 0 0 auto;
+  }
+
+  .bandeja-metricas .cartera-metrica-moneda {
+    font-size: 22px;
+  }
+
+  .cartera-rangos ul {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+  }
+
+  .cuota-identificacion {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cuota-resumen {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .cobro-monitoreo-cabecera {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .cobro-monitoreo-cabecera > div {
+    flex: 1;
+  }
+}
+
+/* ---------------------------------------------------------------- escritorio */
+
+@media (min-width: 56.25rem) {
+  .bandeja-tabla.cobro-tabla td:nth-child(3) {
+    max-width: 360px;
+  }
+
+  .bandeja-tabla.cobro-tabla .cobro-motivo {
+    display: block;
+  }
+}
+
+@media (min-width: 75rem) {
+  .bandeja-filtros.bandeja-filtros.cartera-filtros {
+    flex-wrap: nowrap;
+  }
+
+  .bandeja-filtros.cartera-filtros .bandeja-buscador {
+    flex: 1 1 auto;
+  }
+}

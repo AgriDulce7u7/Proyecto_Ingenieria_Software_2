@@ -1,0 +1,126 @@
+/* Supervisión de la Oficina de PQR (mobile-first). La tabla y las métricas usan los estilos de la bandeja. */
+
+.supervision-rejilla {
+  display: grid;
+  gap: 18px;
+  align-items: start;
+}
+
+/* En móvil la carga del equipo va primero: es el resumen que el jefe revisa antes de la lista */
+.supervision-carga {
+  order: -1;
+}
+
+.supervision-nivel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.supervision-aviso {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--color-plazo);
+  background: var(--color-plazo-claro);
+  border-radius: 50%;
+}
+
+.bandeja-tabla.supervision-tabla small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+/* ---------------------------------------------------------------- carga del equipo */
+
+.supervision-carga ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.supervision-carga-vacia {
+  font-size: 13px;
+}
+
+.supervision-gestor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 9px 12px;
+  text-align: left;
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-control);
+}
+
+.supervision-gestor:hover {
+  background: var(--color-agua-suave);
+}
+
+.supervision-gestor[aria-pressed="true"] {
+  background: var(--color-agua-claro);
+  border-color: var(--color-agua-borde);
+}
+
+.supervision-gestor-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.supervision-gestor-datos strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.supervision-gestor-datos small {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.supervision-gestor-total {
+  flex: none;
+  min-width: 34px;
+  padding: 4px 9px;
+  font-size: 14px;
+  font-weight: 750;
+  text-align: center;
+  color: var(--color-agua-oscuro);
+  background: var(--color-info-claro);
+  border-radius: 999px;
+}
+
+.supervision-gestor-total-vencido {
+  color: var(--color-vencido);
+  background: var(--color-vencido-claro);
+}
+
+/* ---------------------------------------------------------------- escritorio */
+
+@media (min-width: 56.25rem) {
+  /* El asunto pasa a dos líneas para que la fecha límite quepa junto a la carga del equipo */
+  .bandeja-tabla.supervision-tabla td:nth-child(2) small {
+    display: block;
+    max-width: 210px;
+    white-space: normal;
+  }
+
+  .bandeja-tabla.supervision-tabla th,
+  .bandeja-tabla.supervision-tabla td,
+  .bandeja-tabla.supervision-tabla td:nth-child(n + 3):not(:last-child) {
+    padding-inline: 12px;
+  }
+
+  .supervision-rejilla {
+    grid-template-columns: minmax(0, 1fr) 290px;
+  }
+
+  .supervision-carga {
+    order: 0;
+  }
+}

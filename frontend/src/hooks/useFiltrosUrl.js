@@ -26,6 +26,18 @@ export function useFiltrosUrl(nombres, textoLibre = "q") {
       { replace: nombre === textoLibre },
     );
 
+    /** Cambia varios filtros a la vez (por ejemplo, desde y hasta de un periodo) en una sola entrada del historial. */
+  const cambiarFiltros = (valores) =>
+    setParametros((anteriores) => {
+      const nuevos = new URLSearchParams(anteriores);
+      Object.entries(valores).forEach(([nombre, valor]) => {
+        if (valor) nuevos.set(nombre, valor);
+        else nuevos.delete(nombre);
+      });
+      nuevos.delete("pagina");
+      return nuevos;
+    });
+
   const cambiarPagina = (numero) =>
     setParametros((anteriores) => {
       const nuevos = new URLSearchParams(anteriores);
@@ -36,5 +48,5 @@ export function useFiltrosUrl(nombres, textoLibre = "q") {
 
   const limpiar = () => setParametros({});
 
-  return { filtros, pagina, hayFiltros, cambiarFiltro, cambiarPagina, limpiar };
+  return { filtros, pagina, hayFiltros, cambiarFiltro, cambiarFiltros, cambiarPagina, limpiar };
 }

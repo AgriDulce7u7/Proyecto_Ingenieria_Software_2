@@ -4,6 +4,7 @@ import { Boton } from "../../componentes/ui/Boton";
 import { Campo } from "../../componentes/ui/Campo";
 import { Icono } from "../../componentes/ui/Icono";
 import { useTituloPagina } from "../../hooks/useTituloPagina";
+import { useSesion } from "../../sesion/useSesion";
 import { FORMATO_RADICADO, normalizarRadicado } from "./radicado";
 import "./inicio.css";
 
@@ -13,7 +14,41 @@ const PASOS = [
   { titulo: "Consulte el avance", texto: "Revise el estado y las fechas sin crear una cuenta." },
 ];
 
-/** Inicio del portal ciudadano: radicar una PQR o consultar una existente. */
+/** Acceso al portal de autogestión (F-06): facturas, consumo y pago en línea con la cuenta del ciudadano. */
+function Autogestion() {
+  const { esCiudadano } = useSesion();
+  return (
+    <section className="inicio-autogestion" aria-labelledby="autogestion-titulo">
+      <span className="inicio-autogestion-icono" aria-hidden="true">
+        <Icono nombre="recibo" tamano={26} />
+      </span>
+      <div>
+        <h2 id="autogestion-titulo">Consulte y pague sus facturas</h2>
+        <p>
+          Con su cuenta del portal vea la factura del mes, su historial de consumo y pague en línea con tarjeta.
+        </p>
+      </div>
+      <div className="inicio-autogestion-acciones">
+        {esCiudadano ? (
+          <Boton a="/mi-cuenta" icono="flecha">
+            Ir a mi cuenta
+          </Boton>
+        ) : (
+          <>
+            <Boton a="/ingresar" icono="candado">
+              Ingresar
+            </Boton>
+            <Boton a="/activar-cuenta" variante="secundario">
+              Activar mi cuenta
+            </Boton>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/** Inicio del portal ciudadano: radicar o consultar una PQR y entrar al portal de autogestión. */
 export function Inicio() {
   useTituloPagina("Atención ciudadana");
   const navegar = useNavigate();
@@ -97,6 +132,8 @@ export function Inicio() {
           ))}
         </ol>
       </section>
+
+      <Autogestion />
     </>
   );
 }

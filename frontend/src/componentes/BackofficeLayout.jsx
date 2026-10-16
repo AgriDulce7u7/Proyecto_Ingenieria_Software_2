@@ -1,20 +1,13 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, NavLink, Outlet, ScrollRestoration } from "react-router-dom";
 import { useSesion } from "../sesion/useSesion";
-import { SelectorGestor } from "./SelectorGestor";
+import { CargaPagina } from "./CargaPagina";
+import { menuPermitido } from "./menuGestion";
 import { Icono } from "./ui/Icono";
 import { Logo } from "./ui/Logo";
 import "./backoffice.css";
 
-const MENU = [
-  { a: "/gestion/pqr", texto: "Gestión de PQR", icono: "documento" },
-  { a: "/gestion/alertas", texto: "Alertas", icono: "campana" },
-  { a: "/gestion/facturacion", texto: "Facturación", icono: "recibo", fin: true },
-  { a: "/gestion/facturacion/lotes", texto: "Lotes de facturación", icono: "capas" },
-  { a: "/gestion/facturacion/facturas", texto: "Facturas", icono: "documento" },
-];
-
-/** Iniciales del gestor para el avatar: "Laura Giraldo Ríos" → "LG". */
+/** Iniciales del usuario para el avatar: "Laura Giraldo Ríos" → "LG". */
 const iniciales = (nombre = "") =>
   nombre
     .split(" ")
@@ -24,12 +17,13 @@ const iniciales = (nombre = "") =>
     .join("");
 
 /**
- * Back-office de funcionarios: atención de PQR (F-02) y facturación (F-01).
+ * Back-office de funcionarios. El menú muestra solo las secciones que permite el rol del usuario.
  * En escritorio el menú es una columna fija; en pantallas pequeñas es un panel lateral
  * que se abre con el botón de menú y se cierra al navegar, al tocar fuera o con Esc.
  */
 export function BackofficeLayout() {
-  const { gestor } = useSesion();
+  const { usuario, puede, cerrarSesion } = useSesion();
+  const opciones = menuPermitido(puede);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const botonMenu = useRef(null);
   const menu = useRef(null);
@@ -65,7 +59,7 @@ export function BackofficeLayout() {
         </Link>
         <nav aria-label="Back-office">
           <ul>
-            {MENU.map((opcion) => (
+            {opciones.map((opcion) => (
               <li key={opcion.a}>
                 <NavLink to={opcion.a} end={opcion.fin} onClick={cerrarMenu}>
                   <Icono nombre={opcion.icono} tamano={19} />
@@ -105,17 +99,29 @@ export function BackofficeLayout() {
             </span>
           </Link>
 
-          <SelectorGestor />
-          <Link to="/gestion/alertas" className="gestion-boton-icono gestion-campana" aria-label="Ver alertas">
-            <Icono nombre="campana" />
-          </Link>
-          <span className="gestion-avatar" aria-hidden="true">
-            {gestor ? iniciales(gestor.nombre) : "?"}
-          </span>
+          {puede("PQR_ATENDER") && (
+            <Link to="/gestion/alertas" className="gestion-boton-icono gestion-campana" aria-label="Ver alertas">
+              <Icono nombre="campana" />
+            </Link>
+          )}
+          <div className="gestion-usuario">
+            <span className="gestion-avatar" aria-hidden="true">
+              {iniciales(usuario.nombre)}
+            </span>
+            <span className="gestion-usuario-datos">
+              <strong>{usuario.nombre}</strong>
+              <small>{usuario.descripcionRol}</small>
+            </span>
+          </div>
+          <button type="button" className="gestion-boton-icono" onClick={cerrarSesion} aria-label="Cerrar sesión" title="Cerrar sesión">
+            <Icono nombre="salir" />
+          </button>
         </header>
 
         <main id="contenido-gestion" tabIndex={-1} className="gestion-contenido">
-          <Outlet />
+                    <CargaPagina>
+            <Outlet />
+          </CargaPagina>
         </main>
       </div>
       <ScrollRestoration />

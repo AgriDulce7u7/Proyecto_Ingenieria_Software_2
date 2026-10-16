@@ -1,4 +1,4 @@
-import { solicitar } from "./cliente";
+import { descargar, solicitar } from "./cliente";
 
 /** Endpoints de F-02: registro y seguimiento de PQR. */
 
@@ -28,5 +28,29 @@ export const responderPqr = (radicado, { gestorId, respuesta }) =>
   solicitar(`/pqr/${radicado}/responder`, { metodo: "PATCH", cuerpo: { gestorId, respuesta } });
 export const cerrarPqr = (radicado, { usuario, observacion }) =>
   solicitar(`/pqr/${radicado}/cerrar`, { metodo: "PATCH", cuerpo: { usuario, observacion } });
+
+// Evidencias documentales (RN-06: la respuesta exige al menos una)
+export const listarEvidencias = (radicado) => solicitar(`/pqr/${radicado}/evidencias`);
+export function adjuntarEvidencia(radicado, { archivo, descripcion }) {
+  const formulario = new FormData();
+  formulario.append("archivo", archivo);
+  return solicitar(`/pqr/${radicado}/evidencias`, {
+    metodo: "POST",
+    cuerpo: formulario,
+    parametros: { descripcion },
+  });
+}
+export const descargarEvidencia = (radicado, evidencia) =>
+  descargar(`/pqr/${radicado}/evidencias/${evidencia.id}/archivo`, { nombre: evidencia.nombreArchivo });
+
+// Supervisión e indicadores (StR-02c, SyR-02f)
+export const obtenerAlertasEquipo = () => solicitar("/pqr/supervision/alertas");
+export const obtenerCumplimiento = ({ desde, hasta } = {}) =>
+  solicitar("/pqr/indicadores/cumplimiento", { parametros: { desde, hasta } });
+export const exportarCumplimiento = ({ formato, desde, hasta }) =>
+  descargar("/pqr/indicadores/cumplimiento/exportar", {
+    parametros: { formato, desde, hasta },
+    nombre: `cumplimiento-pqr.${formato === "excel" ? "xlsx" : "pdf"}`,
+  });
 
 export const ejecutarMonitoreo = () => solicitar("/pqr/monitoreo", { metodo: "POST" });

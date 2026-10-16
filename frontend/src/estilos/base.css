@@ -131,6 +131,20 @@ p {
   color: var(--color-tinta-suave);
 }
 
+/* Aviso mientras se descarga una pantalla (CargaPagina) */
+.carga-pagina {
+  width: min(100% - 32px, var(--ancho-contenido));
+  min-height: 40vh;
+  margin-inline: auto;
+  padding-block: 32px;
+}
+
+.gestion-contenido .carga-pagina,
+.cuenta .carga-pagina {
+  width: auto;
+  padding-block: 8px;
+}
+
 .aviso {
   padding: var(--espacio-3) var(--espacio-4);
   border-left: 4px solid;
@@ -146,4 +160,9 @@ p {
 .aviso-exito {
   background: var(--color-exito-claro);
   border-color: var(--color-exito);
+}
+
+.aviso-info {
+  background: var(--color-info-claro);
+  border-color: var(--color-agua);
 }

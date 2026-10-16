@@ -6,6 +6,7 @@ import { Etiqueta } from "../../../componentes/ui/Etiqueta";
 import { useContratos, useGenerarLote, useProgramacion } from "../../../hooks/useFacturacion";
 import { formatearNumero, partesPeriodo, presentarEstadoLote } from "../../../presentacion/facturacion";
 import { formatearFecha } from "../../../presentacion/fechas";
+import { useSesion } from "../../../sesion/useSesion";
 import { ResultadoLote } from "./ResultadoLote";
 import "./programacion.css";
 
@@ -24,13 +25,14 @@ export function Programacion() {
   const programacion = useProgramacion();
   const contratosActivos = useContratos("ACTIVO");
   const generacion = useGenerarLote();
+  const puedeOperar = useSesion().puede("FACTURACION_OPERAR");
 
   return (
     <>
       <EncabezadoGestion
         antetitulo="Ciclo mensual"
         titulo="Facturación"
-        descripcion="Consulte la programación y genere el lote del periodo."
+        descripcion={puedeOperar ? "Consulte la programación y genere el lote del periodo." : "Consulte la programación del lote del periodo."}
       />
 
       {programacion.isPending && <Cargando texto="Cargando la programación…" />}
@@ -41,13 +43,14 @@ export function Programacion() {
           programacion={programacion.data}
           contratosActivos={contratosActivos.data?.length}
           generacion={generacion}
+          puedeOperar={puedeOperar}
         />
       )}
     </>
   );
 }
 
-function ContenidoProgramacion({ programacion, contratosActivos, generacion }) {
+function ContenidoProgramacion({ programacion, contratosActivos, generacion, puedeOperar }) {
   const periodo = partesPeriodo(programacion.periodoPendienteDeFacturar);
   const estadoLote = presentarEstadoLote(programacion.estadoLotePeriodoPendiente);
   const loteCompletado = programacion.estadoLotePeriodoPendiente === "COMPLETADO";
@@ -95,14 +98,20 @@ function ContenidoProgramacion({ programacion, contratosActivos, generacion }) {
             </div>
           </dl>
           <div className="programacion-accion">
-            <p>
+                      <p>
               {loteCompletado
-                ? "El lote de este periodo ya se generó. Volver a ejecutarlo no duplica facturas."
-                : "Puede generar el lote ahora o esperar la ejecución programada."}
+                ? "El lote de este periodo ya se generó."
+                : "El lote se generará en la ejecución programada."}
+              {puedeOperar &&
+                (loteCompletado
+                  ? " Volver a ejecutarlo no duplica facturas."
+                  : " También puede generarlo ahora.")}
             </p>
-            <Boton icono="mas" onClick={() => generacion.mutate()} disabled={generacion.isPending}>
-              {generacion.isPending ? "Generando lote…" : "Generar lote manual"}
-            </Boton>
+            {puedeOperar && (
+              <Boton icono="mas" onClick={() => generacion.mutate()} disabled={generacion.isPending}>
+                {generacion.isPending ? "Generando lote…" : "Generar lote manual"}
+              </Boton>
+            )}
           </div>
         </section>
 
