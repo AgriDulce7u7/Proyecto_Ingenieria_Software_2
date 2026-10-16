@@ -126,6 +126,15 @@
     min-height: 100px;
     padding: 22px max(24px, calc((100% - 1132px) / 2));
   }
+
+  .portal-pie-enlace {
+  font-weight: 650;
+  color: var(--color-agua);
+}
+
+.portal-pie-enlace:hover {
+  text-decoration: underline;
+}
 }
 
 @media (min-width: 56.25rem) {

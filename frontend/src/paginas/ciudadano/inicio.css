@@ -173,6 +173,49 @@
   line-height: 1.5;
 }
 
+/* ---------------------------------------------------------------- portal de autogestión */
+
+.inicio-autogestion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 0 20px 60px;
+  padding: 24px 20px;
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-borde);
+  border-radius: var(--radio-grande);
+}
+
+.inicio-autogestion-icono {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  color: var(--color-agua);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-agua-borde);
+  border-radius: 14px;
+}
+
+.inicio-autogestion h2 {
+  margin-bottom: 6px;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--color-agua-profundo);
+}
+
+.inicio-autogestion p {
+  font-size: 14px;
+}
+
+.inicio-autogestion-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 /* ---------------------------------------------------------------- tableta */
 
 @media (min-width: 37.5rem) {
@@ -205,6 +248,21 @@
   .inicio-pasos {
     margin: 0 28px 60px;
   }
+
+    .inicio-autogestion {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 28px 70px;
+    padding: 28px 30px;
+  }
+
+  .inicio-autogestion > div:nth-child(2) {
+    flex: 1;
+  }
+
+  .inicio-autogestion-acciones {
+    flex: none;
+  }
 }
 
 /* ---------------------------------------------------------------- escritorio */
@@ -233,5 +291,10 @@
   .inicio-pasos ol {
     grid-template-columns: repeat(3, 1fr);
     gap: 64px;
+  }
+
+    .inicio-autogestion {
+    max-width: 1132px;
+    margin: 0 auto 90px;
   }
 }

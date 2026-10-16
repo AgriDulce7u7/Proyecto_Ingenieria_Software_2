@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { iniciarSesionFuncionario } from "../../api/autenticacion";
 import { Boton } from "../../componentes/ui/Boton";
 import { Campo } from "../../componentes/ui/Campo";
@@ -124,7 +124,8 @@ export function IniciarSesion() {
         </Boton>
 
         <p className="acceso-nota">
-          ¿Es ciudadano? Radique o consulte su PQR desde el <a href="/">portal</a>, sin crear una cuenta.
+          ¿Es ciudadano? <Link to="/ingresar">Ingrese a su cuenta</Link> para consultar y pagar sus facturas, o
+          radique una PQR desde el <Link to="/">portal</Link> sin crear una cuenta.
         </p>
       </form>
     </div>

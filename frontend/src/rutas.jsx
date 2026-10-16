@@ -3,9 +3,21 @@ import { BackofficeLayout } from "./componentes/BackofficeLayout";
 import { InicioGestion } from "./componentes/InicioGestion";
 import { NoEncontrada } from "./componentes/NoEncontrada";
 import { PortalLayout } from "./componentes/PortalLayout";
+import { RutaCiudadano } from "./componentes/RutaCiudadano";
 import { RutaProtegida } from "./componentes/RutaProtegida";
 import { IniciarSesion } from "./paginas/acceso/IniciarSesion";
 import { Constancia } from "./paginas/ciudadano/Constancia";
+import { ActivarCuenta } from "./paginas/ciudadano/cuenta/ActivarCuenta";
+import { ComprobanteCiudadano } from "./paginas/ciudadano/cuenta/ComprobanteCiudadano";
+import { ContratoCiudadano } from "./paginas/ciudadano/cuenta/ContratoCiudadano";
+import { CuentaLayout } from "./paginas/ciudadano/cuenta/CuentaLayout";
+import { FacturaCiudadano } from "./paginas/ciudadano/cuenta/FacturaCiudadano";
+import { FacturasCiudadano } from "./paginas/ciudadano/cuenta/FacturasCiudadano";
+import { IngresarCiudadano } from "./paginas/ciudadano/cuenta/IngresarCiudadano";
+import { MisDatos } from "./paginas/ciudadano/cuenta/MisDatos";
+import { PagarFactura } from "./paginas/ciudadano/cuenta/PagarFactura";
+import { PagosCiudadano } from "./paginas/ciudadano/cuenta/PagosCiudadano";
+import { Resumen } from "./paginas/ciudadano/cuenta/Resumen";
 import { ConsultarEstado } from "./paginas/ciudadano/ConsultarEstado";
 import { Inicio } from "./paginas/ciudadano/Inicio";
 import { RadicarPqr } from "./paginas/ciudadano/RadicarPqr";
@@ -54,6 +66,38 @@ export const enrutador = createBrowserRouter([
       { path: "consultar", element: <ConsultarEstado /> },
       // RF-14, RNF-05
       { path: "acceso", element: <IniciarSesion /> },
+
+      // F-06 · Portal de autogestión ciudadana (IU-01)
+      // RF-07, CU-05
+      { path: "ingresar", element: <IngresarCiudadano /> },
+      // CU-01 (autorregistro en el portal)
+      { path: "activar-cuenta", element: <ActivarCuenta /> },
+      {
+        path: "mi-cuenta",
+        element: (
+          <RutaCiudadano>
+            <CuentaLayout />
+          </RutaCiudadano>
+        ),
+        children: [
+          // RF-07, CU-05
+          { index: true, element: <Resumen /> },
+          // RF-07, CU-05, SWR-25, SWR-26, SWR-28
+          { path: "contratos/:numero", element: <ContratoCiudadano /> },
+          // RF-07, SWR-25, SWR-27
+          { path: "facturas", element: <FacturasCiudadano /> },
+          // RF-07, SWR-25, SWR-27
+          { path: "facturas/:numero", element: <FacturaCiudadano /> },
+          // RF-06, CU-04, RN-05, SWR-21, SWR-22, SWR-23
+          { path: "facturas/:numero/pagar", element: <PagarFactura /> },
+          // RF-06, SWR-22, SWR-24
+          { path: "pagos", element: <PagosCiudadano /> },
+          // SWR-22
+          { path: "pagos/:codigo", element: <ComprobanteCiudadano /> },
+          // RF-07 (actualización de datos de contacto)
+          { path: "datos", element: <MisDatos /> },
+        ],
+      },
     ],
   },
   {

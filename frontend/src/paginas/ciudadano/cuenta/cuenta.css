@@ -1,0 +1,1091 @@
+/* Portal de autogestión ciudadana: ingreso, activación y «Mi cuenta» (mobile-first). */
+
+/* ---------------------------------------------------------------- ingreso y activación */
+
+.cuenta-acceso-icono {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-borde);
+  border-radius: 14px;
+}
+
+.cuenta-acceso-activar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 16px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-panel);
+}
+
+.cuenta-acceso-activar strong {
+  font-size: 13px;
+}
+
+.cuenta-acceso-activar p {
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.cuenta-contrasena {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cuenta-reglas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 12px;
+}
+
+.cuenta-reglas li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.cuenta-reglas li[data-cumple="true"] {
+  font-weight: 600;
+  color: var(--color-exito);
+}
+
+/* ---------------------------------------------------------------- estructura de «Mi cuenta» */
+
+.cuenta-encabezado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.cuenta-encabezado h1 {
+  margin: 8px 0 6px;
+  font-size: 32px;
+  letter-spacing: -0.035em;
+  color: var(--color-agua-profundo);
+}
+
+.cuenta-encabezado p {
+  font-size: 15px;
+}
+
+/* Pestañas: se desplazan a lo ancho en pantallas pequeñas */
+.cuenta-pestanas {
+  display: flex;
+  gap: 4px;
+  margin: 0 -16px 26px;
+  padding: 0 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--color-borde);
+  scrollbar-width: none;
+}
+
+.cuenta-pestanas a {
+  flex: none;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+  border-bottom: 2px solid transparent;
+}
+
+.cuenta-pestanas a:hover {
+  color: var(--color-agua-oscuro);
+}
+
+.cuenta-pestanas a.active {
+  color: var(--color-agua-oscuro);
+  border-color: var(--color-agua);
+}
+
+.cuenta-volver {
+  margin-bottom: 18px;
+}
+
+.cuenta-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cuenta-seccion h2,
+.cuenta-titulo-seccion {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--color-agua-profundo);
+}
+
+.cuenta-titulo-seccion {
+  margin-bottom: 18px;
+}
+
+.cuenta-seccion-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.cuenta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 17px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-panel);
+}
+
+.cuenta-panel h2,
+.cuenta-panel h3 {
+  font-size: 17px;
+  color: var(--color-tinta);
+}
+
+.cuenta-panel-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.cuenta-panel-titulo p {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--color-tinta-tenue);
+}
+
+.cuenta-vacio,
+.cuenta-nota {
+  font-size: 13px;
+  color: var(--color-tinta-suave);
+}
+
+.cuenta-enlace {
+  font-weight: 650;
+  color: var(--color-agua);
+}
+
+.cuenta-enlace:hover {
+  text-decoration: underline;
+}
+
+.cuenta-selector {
+  min-height: 40px;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--color-tinta);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde-control);
+  border-radius: var(--radio-control);
+}
+
+/* Botones de filtro con forma de píldora (estado de cobro, gráfica o tabla) */
+.cuenta-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cuenta-filtro {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--color-tinta-suave);
+  border: 1px solid var(--color-borde-control);
+  border-radius: 999px;
+}
+
+.cuenta-filtro:hover {
+  color: var(--color-agua-oscuro);
+  background: var(--color-agua-suave);
+}
+
+.cuenta-filtro[aria-pressed="true"] {
+  color: var(--color-agua-oscuro);
+  background: var(--color-agua-claro);
+  border-color: var(--color-agua-borde);
+}
+
+/* ---------------------------------------------------------------- resumen */
+
+/* Mismo bloque oscuro de la programación de facturación y del comprobante */
+.cuenta-saldo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+  margin-bottom: 30px;
+  padding: 24px 20px;
+  color: var(--color-superficie);
+  background: var(--color-agua-profundo);
+  border-radius: var(--radio-grande);
+}
+
+.cuenta-saldo::after {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -80px;
+  width: 240px;
+  height: 240px;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 44% 56%;
+  transform: rotate(25deg);
+}
+
+.cuenta-saldo .antetitulo {
+  color: #83cedd;
+}
+
+.cuenta-saldo-valor {
+  display: block;
+  margin: 8px 0 8px;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.cuenta-saldo p {
+  font-size: 13px;
+  color: #bfd6db;
+}
+
+.cuenta-saldo-boton {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+}
+
+.cuenta-contratos {
+  display: grid;
+  gap: 14px;
+}
+
+.cuenta-contrato {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-panel);
+}
+
+.cuenta-contrato-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cuenta-contrato-cabecera > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.cuenta-contrato-cabecera h3 {
+  font-size: 16px;
+}
+
+.cuenta-contrato-cabecera small {
+  font-size: 12px;
+  color: var(--color-tinta-tenue);
+}
+
+.cuenta-contrato-icono {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+  border-radius: 12px;
+}
+
+.cuenta-contrato-direccion {
+  font-size: 13px;
+  color: var(--color-tinta-suave);
+}
+
+.cuenta-contrato-datos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  border-block: 1px solid var(--color-borde-suave);
+}
+
+.cuenta-contrato-datos dt {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.cuenta-contrato-datos dd {
+  margin-top: 3px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cuenta-dato-vencido {
+  color: var(--color-vencido);
+}
+
+.cuenta-contrato-alerta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--color-vencido);
+}
+
+.cuenta-contrato-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-agua);
+}
+
+.cuenta-contrato-enlace:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- servicio (contrato) */
+
+.cuenta-servicio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+  margin-bottom: 20px;
+}
+
+.cuenta-servicio > div {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.cuenta-servicio h2 {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--color-agua-profundo);
+}
+
+.cuenta-servicio h2 span {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-tinta-tenue);
+}
+
+.cuenta-servicio p {
+  font-size: 13px;
+}
+
+.cuenta-columnas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cuenta-factura-actual {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-borde);
+  border-radius: var(--radio-panel);
+}
+
+.cuenta-factura-actual-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cuenta-factura-actual-total {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-agua-profundo);
+}
+
+.cuenta-factura-actual-datos p {
+  font-size: 13px;
+}
+
+.cuenta-factura-actual-acciones {
+  display: grid;
+  gap: 8px;
+}
+
+.cuenta-factura-pendiente {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  color: var(--color-agua-oscuro);
+  background: var(--color-info-claro);
+  border: 1px solid var(--color-agua-linea);
+  border-radius: var(--radio-panel);
+}
+
+.cuenta-factura-pendiente strong {
+  font-size: 14px;
+}
+
+.cuenta-factura-pendiente p {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--color-tinta);
+}
+
+/* ---------------------------------------------------------------- historial de consumo */
+
+.consumos-resumen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.consumos-resumen div {
+  padding: 12px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-control);
+}
+
+.consumos-resumen dt {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.consumos-resumen dd {
+  margin-top: 3px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.consumos-grafica {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+/* Eje vertical: máximo, mitad y cero, alineados con las guías */
+.consumos-eje {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  font-size: 10px;
+  text-align: right;
+  color: var(--color-tinta-tenue);
+  transform: translateY(-6px);
+}
+
+.consumos-area {
+  position: relative;
+  min-width: 0;
+}
+
+.consumos-guias {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 190px;
+  pointer-events: none;
+}
+
+.consumos-guias i {
+  border-top: 1px solid var(--color-borde-suave);
+}
+
+.consumos-guias i:last-child {
+  border-top-color: var(--color-borde);
+}
+
+.consumos-barras {
+  position: relative;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 2px;
+}
+
+.consumos-barras li {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+}
+
+/* El botón ocupa toda la columna: el área para el puntero es mayor que la barra */
+.consumos-barra {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 190px;
+  border-radius: 4px;
+}
+
+.consumos-barra span {
+  display: block;
+  width: min(100%, 22px);
+  background: var(--color-agua);
+  border-radius: 4px 4px 0 0;
+}
+
+.consumos-barra .consumos-barra-vacia {
+  height: 2px;
+  background: var(--color-borde-control);
+  border-radius: 1px;
+}
+
+.consumos-barras li[data-activo="true"] .consumos-barra {
+  background: var(--color-agua-suave);
+}
+
+.consumos-barras li[data-activo="true"] .consumos-barra span:not(.consumos-barra-vacia) {
+  background: var(--color-agua-oscuro);
+}
+
+.consumos-mes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 10px;
+  color: var(--color-tinta-tenue);
+  white-space: nowrap;
+}
+
+.consumos-mes b {
+  font-weight: 600;
+  color: var(--color-tinta-suave);
+}
+
+.consumos-mes-oculto {
+  visibility: hidden;
+}
+
+/* Ayuda emergente sobre la barra activa; en los extremos se alinea al borde para no salirse */
+.consumos-ayuda {
+  position: absolute;
+  top: -8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+  padding: 9px 11px;
+  font-size: 12px;
+  color: var(--color-tinta);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-control);
+  box-shadow: var(--sombra-panel);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.consumos-ayuda[data-borde="inicio"] {
+  transform: none;
+}
+
+.consumos-ayuda[data-borde="fin"] {
+  transform: translateX(-100%);
+}
+
+.consumos-ayuda strong {
+  font-size: 12px;
+}
+
+.consumos-ayuda span {
+  color: var(--color-tinta-suave);
+}
+
+.consumos-tabla-contenedor {
+  overflow-x: auto;
+}
+
+.consumos-tabla {
+  width: 100%;
+  font-size: 13px;
+  border-collapse: collapse;
+}
+
+.consumos-tabla th,
+.consumos-tabla td {
+  padding: 10px 8px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.consumos-tabla thead th {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--color-tinta-suave);
+}
+
+.consumos-tabla tbody th {
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------------- facturas */
+
+.cuenta-facturas {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-panel);
+}
+
+.cuenta-panel .cuenta-facturas {
+  border: 0;
+  border-radius: 0;
+}
+
+.cuenta-facturas li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.cuenta-panel .cuenta-facturas li {
+  padding-inline: 0;
+}
+
+.cuenta-facturas li:last-child {
+  border-bottom: 0;
+}
+
+.cuenta-factura-periodo,
+.cuenta-factura-valor {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cuenta-factura-periodo strong {
+  font-size: 14px;
+}
+
+.cuenta-factura-periodo a {
+  white-space: nowrap;
+}
+
+.cuenta-factura-periodo a,
+.cuenta-factura-periodo small,
+.cuenta-factura-valor small {
+  font-size: 12px;
+}
+
+.cuenta-factura-periodo small,
+.cuenta-factura-valor small {
+  color: var(--color-tinta-tenue);
+}
+
+.cuenta-factura-valor {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.cuenta-factura-valor strong {
+  font-size: 15px;
+}
+
+.cuenta-factura-acciones {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.cuenta-factura-acciones .boton {
+  min-height: 38px;
+}
+
+.cuenta-factura-anulada .cuenta-factura-valor strong {
+  color: var(--color-tinta-tenue);
+  text-decoration: line-through;
+}
+
+.cuenta-titulo-factura {
+  margin: 6px 0 10px;
+  font-size: 26px;
+  color: var(--color-agua-profundo);
+}
+
+/* La liquidación del back-office usa h2; en el portal el título de la sección es h3 */
+.factura-liquidacion h3 {
+  padding: 18px 16px;
+  font-size: 16px;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+/* ---------------------------------------------------------------- pago en línea */
+
+.pagar-rejilla {
+  display: grid;
+  gap: 18px;
+  align-items: start;
+}
+
+/* En móvil el resumen va primero: el ciudadano confirma cuánto paga antes de escribir la tarjeta */
+.pagar-resumen {
+  order: -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 20px;
+  color: var(--color-superficie);
+  background: var(--color-agua-profundo);
+  border-radius: var(--radio-grande);
+}
+
+.pagar-resumen .antetitulo {
+  color: #83cedd;
+}
+
+.pagar-resumen-total {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.pagar-resumen dl {
+  margin: 10px 0 4px;
+  border-top: 1px solid rgb(255 255 255 / 16%);
+}
+
+.pagar-resumen dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+}
+
+.pagar-resumen dt {
+  font-size: 12px;
+  color: #bfd6db;
+}
+
+.pagar-resumen dd {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.pagar-resumen p {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #bfd6db;
+}
+
+.pagar-resumen p .icono {
+  flex: none;
+  margin-top: 1px;
+}
+
+.pagar-formulario > .boton {
+  width: 100%;
+}
+
+.pagar-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pagar-fila .campo:last-child {
+  grid-column: 1 / -1;
+}
+
+.pagar-pruebas {
+  font-size: 12px;
+  color: var(--color-tinta-suave);
+}
+
+.pagar-pruebas summary {
+  font-weight: 650;
+  color: var(--color-agua);
+  cursor: pointer;
+}
+
+.pagar-pruebas p {
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.pagar-pruebas li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 7px 0;
+  border-bottom: 1px dashed var(--color-borde);
+}
+
+.pagar-pruebas li span {
+  font-weight: 650;
+  color: var(--color-tinta);
+}
+
+/* ---------------------------------------------------------------- pagos y comprobante */
+
+.cuenta-pagos {
+  overflow: hidden;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-panel);
+}
+
+.cuenta-pagos li + li {
+  border-top: 1px solid var(--color-borde-suave);
+}
+
+.cuenta-pago {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 15px 16px;
+}
+
+.cuenta-pago:hover {
+  background: var(--color-fondo);
+}
+
+.cuenta-pago-icono {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-exito);
+  background: var(--color-exito-claro);
+  border-radius: 50%;
+}
+
+.cuenta-pago-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cuenta-pago-datos strong {
+  font-size: 15px;
+}
+
+.cuenta-pago-datos small {
+  font-size: 12px;
+  color: var(--color-tinta-tenue);
+}
+
+.cuenta-pago-comprobante {
+  display: inline-flex;
+  grid-column: 2 / -1;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--color-agua);
+}
+
+.cuenta-comprobante {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 680px;
+}
+
+.cuenta-comprobante-acciones {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+}
+
+/* ---------------------------------------------------------------- mis datos */
+
+.cuenta-datos-rejilla {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+
+.cuenta-identificacion div {
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.cuenta-identificacion div:first-child {
+  padding-top: 0;
+}
+
+.cuenta-identificacion dt {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.cuenta-identificacion dd {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cuenta-contacto-acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---------------------------------------------------------------- tableta */
+
+@media (min-width: 37.5rem) {
+  .cuenta-encabezado {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .cuenta-encabezado h1 {
+    font-size: 40px;
+  }
+
+  .cuenta-pestanas {
+    margin-inline: 0;
+    padding: 0;
+  }
+
+  .cuenta-panel {
+    padding: 24px;
+  }
+
+  .cuenta-saldo {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 28px;
+  }
+
+  .cuenta-saldo-valor {
+    font-size: 48px;
+  }
+
+  .cuenta-saldo-boton {
+    align-self: auto;
+  }
+
+  .cuenta-contratos {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cuenta-factura-actual {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cuenta-factura-actual-acciones {
+    flex: none;
+  }
+
+  .consumos-resumen {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .consumos-eje,
+  .consumos-guias,
+  .consumos-barra {
+    height: 220px;
+  }
+
+  .consumos-barras {
+    gap: 4px;
+  }
+
+  .cuenta-facturas li {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .cuenta-factura-acciones {
+    grid-column: auto;
+    justify-content: flex-end;
+    min-width: 200px;
+  }
+
+  .pagar-fila {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .pagar-fila .campo:last-child {
+    grid-column: auto;
+  }
+
+  .cuenta-pago {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+
+  .cuenta-pago-comprobante {
+    grid-column: auto;
+  }
+
+  .cuenta-comprobante-acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+/* ---------------------------------------------------------------- escritorio */
+
+@media (min-width: 56.25rem) {
+  .cuenta-contratos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .pagar-rejilla {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+
+  .pagar-resumen {
+    order: 0;
+    position: sticky;
+    top: 24px;
+  }
+
+  .cuenta-datos-rejilla {
+    grid-template-columns: 340px minmax(0, 1fr);
+  }
+}
