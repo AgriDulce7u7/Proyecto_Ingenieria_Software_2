@@ -147,3 +147,8 @@ p {
   background: var(--color-exito-claro);
   border-color: var(--color-exito);
 }
+
+.aviso-info {
+  background: var(--color-info-claro);
+  border-color: var(--color-agua);
+}

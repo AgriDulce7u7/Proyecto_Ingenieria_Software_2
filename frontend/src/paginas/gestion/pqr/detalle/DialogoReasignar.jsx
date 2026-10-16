@@ -5,7 +5,11 @@ import { Campo } from "../../../../componentes/ui/Campo";
 import { enfocarError } from "./enfocarError";
 import { useGestores } from "../../../../hooks/usePqr";
 
-/** Formulario para cambiar el gestor responsable. Queda auditado con el usuario y el motivo (SWR-09). */
+/**
+ * Formulario para cambiar el gestor responsable (solo jefe de PQR y administrador). Queda auditado
+ * con el usuario que inició sesión y el motivo (SWR-09). Cada gestor se muestra con su municipio
+ * para asignar por territorio.
+ */
 export function DialogoReasignar({ pqr, usuario, accion, onListo, onCancelar }) {
   const { data: gestores = [] } = useGestores();
   const candidatos = gestores.filter((gestor) => gestor.id !== pqr.gestor?.id);
@@ -43,7 +47,8 @@ export function DialogoReasignar({ pqr, usuario, accion, onListo, onCancelar }) 
         <option value="">Seleccione un gestor</option>
         {candidatos.map((gestor) => (
           <option key={gestor.id} value={gestor.id}>
-            {gestor.nombre}
+            {gestor.municipio ? `${gestor.nombre} · ${gestor.municipio}` : gestor.nombre}
+            {gestor.esJefe ? " (jefe)" : ""}
           </option>
         ))}
       </Campo>

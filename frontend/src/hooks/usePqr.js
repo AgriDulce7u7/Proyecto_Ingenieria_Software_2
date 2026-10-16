@@ -1,8 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  adjuntarEvidencia,
   consultarEstadoPqr,
   ejecutarMonitoreo,
   cerrarPqr,
+  listarEvidencias,
+  obtenerAlertasEquipo,
+  obtenerCumplimiento,
   listarPqr,
   obtenerEstados,
   obtenerGestores,
@@ -29,6 +33,9 @@ export const clavesPqr = {
   detalle: (radicado) => ["pqr", "detalle", radicado],
   historial: (radicado) => ["pqr", "detalle", radicado, "historial"],
   notificaciones: (radicado) => ["pqr", "detalle", radicado, "notificaciones"],
+  evidencias: (radicado) => ["pqr", "detalle", radicado, "evidencias"],
+  alertasEquipo: ["pqr", "supervision", "alertas"],
+  cumplimiento: (periodo) => ["pqr", "indicadores", "cumplimiento", periodo],
 };
 
 // Los catálogos no cambian durante la sesión: se piden una sola vez.
@@ -44,7 +51,7 @@ export function useEstadosPqr() {
   return useQuery({ queryKey: clavesPqr.estados, queryFn: obtenerEstados, ...CATALOGO });
 }
 
-/** Gestores activos (selector del gestor actual y filtros). */
+/** Gestores activos (filtro de la bandeja y reasignación). */
 export function useGestores() {
   return useQuery({ queryKey: clavesPqr.gestores, queryFn: obtenerGestores, staleTime: 5 * 60 * 1000 });
 }
@@ -76,7 +83,7 @@ export function useBandejaPqr(filtros = {}) {
   });
 }
 
-/** Notificaciones del gestor actual (asignaciones, alertas de 48 h y vencimientos). */
+/** Notificaciones de un gestor (asignaciones, alertas de 48 h y vencimientos). No consulta sin gestor. */
 export function useNotificacionesGestor(gestorId) {
   return useQuery({
     queryKey: clavesPqr.notificacionesGestor(gestorId),
@@ -115,6 +122,44 @@ export function useHistorialPqr(radicado) {
 /** Notificaciones enviadas por la PQR (al ciudadano y al gestor). */
 export function useNotificacionesPqr(radicado) {
   return useQuery({ queryKey: clavesPqr.notificaciones(radicado), queryFn: () => obtenerNotificacionesPqr(radicado) });
+}
+
+/** Evidencias documentales adjuntas a la PQR (RN-06, RF-09). */
+export function useEvidenciasPqr(radicado) {
+  return useQuery({ queryKey: clavesPqr.evidencias(radicado), queryFn: () => listarEvidencias(radicado) });
+}
+
+/** Adjunta una evidencia ({ archivo, descripcion }) y refresca la lista y el historial de la PQR. */
+export function useAdjuntarEvidencia(radicado) {
+  const clienteConsultas = useQueryClient();
+  return useMutation({
+    mutationFn: (datos) => adjuntarEvidencia(radicado, datos),
+    onSuccess: () => clienteConsultas.invalidateQueries({ queryKey: clavesPqr.detalle(radicado) }),
+  });
+}
+
+/**
+ * PQR pendientes del equipo con su nivel frente al plazo (StR-02c). El backend filtra por el equipo
+ * del jefe que inició sesión; el administrador ve toda la oficina. Se refresca cada minuto.
+ */
+export function useAlertasEquipo() {
+  return useQuery({
+    queryKey: clavesPqr.alertasEquipo,
+    queryFn: obtenerAlertasEquipo,
+    refetchInterval: 60 * 1000,
+  });
+}
+
+/**
+ * Indicador de cumplimiento del plazo normativo (SyR-02f, RN-04) para el periodo { desde, hasta }.
+ * Sin fechas el backend toma desde el primer día de hace dos meses hasta hoy.
+ */
+export function useCumplimientoPqr(periodo) {
+  return useQuery({
+    queryKey: clavesPqr.cumplimiento(periodo),
+    queryFn: () => obtenerCumplimiento(periodo),
+    placeholderData: (anteriores) => anteriores,
+  });
 }
 
 /**

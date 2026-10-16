@@ -27,6 +27,8 @@ export const PQR_VACIA = {
   correo: "",
   telefono: "",
   direccion: "",
+  municipioId: "",
+  numeroContrato: "",
   tipoSolicitud: "",
   asunto: "",
   descripcion: "",
@@ -35,6 +37,7 @@ export const PQR_VACIA = {
 const PATRON_DOCUMENTO = /^[0-9A-Za-z-]{4,20}$/;
 const PATRON_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PATRON_TELEFONO = /^[0-9+ ]{7,20}$/;
+const PATRON_CONTRATO = /^[A-Za-z0-9-]{4,30}$/;
 
 /** El documento se acepta con puntos o espacios (1.094.912.580) y se envía sin ellos. */
 export const limpiarDocumento = (valor) => valor.replace(/[.\s]/g, "");
@@ -59,6 +62,8 @@ const REGLAS = {
   telefono: (v) =>
     !v.trim() || PATRON_TELEFONO.test(v.trim()) ? null : "El teléfono debe tener entre 7 y 20 dígitos.",
   direccion: (v) => (v.trim().length <= LIMITES.direccion ? null : `Máximo ${LIMITES.direccion} caracteres.`),
+  numeroContrato: (v) =>
+    !v.trim() || PATRON_CONTRATO.test(v.trim()) ? null : "Use entre 4 y 30 letras, números o guiones.",
   tipoSolicitud: (v) => (v ? null : "Seleccione el tipo de solicitud."),
   asunto: (v) => {
     if (!v.trim()) return "Escriba un asunto breve.";
@@ -94,6 +99,9 @@ export function aSolicitudPqr(datos) {
     correo: datos.correo.trim(),
     telefono: opcional(datos.telefono),
     direccion: opcional(datos.direccion),
+    // Entrega 2: con contrato el backend toma el municipio de su predio; sin él, el que elija el ciudadano
+    numeroContrato: opcional(datos.numeroContrato),
+    municipioId: datos.municipioId ? Number(datos.municipioId) : null,
     tipoSolicitud: datos.tipoSolicitud,
     canal: "WEB",
     asunto: datos.asunto.trim(),

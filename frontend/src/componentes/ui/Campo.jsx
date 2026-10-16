@@ -8,6 +8,7 @@ import "./ui.css";
  *
  * - `como`: "input" (por defecto), "select" o "textarea". Las opciones del select van como children.
  * - La validación la hace el formulario: el asterisco indica obligatoriedad sin activar la del navegador.
+ * - `accesorio`: botón dentro del control, a la derecha (por ejemplo, mostrar la contraseña).
  */
 export function Campo({
   etiqueta,
@@ -17,6 +18,7 @@ export function Campo({
   ayuda,
   contador,
   className = "",
+  accesorio,
   children,
   ...propsControl
 }) {
@@ -24,6 +26,17 @@ export function Campo({
   const idAyuda = `${id}-ayuda`;
   const idError = `${id}-error`;
   const descripciones = [ayuda && idAyuda, error && idError].filter(Boolean).join(" ") || undefined;
+  const control = (
+    <Control
+      id={id}
+      aria-required={obligatorio || undefined}
+      aria-invalid={error ? true : undefined}
+      aria-describedby={descripciones}
+      {...propsControl}
+    >
+      {children}
+    </Control>
+  );
 
   return (
     <div className={`campo ${className}`.trim()}>
@@ -31,15 +44,14 @@ export function Campo({
         {etiqueta}
         {obligatorio && <b aria-hidden="true"> *</b>}
       </label>
-      <Control
-        id={id}
-        aria-required={obligatorio || undefined}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={descripciones}
-        {...propsControl}
-      >
-        {children}
-      </Control>
+      {accesorio ? (
+        <div className="campo-con-accesorio">
+          {control}
+          {accesorio}
+        </div>
+      ) : (
+        control
+      )}
       {error && (
         <small id={idError} className="campo-error">
           <Icono nombre="alerta" tamano={14} />

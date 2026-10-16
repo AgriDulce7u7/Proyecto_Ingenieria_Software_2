@@ -1,10 +1,7 @@
 import { createContext } from "react";
 
 /**
- * Sesión del back-office.
- *
- * El prototipo no tiene autenticación (limitación documentada en backend/README.md): el gestor
- * se elige en un selector. Cuando exista login, este contexto recibirá el usuario autenticado
- * y el resto de la aplicación no cambia.
+ * Sesión autenticada con JWT (RF-14, RNF-05): usuario, rol y las acciones para iniciar y
+ * cerrar sesión. La provee SesionProvider; se consume con useSesion().
  */
 export const SesionContext = createContext(null);

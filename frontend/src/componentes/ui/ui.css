@@ -207,6 +207,33 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Control con un botón dentro, a la derecha (mostrar contraseña) */
+.campo-con-accesorio {
+  position: relative;
+}
+
+.campo-con-accesorio input {
+  padding-right: 48px;
+}
+
+.campo-con-accesorio > button {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  color: var(--color-tinta-suave);
+  transform: translateY(-50%);
+}
+
+.campo-con-accesorio > button:hover {
+  color: var(--color-agua);
+  background: var(--color-agua-suave);
+}
+
 /* ---------------------------------------------------------------- enlace para volver */
 
 .enlace-volver {

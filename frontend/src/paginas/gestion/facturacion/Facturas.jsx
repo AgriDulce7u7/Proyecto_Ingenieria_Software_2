@@ -15,6 +15,7 @@ import {
 } from "../../../presentacion/facturacion";
 import { paginar } from "../../../presentacion/paginacion";
 import { buscarEn } from "../../../presentacion/texto";
+import { useSesion } from "../../../sesion/useSesion";
 import { TablaFacturas } from "./TablaFacturas";
 import "./facturas.css";
 
@@ -46,6 +47,7 @@ export function Facturas() {
   ]);
   const lotes = useLotes();
   const sincronizacion = useSincronizarFactura();
+  const puedeOperar = useSesion().puede("FACTURACION_OPERAR");
 
   const periodoReciente = lotes.data?.[0]?.periodo ?? "";
   const periodoElegido = filtros.periodo || periodoReciente || TODOS_LOS_PERIODOS;
@@ -142,7 +144,7 @@ export function Facturas() {
         {visibles.length > 0 && (
           <TablaFacturas
             facturas={visibles}
-            onReintentar={(numero) => sincronizacion.mutate(numero)}
+            onReintentar={puedeOperar ? (numero) => sincronizacion.mutate(numero) : undefined}
             reintentando={sincronizacion.isPending ? sincronizacion.variables : null}
           />
         )}

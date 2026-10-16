@@ -13,6 +13,37 @@ const TRAZOS = {
       <path d="m10 7-5 5 5 5" />
     </>
   ),
+  salir: (
+    <>
+      <path d="M15 4h4v16h-4" />
+      <path d="M10 8l-4 4 4 4M6 12h10" />
+    </>
+  ),
+  candado: (
+    <>
+      <rect x="5" y="10" width="14" height="10" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  ojo: (
+    <>
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  adjunto: <path d="m20 11-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L14 7" />,
+  descargar: (
+    <>
+      <path d="M12 4v11M7 10l5 5 5-5" />
+      <path d="M5 20h14" />
+    </>
+  ),
+    grafica: (
+    <>
+      <path d="M4 4v16h16" />
+      <path d="M8 16v-4M12 16V8M16 16v-6" />
+    </>
+  ),
   buscar: (
     <>
       <circle cx="11" cy="11" r="7" />

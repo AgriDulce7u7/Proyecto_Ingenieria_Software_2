@@ -16,6 +16,7 @@ import {
 } from "../../../../presentacion/facturacion";
 import { formatearFecha } from "../../../../presentacion/fechas";
 import { enmascararDocumento } from "../../../../presentacion/texto";
+import { useSesion } from "../../../../sesion/useSesion";
 import { AvisoErp } from "./AvisoErp";
 import { BitacoraErp } from "./BitacoraErp";
 import "./detalle-factura.css";
@@ -103,6 +104,7 @@ function ContenidoFactura({ factura }) {
   const estado = presentarEstadoFactura(factura.estado);
   const periodo = partesPeriodo(factura.periodo);
   const sincronizacion = useSincronizarFactura();
+  const puedeOperar = useSesion().puede("FACTURACION_OPERAR");
   const { contrato } = factura;
 
   return (
@@ -116,7 +118,7 @@ function ContenidoFactura({ factura }) {
             <span>Periodo {periodo.texto}</span>
           </div>
         </div>
-        {puedeSincronizarse(factura.estado) && (
+          {puedeOperar && puedeSincronizarse(factura.estado) && (
           <Boton
             icono="sincronizar"
             onClick={() => sincronizacion.mutate(factura.numeroFactura)}

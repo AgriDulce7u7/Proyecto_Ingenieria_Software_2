@@ -18,6 +18,7 @@ import {
 } from "../../../presentacion/facturacion";
 import { formatearFechaHora } from "../../../presentacion/fechas";
 import { paginar } from "../../../presentacion/paginacion";
+import { useSesion } from "../../../sesion/useSesion";
 import { TablaFacturas } from "./TablaFacturas";
 import "./detalle-lote.css";
 
@@ -115,6 +116,7 @@ function ContenidoLote({ lote }) {
   const sincronizacionLote = useSincronizarLote(lote.periodo);
   const sincronizacionFactura = useSincronizarFactura();
   const [pagina, setPagina] = useState(1);
+  const puedeOperar = useSesion().puede("FACTURACION_OPERAR");
 
   const porSincronizar = lote.facturasPendientesSincronizacion + lote.facturasConErrorSincronizacion;
   const lista = facturas.data ?? [];
@@ -129,15 +131,17 @@ function ContenidoLote({ lote }) {
           <h1>Lote de {periodo.texto}</h1>
           <Etiqueta tono={estado.tono}>{estado.etiqueta}</Etiqueta>
         </div>
-        <Boton
-          variante="secundario"
-          icono="sincronizar"
-          onClick={() => sincronizacionLote.mutate()}
-          disabled={porSincronizar === 0 || sincronizacionLote.isPending}
-          title={porSincronizar === 0 ? "Todas las facturas del lote ya están sincronizadas" : undefined}
-        >
-          {sincronizacionLote.isPending ? "Sincronizando…" : "Reintentar sincronización del lote"}
-        </Boton>
+              {puedeOperar && (
+          <Boton
+            variante="secundario"
+            icono="sincronizar"
+            onClick={() => sincronizacionLote.mutate()}
+            disabled={porSincronizar === 0 || sincronizacionLote.isPending}
+            title={porSincronizar === 0 ? "Todas las facturas del lote ya están sincronizadas" : undefined}
+          >
+            {sincronizacionLote.isPending ? "Sincronizando…" : "Reintentar sincronización del lote"}
+          </Boton>
+        )}
       </div>
 
       {sincronizacionLote.data && <ResultadoSincronizacionLote resultado={sincronizacionLote.data} />}
@@ -184,7 +188,7 @@ function ContenidoLote({ lote }) {
           {visibles.length > 0 && (
             <TablaFacturas
               facturas={visibles}
-              onReintentar={(numero) => sincronizacionFactura.mutate(numero)}
+              onReintentar={puedeOperar ? (numero) => sincronizacionFactura.mutate(numero) : undefined}
               reintentando={sincronizacionFactura.isPending ? sincronizacionFactura.variables : null}
             />
           )}

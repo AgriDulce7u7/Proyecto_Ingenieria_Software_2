@@ -12,7 +12,8 @@ import { formatearFechaCorta } from "../../../presentacion/fechas";
 import "./facturas.css";
 
 /**
- * Listado de facturas. Las que no han llegado al ERP ofrecen "Reintentar" (SWR-04).
+ * Listado de facturas. Si se recibe `onReintentar` (el usuario puede operar la facturación), las que
+ * no han llegado al ERP ofrecen "Reintentar" (SWR-04); si no, todas llevan al detalle.
  * En pantallas pequeñas cada fila se muestra como una tarjeta (ver facturas.css).
  */
 export function TablaFacturas({ facturas, onReintentar, reintentando }) {
@@ -69,7 +70,7 @@ export function TablaFacturas({ facturas, onReintentar, reintentando }) {
                   <Etiqueta tono={estado.tono}>{estado.etiqueta}</Etiqueta>
                 </td>
                 <td>
-                  {puedeSincronizarse(factura.estado) ? (
+                  {onReintentar && puedeSincronizarse(factura.estado) ? (
                     <Boton
                       variante="discreto"
                       icono="sincronizar"
