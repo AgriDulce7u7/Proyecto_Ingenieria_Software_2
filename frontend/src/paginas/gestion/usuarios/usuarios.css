@@ -1,0 +1,162 @@
+/* Usuarios del servicio (mobile-first). La búsqueda y la tabla usan los estilos de la bandeja. */
+
+/* En la bandeja el botón Limpiar se oculta en móvil; aquí Buscar siempre se ve */
+.usuarios-busqueda .boton {
+  display: inline-flex;
+  flex: 1 1 100%;
+}
+
+.usuarios-busqueda select {
+  flex: 1 1 100%;
+}
+
+.usuarios-busqueda-error {
+  flex-basis: 100%;
+}
+
+.usuarios-inicio {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--color-agua);
+}
+
+.usuarios-inicio p {
+  font-size: 13px;
+}
+
+.usuarios-vacio-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (min-width: 37.5rem) {
+  .usuarios-busqueda {
+    flex-wrap: wrap;
+  }
+
+  .usuarios-busqueda select {
+    flex: 0 0 190px;
+  }
+
+  .usuarios-busqueda .bandeja-buscador {
+    flex: 1 1 0;
+  }
+
+  .usuarios-busqueda .boton {
+    flex: none;
+  }
+}
+
+/* ---------------------------------------------------------------- registro */
+
+.usuarios-volver {
+  margin-bottom: 18px;
+}
+
+.usuarios-duplicado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+/* Confirmación del registro: mismo diseño de la constancia de radicación */
+.usuarios-registrado {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 28px 20px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-top: 4px solid var(--color-exito);
+  border-radius: var(--radio-grande);
+}
+
+.usuarios-registrado-icono {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  color: var(--color-exito);
+  background: var(--color-exito-claro);
+  border-radius: 50%;
+}
+
+.usuarios-registrado h1 {
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  color: var(--color-agua-profundo);
+}
+
+.usuarios-registrado > p {
+  font-size: 13px;
+}
+
+.usuarios-registrado-codigo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  background: var(--color-agua-suave);
+  border: 1px solid var(--color-agua-borde);
+  border-radius: var(--radio-panel);
+}
+
+.usuarios-registrado-codigo span {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.usuarios-registrado-codigo strong {
+  font-size: 26px;
+  color: var(--color-agua-oscuro);
+}
+
+.usuarios-registrado-datos div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.usuarios-registrado-datos dt {
+  font-size: 11px;
+  color: var(--color-tinta-tenue);
+}
+
+.usuarios-registrado-datos dd {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.usuarios-registrado-datos small {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-tinta-tenue);
+}
+
+.usuarios-registrado-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+@media (min-width: 37.5rem) {
+  .usuarios-registrado {
+    padding: 34px;
+  }
+
+  .usuarios-registrado-acciones {
+    flex-direction: row;
+  }
+}

@@ -3,13 +3,15 @@
  * para avisar al ciudadano antes de enviar; el backend sigue siendo la validación definitiva.
  */
 
-export const TIPOS_DOCUMENTO = [
-  { codigo: "CC", nombre: "Cédula de ciudadanía" },
-  { codigo: "CE", nombre: "Cédula de extranjería" },
-  { codigo: "TI", nombre: "Tarjeta de identidad" },
-  { codigo: "NIT", nombre: "NIT" },
-  { codigo: "PA", nombre: "Pasaporte" },
-];
+import {
+  PATRON_CORREO,
+  PATRON_DOCUMENTO,
+  PATRON_TELEFONO,
+  TIPOS_DOCUMENTO,
+  limpiarDocumento,
+} from "../../presentacion/datosPersonales";
+
+export { TIPOS_DOCUMENTO, limpiarDocumento };
 
 export const LIMITES = {
   nombreCompleto: 150,
@@ -34,13 +36,7 @@ export const PQR_VACIA = {
   descripcion: "",
 };
 
-const PATRON_DOCUMENTO = /^[0-9A-Za-z-]{4,20}$/;
-const PATRON_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PATRON_TELEFONO = /^[0-9+ ]{7,20}$/;
 const PATRON_CONTRATO = /^[A-Za-z0-9-]{4,30}$/;
-
-/** El documento se acepta con puntos o espacios (1.094.912.580) y se envía sin ellos. */
-export const limpiarDocumento = (valor) => valor.replace(/[.\s]/g, "");
 
 const REGLAS = {
   tipoDocumento: (v) =>

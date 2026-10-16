@@ -4,7 +4,7 @@ import { Boton } from "../../../../componentes/ui/Boton";
 import { Campo } from "../../../../componentes/ui/Campo";
 import { Icono } from "../../../../componentes/ui/Icono";
 import { useEvidenciasPqr } from "../../../../hooks/usePqr";
-import { enfocarError } from "./enfocarError";
+import { enfocarPrimerError } from "../../../../componentes/enfocarPrimerError";
 import { FormularioEvidencia } from "./FormularioEvidencia";
 
 const MINIMO = 20;
@@ -48,7 +48,7 @@ export function DialogoResponder({ pqr, gestorId, accion, onListo, onCancelar })
     const texto = respuesta.trim();
     if (texto.length < MINIMO) {
       setError(`Escriba una respuesta de al menos ${MINIMO} caracteres.`);
-      enfocarError(evento.currentTarget);
+      enfocarPrimerError(evento.currentTarget);
       return;
     }
     accion.mutate(

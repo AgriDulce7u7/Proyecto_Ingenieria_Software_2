@@ -2,7 +2,7 @@ import { useState } from "react";
 import { MensajeError } from "../../../../componentes/MensajeError";
 import { Boton } from "../../../../componentes/ui/Boton";
 import { Campo } from "../../../../componentes/ui/Campo";
-import { enfocarError } from "./enfocarError";
+import { enfocarPrimerError } from "../../../../componentes/enfocarPrimerError";
 import { useGestores } from "../../../../hooks/usePqr";
 
 /**
@@ -21,7 +21,7 @@ export function DialogoReasignar({ pqr, usuario, accion, onListo, onCancelar }) 
     evento.preventDefault();
     if (!gestorId) {
       setError("Seleccione el nuevo gestor.");
-      enfocarError(evento.currentTarget);
+      enfocarPrimerError(evento.currentTarget);
       return;
     }
     const nuevo = candidatos.find((gestor) => gestor.id === Number(gestorId));

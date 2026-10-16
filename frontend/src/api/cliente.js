@@ -14,17 +14,23 @@ import { marcarSesionVencida, obtenerToken } from "../sesion/almacenSesion";
 const URL_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8080/api";
 
 export class ErrorApi extends Error {
-  constructor({ estado, titulo, detalle, errores }) {
+  constructor({ estado, titulo, detalle, errores, propiedades }) {
     super(detalle || titulo || "Error inesperado");
     this.name = "ErrorApi";
     this.estado = estado;          // código HTTP (0 si no hubo respuesta)
     this.titulo = titulo;          // "Datos inválidos", "Recurso no encontrado"...
     this.detalle = detalle;
     this.errores = errores ?? {};  // { campo: "mensaje" } en los 400 de validación
+    // Datos extra del ProblemDetail, p. ej. { codigoUsuarioExistente } en el 409 de un usuario duplicado
+    this.propiedades = propiedades ?? {};
   }
 
   get esValidacion() {
     return this.estado === 400 && Object.keys(this.errores).length > 0;
+  }
+
+    get conflicto() {
+    return this.estado === 409;
   }
 
   get noEncontrado() {
@@ -56,6 +62,7 @@ async function leerError(respuesta) {
     titulo: cuerpo?.title,
     detalle: cuerpo?.detail ?? `El servidor respondió con el código ${respuesta.status}`,
     errores: cuerpo?.errores,
+    propiedades: cuerpo ?? undefined,
   });
 }
 

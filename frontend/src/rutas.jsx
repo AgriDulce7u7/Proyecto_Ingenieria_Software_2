@@ -19,6 +19,9 @@ import { Programacion } from "./paginas/gestion/facturacion/Programacion";
 import { BandejaPqr } from "./paginas/gestion/pqr/BandejaPqr";
 import { DetallePqr } from "./paginas/gestion/pqr/detalle/DetallePqr";
 import { Supervision } from "./paginas/gestion/supervision/Supervision";
+import { PerfilUsuario } from "./paginas/gestion/usuarios/perfil/PerfilUsuario";
+import { RegistrarUsuario } from "./paginas/gestion/usuarios/RegistrarUsuario";
+import { Usuarios } from "./paginas/gestion/usuarios/Usuarios";
 
 /**
  * Mapa de pantallas. Cada ruta indica los requisitos que respalda, con los identificadores del
@@ -68,7 +71,13 @@ export const enrutador = createBrowserRouter([
       { path: "supervision", element: protegida("PQR_SUPERVISAR", <Supervision />) },
       // SyR-02f, RN-04
       { path: "cumplimiento", element: protegida("PQR_INDICADORES", <Cumplimiento />) },
-
+            // F-03 · Usuarios del servicio
+      // RF-03, SWR-16
+      { path: "usuarios", element: protegida("COMERCIAL_CONSULTAR", <Usuarios />) },
+      // RF-01, CU-01, SWR-12, SWR-13, SWR-14
+      { path: "usuarios/nuevo", element: protegida("COMERCIAL_GESTIONAR", <RegistrarUsuario />) },
+      // RF-02, RF-03, SWR-14, SWR-15
+      { path: "usuarios/:codigo", element: protegida("COMERCIAL_CONSULTAR", <PerfilUsuario />) },
       // F-01 · Facturación
       // RF-05, CU-03, SWR-01, SWR-02
       { path: "facturacion", element: protegida("FACTURACION_CONSULTAR", <Programacion />) },
