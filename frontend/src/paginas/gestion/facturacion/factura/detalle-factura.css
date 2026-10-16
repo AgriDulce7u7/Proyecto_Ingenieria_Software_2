@@ -18,8 +18,19 @@
   color: var(--color-agua-profundo);
 }
 
-.detalle-factura-encabezado > .boton {
-  width: 100%;
+.detalle-factura-acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+/* El botón principal (reintentar) ocupa toda la fila en móvil */
+.detalle-factura-acciones > .boton-principal {
+  grid-column: 1 / -1;
+}
+
+.detalle-factura-acciones > .boton:only-child {
+  grid-column: 1 / -1;
 }
 
 .detalle-factura-etiquetas {
@@ -253,6 +264,11 @@
   font-weight: 750;
 }
 
+.factura-liquidacion-anulada strong {
+  color: #a6c5cc;
+  text-decoration: line-through;
+}
+
 /* ---------------------------------------------------------------- aviso del ERP */
 
 .factura-aviso {
@@ -290,6 +306,18 @@
   border-color: #ecd7a9;
 }
 
+.factura-aviso-neutro {
+  color: var(--color-tinta-suave);
+  background: #eef2f3;
+  border-color: var(--color-borde);
+}
+
+.factura-aviso-info {
+  color: var(--color-agua-oscuro);
+  background: var(--color-info-claro);
+  border-color: var(--color-agua-linea);
+}
+
 .factura-aviso-exito {
   color: var(--color-exito);
   background: var(--color-exito-claro);
@@ -299,10 +327,10 @@
 /* ---------------------------------------------------------------- tableta */
 
 @media (min-width: 37.5rem) {
-  .detalle-factura-encabezado {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
+  .detalle-factura-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .detalle-factura-encabezado h1 {

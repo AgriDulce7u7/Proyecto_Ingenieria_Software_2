@@ -7,10 +7,12 @@ import { Icono } from "../../../componentes/ui/Icono";
 import { useFacturas, useLotes, useSincronizarFactura } from "../../../hooks/useFacturacion";
 import { useFiltrosUrl } from "../../../hooks/useFiltrosUrl";
 import {
+  ESTADOS_COBRO_CODIGOS,
   ESTADOS_FACTURA_CODIGOS,
   formatearMoneda,
   formatearNumero,
   partesPeriodo,
+  presentarEstadoCobro,
   presentarEstadoFactura,
 } from "../../../presentacion/facturacion";
 import { paginar } from "../../../presentacion/paginacion";
@@ -36,14 +38,15 @@ function ResultadoSincronizacion({ resultado }) {
 }
 
 /**
- * Facturas generadas y su sincronización con el ERP (RF-05, SWR-03, SWR-04).
- * Por defecto muestra el periodo del lote más reciente.
+ * Facturas generadas, su estado de cobro (DE-01) y su sincronización con el ERP (RF-05, SWR-03, SWR-04).
+ * Por defecto muestra el periodo del lote más reciente. Las anuladas no suman al total.
  */
 export function Facturas() {
   const { filtros, pagina, hayFiltros, cambiarFiltro, cambiarPagina, limpiar } = useFiltrosUrl([
     "q",
     "periodo",
     "estado",
+    "cobro",
   ]);
   const lotes = useLotes();
   const sincronizacion = useSincronizarFactura();
@@ -55,12 +58,15 @@ export function Facturas() {
 
   // Espera a conocer el lote más reciente para no pedir primero todas las facturas
   const facturas = useFacturas(
-    { periodo, estado: filtros.estado },
+     { periodo, estado: filtros.estado, estadoCobro: filtros.cobro },
     { habilitada: Boolean(filtros.periodo) || !lotes.isPending },
   );
 
   const resultado = buscarEn(facturas.data ?? [], filtros.q, ["numeroFactura", "numeroContrato", "cliente"]);
-  const total = resultado.reduce((suma, factura) => suma + Number(factura.total), 0);
+  const hayAnuladas = resultado.some((factura) => factura.estadoCobro === "ANULADA");
+  const total = resultado
+    .filter((factura) => factura.estadoCobro !== "ANULADA")
+    .reduce((suma, factura) => suma + Number(factura.total), 0);
   const { visibles, paginaActual, totalPaginas, inicio } = paginar(resultado, pagina, TAMANO_PAGINA);
 
   return (
@@ -68,7 +74,7 @@ export function Facturas() {
       <EncabezadoGestion
         antetitulo={periodo ? partesPeriodo(periodo).texto : "Todos los periodos"}
         titulo="Facturas"
-        descripcion="Consulte liquidaciones y su sincronización con el ERP."
+        descripcion="Consulte liquidaciones, su estado de cobro y su sincronización con el ERP."
       />
 
       {sincronizacion.data && <ResultadoSincronizacion resultado={sincronizacion.data} />}
@@ -86,17 +92,29 @@ export function Facturas() {
               onChange={(evento) => cambiarFiltro("q", evento.target.value)}
             />
           </label>
-          <select
-            aria-label="Filtrar por periodo"
-            value={periodoElegido}
-            onChange={(evento) => cambiarFiltro("periodo", evento.target.value)}
+              <select
+            aria-label="Filtrar por estado de cobro"
+            value={filtros.cobro}
+            onChange={(evento) => cambiarFiltro("cobro", evento.target.value)}
           >
-            {(lotes.data ?? []).map((lote) => (
-              <option key={lote.periodo} value={lote.periodo}>
-                {partesPeriodo(lote.periodo).corto}
+            <option value="">Todo el cobro</option>
+            {ESTADOS_COBRO_CODIGOS.map((codigo) => (
+              <option key={codigo} value={codigo}>
+                {presentarEstadoCobro(codigo).etiqueta}
               </option>
             ))}
-            <option value={TODOS_LOS_PERIODOS}>Todos los periodos</option>
+          </select>
+          <select
+            aria-label="Filtrar por estado en el ERP"
+            value={filtros.estado}
+            onChange={(evento) => cambiarFiltro("estado", evento.target.value)}
+          >
+            <option value="">Todo el ERP</option>
+            {ESTADOS_FACTURA_CODIGOS.map((codigo) => (
+              <option key={codigo} value={codigo}>
+                {presentarEstadoFactura(codigo).etiqueta}
+              </option>
+            ))}
           </select>
           <select
             aria-label="Filtrar por estado"
@@ -119,8 +137,9 @@ export function Facturas() {
           <strong>
             {formatearNumero(resultado.length)} {resultado.length === 1 ? "factura" : "facturas"}
           </strong>
-          <small>
-            {filtros.q || filtros.estado ? "Total mostrado" : periodo ? "Total del periodo" : "Total"}:{" "}
+           <small>
+            {filtros.q || filtros.estado || filtros.cobro ? "Total mostrado" : periodo ? "Total del periodo" : "Total"}
+            {hayAnuladas && " sin anuladas"}:{" "}
             <span className="cifra">{formatearMoneda(total)}</span>
           </small>
         </div>

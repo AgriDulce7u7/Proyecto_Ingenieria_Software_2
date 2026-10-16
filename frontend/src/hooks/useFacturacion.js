@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  anularFactura,
   buscarFacturas,
   generarLote,
   listarContratos,
@@ -72,6 +73,21 @@ export function useSincronizarFactura() {
   return useMutation({
     mutationFn: sincronizarFactura,
     onSettled: () => clienteConsultas.invalidateQueries({ queryKey: clavesFacturacion.todo }),
+  });
+}
+
+/**
+ * Anula una factura pendiente o vencida con un motivo (DE-01, RF-15). El backend responde con el
+ * detalle actualizado, que se guarda de inmediato; luego se refrescan listados y lotes.
+ */
+export function useAnularFactura(numero) {
+  const clienteConsultas = useQueryClient();
+  return useMutation({
+    mutationFn: (motivo) => anularFactura(numero, motivo),
+    onSuccess: (detalle) => {
+      clienteConsultas.setQueryData(clavesFacturacion.factura(numero), detalle);
+      return clienteConsultas.invalidateQueries({ queryKey: clavesFacturacion.todo });
+    },
   });
 }
 

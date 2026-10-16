@@ -69,6 +69,26 @@ export const ESTADOS_FACTURA_CODIGOS = Object.keys(ESTADOS_FACTURA);
 
 export const presentarEstadoFactura = (estado) => ESTADOS_FACTURA[estado] ?? { etiqueta: estado, tono: "neutro" };
 
+/** Estado de cobro de la factura (EstadoCobroFactura en el backend, DE-01). Independiente del ERP. */
+const ESTADOS_COBRO = {
+  PENDIENTE: { etiqueta: "Por pagar", tono: "advertencia" },
+  VENCIDA: { etiqueta: "Vencida", tono: "peligro" },
+  PAGADA: { etiqueta: "Pagada", tono: "exito" },
+  ANULADA: { etiqueta: "Anulada", tono: "neutro" },
+};
+
+export const ESTADOS_COBRO_CODIGOS = Object.keys(ESTADOS_COBRO);
+
+export const presentarEstadoCobro = (estado) =>
+  ESTADOS_COBRO[estado] ?? { etiqueta: estado ?? "Sin estado", tono: "neutro" };
+
+/**
+ * Solo se anulan facturas por pagar o vencidas que no estén incluidas en un acuerdo de pago
+ * (Factura.anular en el backend, que sigue siendo quien decide).
+ */
+export const puedeAnularse = (factura) =>
+  (factura.estadoCobro === "PENDIENTE" || factura.estadoCobro === "VENCIDA") && !factura.enAcuerdoDePago;
+
 /** Solo se reenvían al ERP las facturas que aún no llegan (SWR-04). */
 export const puedeSincronizarse = (estado) => estado === "GENERADA" || estado === "ERROR_SINCRONIZACION";
 

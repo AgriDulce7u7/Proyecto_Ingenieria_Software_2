@@ -164,6 +164,13 @@
   color: var(--color-tinta);
 }
 
+/* Una factura anulada sigue en el listado, pero su valor ya no se cobra */
+.facturas-fila-anulada .facturas-valor {
+  font-weight: 500;
+  color: var(--color-tinta-tenue);
+  text-decoration: line-through;
+}
+
 .facturas-tabla .boton {
   min-height: 36px;
   padding: 0 8px;
