@@ -559,11 +559,11 @@ Cada ejecución termina con una línea `Tests run: N, Failures: F, Errors: E, Sk
 > Completar con la salida real de Maven (`Tests run / Failures / Errors / Skipped`).
 
 | Ejecución | Commit | Pruebas esperadas | Fallos | Errores | Evidencia |
-|---|---|---|---|---|---|
-| Antes | `7b08875` | 37 (8 + 14 + 7 + 8) | | | `evidencias/antes.txt` |
-| Después de H-02 | `b1fcb9f` | 40 (8 + 14 + 7 + 11) | | | `evidencias/despues-h02.txt` |
-| Después de H-03 | `b7d4111` | 41 (8 + 14 + 8 + 11) | | | `evidencias/despues-h03.txt` |
-| Suite completa | `b7d4111` | | | | `evidencias/suite-completa.txt` |
+|---|---|---|--------|---------|---|
+| Antes | `7b08875` | 37 (8 + 14 + 7 + 8) | 0      | 0       | `evidencias/antes.txt` |
+| Después de H-02 | `b1fcb9f` | 40 (8 + 14 + 7 + 11) | 0      | 0       | `evidencias/despues-h02.txt` |
+| Después de H-03 | `b7d4111` | 41 (8 + 14 + 8 + 11) | 0      | 0       | `evidencias/despues-h03.txt` |
+| Suite completa | `b7d4111` | | 0      | 0       | `evidencias/suite-completa.txt` |
 
 ### 8.5 Limitaciones
 
