@@ -1,9 +1,14 @@
-# Diagnóstico técnico — F-05 Registrar pago de factura
+# Diagnóstico técnico y refactorización — F-05 Registrar pago de factura
 
 Taller de refactorización · Ingeniería de Software II · Universidad del Quindío
 
 > **Convenciones.** Las rutas son relativas a `backend/src/main/java/co/edu/uniquindio/epq/`. Los números de
-> línea corresponden al commit `e63671b` de la rama principal.
+> línea de los hallazgos (secciones 1 a 4) corresponden al commit `e63671b`, es decir, al código **antes** de
+> refactorizar.
+>
+> **Contenido.** Primera parte del taller: secciones 1 a 4 (diagnóstico). Segunda parte: secciones 5 a 10
+> (priorización, dos refactorizaciones, verificación, análisis y cierre). Las preguntas de la sesión se responden
+> en las secciones 6 y 7, una vez por cada refactorización.
 
 ---
 
@@ -219,8 +224,365 @@ la rama de timeout.
 
 ## 4. Resumen
 
-| ID | Hallazgo | Tipo | Criterio principal | Impacto |
-|---|---|---|---|---|
-| H-01 | El servicio depende de DTO de la capa web | Riesgo arquitectónico | Capas §5.4, DIP, acoplamiento | Medio |
-| H-02 | Regla "pago por el total" duplicada y fuera del dominio | Deuda técnica | DRY, SRP / Experto en Información | Medio |
-| H-03 | Ciclo `pasarela ↔ servicio` y datos por un mapa sin tipo | Oportunidad de mejora | Acoplamiento (ADP), capas, código limpio | Bajo |
+| ID | Hallazgo | Tipo | Criterio principal | Impacto | Estado |
+|---|---|---|---|---|---|
+| H-01 | El servicio depende de DTO de la capa web | Riesgo arquitectónico | Capas §5.4, DIP, acoplamiento | Medio | Pendiente (sección 9) |
+| H-02 | Regla "pago por el total" duplicada y fuera del dominio | Deuda técnica | DRY, SRP / Experto en Información | Medio | **Refactorizado** (sección 6) |
+| H-03 | Ciclo `pasarela ↔ servicio` y datos por un mapa sin tipo | Oportunidad de mejora | Acoplamiento (ADP), capas, código limpio | Bajo | **Refactorizado** (sección 7) |
+
+---
+
+# Segunda parte — Refactorización
+
+## 5. Revisión y priorización de los hallazgos
+
+Cada hallazgo se calificó de 1 a 3 en cuatro criterios. **Prioridad = beneficio + riesgo − esfuerzo − riesgo de
+romper algo**: se eligen primero los cambios que mejoran más y que se pueden demostrar con menos riesgo.
+
+| ID | Beneficio | Riesgo si no se corrige | Esfuerzo | Riesgo de romper algo | Prioridad | Decisión |
+|---|---|---|---|---|---|---|
+| H-02 | 3 | 2 | 1 | 1 | **3** | **Primera refactorización** |
+| H-03 | 2 | 1 | 1 | 1 | **1** | **Segunda refactorización** |
+| H-01 | 3 | 2 | 3 | 2 | 0 | Se pospone (sección 9) |
+
+**Razones.**
+
+- **H-02 primero.** Es una regla de negocio (dinero del usuario) que ya tiene dos versiones con mensajes
+  distintos; corregirla deja un único dueño de la regla. El cambio toca tres archivos y se demuestra con
+  pruebas unitarias del dominio.
+- **H-03 segundo.** Su impacto funcional es bajo, pero es el único hallazgo de **acoplamiento entre paquetes**
+  que se puede eliminar por completo en esta sesión, y el cambio es pequeño y local al módulo de pagos.
+- **H-01 se pospone.** Tiene alto beneficio, pero el problema está repetido en 56 archivos de casi todos los
+  módulos. Corregirlo solo en pagos dejaría el proyecto inconsistente, y corregirlo en todos excede una sesión.
+  Se registra como deuda técnica con un plan (sección 9).
+
+**Red de seguridad antes de refactorizar.** F-05 no tenía pruebas del servicio, del aplicador ni del procesador
+de la pasarela. Antes de cambiar código se escribieron **pruebas de caracterización** sobre el código original
+(commit `7b08875`): fijan lo que el sistema hace hoy, incluidos los casos de error. La condición de éxito de
+ambas refactorizaciones es que esas pruebas pasen **sin modificarse** antes y después.
+
+| Clase de prueba (nueva) | Pruebas | Qué fija |
+|---|---|---|
+| `pagos/servicio/AplicadorPagoTest` | 8 | Pago por el total, comparación por monto, valor distinto, factura pagada / en acuerdo / inexistente, RN-05 |
+| `pagos/servicio/impl/RegistroPagoServiceImplTest` | 14 | Flujo presencial y en línea: factura ajena, rechazo, timeout (con el procesador real), cobro aprobado no aplicable, pagos simultáneos |
+| `pagos/pasarela/ProcesadorTransaccionesPasarelaTest` | 7 | Política CO-02: aprobación, rechazo sin reintento, reintento por falla técnica, error inesperado, agotamiento de intentos, timeout |
+
+---
+
+## 6. Primera refactorización — H-02: la regla del valor del pago pasa al dominio
+
+**Commit:** `b1fcb9f` — *refactor: centralizar en Factura la validacion del valor del pago*
+
+### 6.1 ¿Cuál era el problema identificado y dónde estaba localizado?
+
+La regla de negocio CO-02, "el pago debe ser por el total de la factura; no se admiten pagos parciales", estaba
+**escrita dos veces en la capa de servicio** y no en la entidad que posee el dato:
+
+| Ubicación (antes) | Código | Mensaje |
+|---|---|---|
+| `pagos/servicio/AplicadorPago.java`, `aplicar`, l. 56-60 | `if (valor.compareTo(factura.getTotal()) != 0)` | "El valor X no coincide con el total de la factura N (T)" |
+| `pagos/servicio/impl/RegistroPagoServiceImpl.java`, `pagarEnLinea`, l. 95-99 | `if (s.valor() != null && s.valor().compareTo(monto) != 0)` | "El valor a pagar debe ser el total de la factura: T" |
+
+Las otras reglas que deciden si una factura se puede pagar (ya pagada, anulada, en acuerdo de pago) sí estaban en
+`facturacion/dominio/Factura.java`, método `validarPagable()`.
+
+### 6.2 ¿Qué principio de diseño o atributo de calidad estaba comprometido?
+
+- **DRY (no repetirse):** una misma regla con dos implementaciones que ya habían divergido (mensajes distintos).
+- **SRP / Experto en Información (GRASP):** los servicios, cuya responsabilidad es orquestar, también decidían
+  una política de la factura. El experto es `Factura`: tiene el `total` y ya concentra las reglas de cobro.
+- **Separación de capas:** `ARQUITECTURA.md` §5.4 asigna las reglas de negocio a la capa `dominio`.
+- **Atributo de calidad: mantenibilidad** (modificabilidad). Cambiar la política exigía encontrar y modificar
+  dos lugares; olvidar uno dejaba al pago presencial y al pago en línea con reglas diferentes.
+
+### 6.3 ¿Qué modificación realizaron y cómo cambiaron las responsabilidades o dependencias?
+
+Se creó en la entidad un método que valida **estado y valor** en un solo lugar, y los dos servicios lo usan:
+
+```java
+// facturacion/dominio/Factura.java (nuevo, l. 181)
+public void validarPago(BigDecimal valor) {
+    validarPagable();                                   // 1.º el estado (pagada, anulada, en acuerdo)
+    if (Objects.requireNonNull(valor, "El valor del pago es obligatorio").compareTo(total) != 0) {
+        throw new ReglaNegocioException("El valor %s no coincide con el total de la factura %s (%s)"
+                .formatted(valor, numeroFactura, total));
+    }
+}
+```
+
+| Archivo | Antes | Después |
+|---|---|---|
+| `AplicadorPago.aplicar` (l. 55) | `validarPagable()` + `if` propio | `factura.validarPago(valor)` |
+| `RegistroPagoServiceImpl.pagarEnLinea` (l. 98) | `validarPagable()` + `if` propio | `factura.validarPago(s.valor() == null ? monto : s.valor())` |
+
+```mermaid
+flowchart LR
+    subgraph Antes
+        A1[AplicadorPago] -->|validarPagable| F1[Factura]
+        A1 -->|"regla del total (copia 1)"| A1
+        R1[RegistroPagoServiceImpl] -->|validarPagable| F1
+        R1 -->|"regla del total (copia 2)"| R1
+    end
+    subgraph Después
+        A2[AplicadorPago] -->|"validarPago(valor)"| F2["Factura.validarPago<br/>estado + valor"]
+        R2[RegistroPagoServiceImpl] -->|"validarPago(valor)"| F2
+    end
+```
+
+**Cambio de responsabilidades.** `Factura` pasa a ser la única dueña de la decisión "¿se puede pagar esta factura
+con este valor?". Los servicios conservan solo la orquestación: cuándo validar (el pago en línea sigue validando
+**antes** de cobrar la tarjeta para fallar temprano) y qué hacer después. Las dependencias entre clases no
+cambian: los servicios ya dependían de `Factura`.
+
+**Decisiones para conservar el comportamiento.** Se mantuvo el orden de validación (primero el estado, luego el
+valor), la comparación por monto con `compareTo` (81783.25 = 81783.250) y la firma de `registrarPago`, que también
+usa el módulo de cartera.
+
+### 6.4 ¿Qué consecuencias tiene el cambio sobre la arquitectura de la aplicación?
+
+- **Se cumple la regla de capas §5.4** para esta regla de negocio: vuelve a la capa `dominio`.
+- **Modelo de dominio más rico y coherente:** todas las reglas de cobro de la factura están ahora en
+  `Factura` y se pueden probar sin Spring, sin base de datos y sin dobles.
+- **Punto único de cambio:** si mañana se aceptan abonos o una tolerancia por redondeo, se modifica un método y
+  ambos canales (presencial y en línea) heredan el cambio.
+- **Consecuencia observable declarada:** al unificar la regla se unificó el mensaje. En el pago en línea con un
+  valor distinto del total, el error sigue siendo HTTP 422, pero su texto pasa de "El valor a pagar debe ser el
+  total de la factura: T" a "El valor X no coincide con el total de la factura N (T)". La pantalla del ciudadano
+  siempre envía `valor = factura.total` (`frontend/src/paginas/ciudadano/cuenta/PagarFactura.jsx:121`), así que
+  este caso solo aparece llamando la API directamente. Se considera una mejora de consistencia, no un defecto.
+
+### 6.5 ¿Qué evidencias demuestran que la funcionalidad conserva su comportamiento?
+
+1. **Pruebas de caracterización sin cambios** (`AplicadorPagoTest`, `RegistroPagoServiceImplTest`) escritas
+   sobre el código original; deben pasar en el commit `7b08875` (antes) y en `b1fcb9f` (después). Cubren, entre
+   otros: pago por el total, `81783.250` aceptado, valor distinto rechazado **sin guardar ni publicar el evento**,
+   el estado se valida antes que el valor, y en línea el valor incorrecto se rechaza **antes de llamar a la
+   pasarela**.
+2. **Pruebas nuevas del dominio** en `FacturaCobroTest` (de 8 a 11): `validarPago` acepta el total, rechaza otro
+   valor sin cambiar el estado, revisa primero el estado y rechaza una factura en acuerdo aunque el valor sea el
+   total.
+3. **Las 8 pruebas que ya existían** en `FacturaCobroTest` no se modificaron.
+4. **Comprobación manual** en Swagger (tabla 8.3).
+
+---
+
+## 7. Segunda refactorización — H-03: se elimina el ciclo entre pasarela y servicio
+
+**Commit:** `b7d4111` — *refactor: eliminar la dependencia de la pasarela hacia el servicio de pagos*
+
+### 7.1 ¿Cuál era el problema identificado y dónde estaba localizado?
+
+`pagos/pasarela/ProcesadorTransaccionesPasarela.java` (capa de integración con el sistema externo) importaba
+`TimeoutPagoException` del paquete `pagos/servicio` (l. 14) y la lanzaba al agotar los intentos (l. 58). A su
+vez, `pagos/servicio/impl/RegistroPagoServiceImpl.java` importa el procesador: **ciclo `servicio ↔ pasarela`**.
+
+Además, el número de intentos viajaba del procesador al servicio dentro de `propiedades()`, un
+`Map<String, Object>` de `ExcepcionAplicacion` pensado para la respuesta HTTP de error, y se leía con una clave de
+texto y un cast (`RegistroPagoServiceImpl.java` l. 112-114):
+
+```java
+} catch (TimeoutPagoException ex) {
+    registrarIntento(..., ex.getMessage(), tarjeta, (Integer) ex.propiedades().get("intentos"), usuario);
+    throw ex;
+}
+```
+
+### 7.2 ¿Qué principio de diseño o atributo de calidad estaba comprometido?
+
+- **Principio de Dependencias Acíclicas (ADP):** el grafo de dependencias entre paquetes no debe tener ciclos.
+  Con el ciclo, ni la pasarela ni el servicio se pueden entender, probar o reemplazar de forma independiente.
+- **Separación de capas / bajo acoplamiento:** la integración (decisión D3 de `ARQUITECTURA.md`: "integraciones
+  detrás de interfaces") quedaba atada al caso de uso y, a través de `ExcepcionAplicacion.estadoHttp()`, a HTTP.
+  Traducir errores a códigos HTTP corresponde a la capa web, no al adaptador.
+- **Código limpio:** comunicación por un canal sin tipo (clave `"intentos"` + cast) que el compilador no verifica.
+- **Atributos de calidad:** mantenibilidad y modificabilidad (reemplazar la pasarela o reutilizar el procesador)
+  y robustez (un renombre de la clave fallaría solo en tiempo de ejecución, en la rama de timeout).
+
+### 7.3 ¿Qué modificación realizaron y cómo cambiaron las responsabilidades o dependencias?
+
+1. **Nueva excepción propia de la integración**, `pagos/pasarela/PasarelaSinRespuestaException.java`: hereda de
+   `RuntimeException` (no conoce HTTP) y expone `int intentos()` con tipo.
+2. **El procesador** deja de importar el paquete `servicio` y lanza la nueva excepción (l. 57):
+   `throw new PasarelaSinRespuestaException(maximo);`
+3. **El servicio traduce** la falla técnica al error del caso de uso, con el mismo mensaje y el mismo código
+   HTTP que antes (`RegistroPagoServiceImpl.java` l. 111-117):
+
+```java
+} catch (PasarelaSinRespuestaException ex) {
+    TimeoutPagoException timeout = new TimeoutPagoException(ex.intentos());
+    registrarIntento(factura, monto, ResultadoIntentoPago.SIN_RESPUESTA, null, null, timeout.getMessage(),
+            tarjeta, ex.intentos(), usuario);
+    throw timeout;
+}
+```
+
+4. `registrarIntento` recibe `int intentos` en lugar de `Integer` y se elimina el `intentos == null ? 1 : intentos`,
+   que ya no tiene caso posible.
+
+```mermaid
+flowchart LR
+    subgraph Antes
+        S1[servicio<br/>RegistroPagoServiceImpl<br/>TimeoutPagoException] -->|usa| P1[pasarela<br/>ProcesadorTransaccionesPasarela]
+        P1 -->|"lanza TimeoutPagoException"| S1
+    end
+    subgraph Después
+        S2[servicio<br/>RegistroPagoServiceImpl] -->|usa| P2[pasarela<br/>ProcesadorTransaccionesPasarela<br/>PasarelaSinRespuestaException]
+        S2 -.->|"traduce a TimeoutPagoException (504)"| S2
+    end
+```
+
+**Cambio de responsabilidades.** El procesador solo informa un hecho técnico ("no hubo respuesta en N intentos").
+El servicio decide qué significa para el usuario (HTTP 504, mensaje, registro del intento). La dependencia entre
+paquetes queda **en un solo sentido**: `servicio → pasarela`.
+
+### 7.4 ¿Qué consecuencias tiene el cambio sobre la arquitectura de la aplicación?
+
+- **Grafo de paquetes acíclico** en el módulo de pagos: `pagos/pasarela` ya no importa nada de `pagos/servicio`
+  (verificado: 0 importaciones).
+- **Se refuerza la decisión D3:** la integración es un componente independiente del caso de uso; se podría
+  reutilizar desde otro servicio (por ejemplo, pagos de cuotas de acuerdos) o sustituir sin tocar `servicio`.
+- **La traducción a HTTP queda fuera de la integración**, más cerca de la regla de §5.4 ("web: códigos de error").
+  `TimeoutPagoException` sigue existiendo en `servicio` porque es el error del caso de uso.
+- **Contrato más seguro:** un cambio en el número de intentos se detecta al compilar, no en producción.
+- **Sin cambios externos:** la API, el JSON de error (`intentos`, título, estado 504) y los datos guardados son
+  los mismos.
+
+### 7.5 ¿Qué evidencias demuestran que la funcionalidad conserva su comportamiento?
+
+1. **`RegistroPagoServiceImplTest.co02SinRespuestaDeLaPasarelaSeRegistraElIntentoYSePropagaElTimeout`**, escrita
+   antes de refactorizar y **sin modificaciones**: usa el **procesador real** con una pasarela que nunca responde.
+   Por eso no depende de qué excepción interna use la pasarela y compara el comportamiento observable: el
+   servicio lanza `TimeoutPagoException` con estado `GATEWAY_TIMEOUT`, propiedad `intentos = 2`, mensaje
+   "…no respondió después de 2 intentos…", guarda un intento `SIN_RESPUESTA` con ese mismo mensaje y 2 intentos,
+   llama a la pasarela 2 veces y no aplica el pago.
+2. **`ProcesadorTransaccionesPasarelaTest`**: sus 7 pruebas de caracterización (aprobación, rechazo sin reintento,
+   reintento por falla técnica, error inesperado, agotamiento de intentos, timeout, mínimo un intento) pasan
+   sin cambios; se agregó 1 prueba nueva que fija el contrato tipado (`intentos() == 2`).
+3. **Verificación estructural:** búsqueda de `import co.edu.uniquindio.epq.pagos.servicio` en `pagos/pasarela/`:
+   1 resultado antes, 0 después.
+
+---
+
+## 8. Verificación y análisis de la mejora
+
+### 8.1 Métricas antes y después
+
+Obtenidas con `git grep` sobre `e63671b` (antes) y `b7d4111` (después).
+
+| Métrica | Antes | Después | Hallazgo |
+|---|---|---|---|
+| Comparaciones del valor contra el total en servicios de pagos | 2 | 0 | H-02 |
+| Implementaciones de la regla en el dominio (`Factura`) | 0 | 1 | H-02 |
+| Mensajes distintos para la misma regla | 2 | 1 | H-02 |
+| Importaciones de `pagos/pasarela` hacia `pagos/servicio` (ciclo) | 1 | 0 | H-03 |
+| Casts desde `propiedades()` en el módulo de pagos | 1 | 0 | H-03 |
+| Pruebas (`@Test`) del módulo de pagos | 5 | 35 | Red de seguridad |
+| Pruebas (`@Test`) de `FacturaCobroTest` | 8 | 11 | H-02 |
+
+**Análisis.** Las dos refactorizaciones son pequeñas (≈ 50 líneas de código de producción) pero eliminan las
+causas, no los síntomas: la regla de negocio tiene ahora un solo dueño y el ciclo de dependencias desapareció.
+La mejora más grande en calidad no está en las líneas cambiadas sino en las **30 pruebas nuevas del módulo de
+pagos**: antes, ninguna refactorización de F-05 se podía demostrar; ahora cada rama crítica (rechazo, timeout,
+factura ajena, cobro aprobado no aplicable, pagos simultáneos) está protegida.
+
+### 8.2 Procedimiento antes/después
+
+Desde `backend/`. No se necesita la base de datos: son pruebas unitarias con dobles (Mockito).
+
+```bash
+CLASES='AplicadorPagoTest,RegistroPagoServiceImplTest,ProcesadorTransaccionesPasarelaTest,FacturaCobroTest'
+
+git checkout 7b08875   # ANTES: código original + pruebas de caracterización
+./mvnw test -Dtest="$CLASES" | tee ../docs/refactorizacion/evidencias/antes.txt
+
+git checkout b1fcb9f   # Después de la primera refactorización (H-02)
+./mvnw test -Dtest="$CLASES" | tee ../docs/refactorizacion/evidencias/despues-h02.txt
+
+git checkout b7d4111   # Después de la segunda refactorización (H-03)
+./mvnw test -Dtest="$CLASES" | tee ../docs/refactorizacion/evidencias/despues-h03.txt
+./mvnw test | tee ../docs/refactorizacion/evidencias/suite-completa.txt   # sin regresiones en otros módulos
+```
+
+### 8.3 Comprobación manual (Swagger: `http://localhost:8080/swagger-ui.html`)
+
+| Caso | Antes | Después |
+|---|---|---|
+| `POST /api/pagos/presenciales` por el total | 201 + comprobante | Igual |
+| `POST /api/pagos/presenciales` con otro valor | 422 "El valor … no coincide con el total…" | Igual |
+| `POST /api/pagos/presenciales` sobre factura pagada | 422 "…ya se encuentra pagada" | Igual |
+| Pago en línea con tarjeta de prueba `4111111111111111` | 201 + comprobante | Igual |
+| Pago en línea con `valor` distinto del total | 422 "El valor a pagar debe ser el total…" | 422 "El valor … no coincide con el total…" (6.4) |
+| Pago en línea con la pasarela simulada sin respuesta | 504 "Pasarela sin respuesta", `intentos: 2` | Igual |
+
+### 8.4 Resultados
+
+> Completar con la salida real de Maven (`Tests run / Failures / Errors / Skipped`).
+
+| Ejecución | Commit | Pruebas esperadas | Fallos | Errores | Evidencia |
+|---|---|---|---|---|---|
+| Antes | `7b08875` | 37 (8 + 14 + 7 + 8) | | | `evidencias/antes.txt` |
+| Después de H-02 | `b1fcb9f` | 40 (8 + 14 + 7 + 11) | | | `evidencias/despues-h02.txt` |
+| Después de H-03 | `b7d4111` | 41 (8 + 14 + 8 + 11) | | | `evidencias/despues-h03.txt` |
+| Suite completa | `b7d4111` | | | | `evidencias/suite-completa.txt` |
+
+### 8.5 Limitaciones
+
+- El código y las pruebas se prepararon en un entorno sin acceso a Maven Central, donde **no se pudieron
+  ejecutar**. Se hizo una compilación estática de todo el proyecto con `javac`: los únicos errores fueron por
+  librerías ausentes (Spring, JPA, JUnit, Mockito), ninguno de sintaxis ni de tipos del proyecto. La evidencia
+  válida es la tabla 8.4, que el equipo completa al ejecutar.
+- Son pruebas unitarias: no cubren el bloqueo pesimista real ni la restricción `UNIQUE` de PostgreSQL.
+- `ProcesadorTransaccionesPasarelaTest.unIntentoQueSuperaElTimeoutSeAbandona` tarda unos segundos porque espera
+  un timeout real de 1 s.
+
+---
+
+## 9. Deuda técnica pendiente
+
+| ID | Deuda | Por qué no se hizo ahora | Siguiente paso |
+|---|---|---|---|
+| H-01 | Los servicios dependen de DTO de la capa web (56 archivos) | Cambio sistémico; hacerlo solo en pagos dejaría el proyecto inconsistente | Comandos y resultados propios del servicio, módulo por módulo, empezando por pagos; regla ArchUnit para evitar regresiones |
+| — | Si el hilo se interrumpe, el procesador informa el máximo de intentos aunque haya hecho menos (`ProcesadorTransaccionesPasarela` l. 52-57) | Corregirlo cambia el comportamiento; no es una refactorización pura | Informar el número real de intentos y agregar la prueba correspondiente |
+| — | Faltan pruebas `@WebMvcTest` de los endpoints de pago y de integración con la base de datos | Fuera del alcance de la sesión | `@WebMvcTest` para los códigos HTTP y `@DataJpaTest` para el bloqueo y la restricción `UNIQUE` |
+
+---
+
+## 10. Cierre
+
+**Lecciones.**
+
+- **Caracterizar antes de refactorizar.** Sin pruebas no había cómo demostrar que nada cambió. Escribirlas
+  primero también obligó a entender el código: la prueba del timeout se diseñó con el procesador real para que
+  sirviera antes y después de la segunda refactorización.
+- **Refactorizar es mover responsabilidades, no reescribir.** Las dos intervenciones son pequeñas y cada una
+  responde a un principio concreto (Experto en Información y ADP).
+- **Declarar los cambios observables.** Unificar una regla unificó un mensaje de error; se dejó documentado.
+- **Priorizar también es decidir qué no hacer.** H-01 tiene alto beneficio, pero no se podía hacer bien en una
+  sesión.
+
+**Vínculo con el proceso (SCRUM).** En un sprint de dos semanas con reunión diaria, estas prácticas evitan que
+la deuda se acumule:
+
+- **Definición de Hecho** con pruebas obligatorias de servicio por historia: F-05 se habría entregado con pruebas,
+  como F-01 y F-02.
+- **Revisión de código en cada pull request** con una lista de verificación de arquitectura (¿la regla está en
+  el dominio?, ¿se respetan las dependencias de §5.4?, ¿hay ciclos entre paquetes?).
+- **Pruebas de arquitectura automáticas** (ArchUnit) en `./mvnw test`, para que las reglas de capas fallen el build.
+- **Deuda técnica en el backlog:** H-01 y los pendientes de la sección 9 entran como historias técnicas del
+  siguiente sprint.
+
+**Commits.**
+
+| # | Commit | Mensaje |
+|---|---|---|
+| Base | `e63671b` | Merge pull request #9 (feature/frontend-entrega-final) |
+| 1 | `33c44fc` | docs: registrar diagnostico tecnico |
+| 2 | `7b08875` | test: caracterizar el registro de pagos (F-05) |
+| 3 | `b1fcb9f` | refactor: centralizar en Factura la validacion del valor del pago |
+| 4 | `b7d4111` | refactor: eliminar la dependencia de la pasarela hacia el servicio de pagos |
+| 5 | (este documento) | docs: documentar refactorizaciones y verificacion |
+
+Rama: `refactor/taller-f05-pagos` en <https://github.com/AgriDulce7u7/Proyecto_Ingenieria_Software_2>.
+
+**Uso de IA.** Se usó Claude (Anthropic) como apoyo para el análisis, la escritura de pruebas y la redacción.
+El equipo debe verificar cada hallazgo, línea y resultado antes de la sustentación.
