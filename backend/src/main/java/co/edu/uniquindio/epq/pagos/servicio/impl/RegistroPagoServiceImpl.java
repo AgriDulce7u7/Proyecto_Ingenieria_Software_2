@@ -24,6 +24,7 @@ import co.edu.uniquindio.epq.pagos.dominio.IntentoPagoEnLinea;
 import co.edu.uniquindio.epq.pagos.dominio.Pago;
 import co.edu.uniquindio.epq.pagos.dominio.ResultadoIntentoPago;
 import co.edu.uniquindio.epq.pagos.pasarela.DatosTarjeta;
+import co.edu.uniquindio.epq.pagos.pasarela.PasarelaSinRespuestaException;
 import co.edu.uniquindio.epq.pagos.pasarela.ProcesadorTransaccionesPasarela;
 import co.edu.uniquindio.epq.pagos.pasarela.RespuestaPasarela;
 import co.edu.uniquindio.epq.pagos.pasarela.SolicitudCobro;
@@ -92,11 +93,9 @@ public class RegistroPagoServiceImpl implements RegistroPagoService {
     public ComprobantePagoResponse pagarEnLinea(String numeroFactura, PagoEnLineaRequest s) {
         UsuarioAutenticado ciudadano = contexto.requerirUsuario();
         Factura factura = facturaDelCiudadano(numeroFactura, ciudadano);
-        factura.validarPagable();                                   // SWR-23
         BigDecimal monto = factura.getTotal();
-        if (s.valor() != null && s.valor().compareTo(monto) != 0) {  // CO-02: el monto coincide con el total
-            throw new ReglaNegocioException("El valor a pagar debe ser el total de la factura: " + monto);
-        }
+        // SWR-23 y CO-02 antes de cobrar la tarjeta; el valor es opcional y, si no llega, se cobra el total
+        factura.validarPago(s.valor() == null ? monto : s.valor());
         if (!pagosEnCurso.add(factura.getNumeroFactura())) {
             throw new RecursoDuplicadoException("Ya hay un pago en proceso para la factura " + factura.getNumeroFactura());
         }
@@ -109,10 +108,12 @@ public class RegistroPagoServiceImpl implements RegistroPagoService {
             try {
                 resultado = pasarela.cobrar(new SolicitudCobro(referencia, monto, tarjeta,
                         "EPQ factura " + factura.getNumeroFactura()));
-            } catch (TimeoutPagoException ex) {
-                registrarIntento(factura, monto, ResultadoIntentoPago.SIN_RESPUESTA, null, null, ex.getMessage(),
-                        tarjeta, (Integer) ex.propiedades().get("intentos"), usuario);
-                throw ex;
+            } catch (PasarelaSinRespuestaException ex) {
+                // El servicio traduce la falla técnica de la integración al error del caso de uso (HTTP 504)
+                TimeoutPagoException timeout = new TimeoutPagoException(ex.intentos());
+                registrarIntento(factura, monto, ResultadoIntentoPago.SIN_RESPUESTA, null, null, timeout.getMessage(),
+                        tarjeta, ex.intentos(), usuario);
+                throw timeout;
             }
             RespuestaPasarela respuesta = resultado.respuesta();
             if (!respuesta.aprobada()) {
@@ -155,9 +156,9 @@ public class RegistroPagoServiceImpl implements RegistroPagoService {
 
     /** Se guarda aunque el pago falle: este método corre fuera de transacción y save() confirma de inmediato. */
     private void registrarIntento(Factura factura, BigDecimal valor, ResultadoIntentoPago resultado, String codigoTransaccion,
-                          String codigoRespuesta, String mensaje, DatosTarjeta tarjeta, Integer intentos, String usuario) {
+                          String codigoRespuesta, String mensaje, DatosTarjeta tarjeta, int intentos, String usuario) {
         intentoRepository.save(IntentoPagoEnLinea.registrar(factura.getId(), valor, resultado, codigoTransaccion,
-                codigoRespuesta, mensaje, tarjeta.ultimosDigitos(), intentos == null ? 1 : intentos, usuario,
+                codigoRespuesta, mensaje, tarjeta.ultimosDigitos(), intentos, usuario,
                 LocalDateTime.now(clock)));
     }
 }

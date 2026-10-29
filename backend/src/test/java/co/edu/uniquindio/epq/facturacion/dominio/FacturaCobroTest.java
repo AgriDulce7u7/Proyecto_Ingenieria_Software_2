@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -51,6 +52,38 @@ class FacturaCobroTest {
         factura.vencerSiCorresponde(despuesDelVencimiento);
         factura.registrarPago(ahora);
         assertEquals(EstadoCobroFactura.PAGADA, factura.getEstadoCobro());
+    }
+
+    @Test
+    void co02ElPagoDebeSerPorElTotalDeLaFactura() {
+        Factura factura = DatosPruebaFacturacion.factura();
+        BigDecimal total = DatosPruebaFacturacion.LIQUIDACION.total();
+
+        factura.validarPago(total);
+        factura.validarPago(new BigDecimal("81783.250"));   // se compara el monto, no la escala
+        ReglaNegocioException error = assertThrows(ReglaNegocioException.class,
+                () -> factura.validarPago(new BigDecimal("81783.24")));
+        assertTrue(error.getMessage().contains("no coincide con el total"));
+        assertEquals(EstadoCobroFactura.PENDIENTE, factura.getEstadoCobro());   // validar no cambia el estado
+    }
+
+    @Test
+    void validarPagoRevisaPrimeroElEstadoDeLaFactura() {
+        Factura factura = DatosPruebaFacturacion.factura();
+        factura.registrarPago(ahora);
+
+        ReglaNegocioException error = assertThrows(ReglaNegocioException.class,
+                () -> factura.validarPago(BigDecimal.ONE));
+        assertTrue(error.getMessage().contains("ya se encuentra pagada"));
+    }
+
+    @Test
+    void validarPagoRechazaUnaFacturaEnAcuerdoAunqueElValorSeaElTotal() {
+        Factura factura = DatosPruebaFacturacion.factura();
+        factura.vencerSiCorresponde(despuesDelVencimiento);
+        factura.incluirEnAcuerdo(2);
+
+        assertThrows(ReglaNegocioException.class, () -> factura.validarPago(DatosPruebaFacturacion.LIQUIDACION.total()));
     }
 
     @Test
