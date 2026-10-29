@@ -96,6 +96,16 @@ class ProcesadorTransaccionesPasarelaTest {
     }
 
     @Test
+    void h03LaFaltaDeRespuestaSeInformaConUnaExcepcionPropiaYTipada() {
+        when(gateway.cobrar(SOLICITUD)).thenThrow(new PasarelaNoDisponibleException("Sin conexión"));
+
+        PasarelaSinRespuestaException error =
+                assertThrows(PasarelaSinRespuestaException.class, () -> procesador.cobrar(SOLICITUD));
+
+        assertEquals(2, error.intentos());
+    }
+
+    @Test
     void unIntentoQueSuperaElTimeoutSeAbandona() {
         procesador.cerrar();
         procesador = procesador(1, 1);

@@ -11,12 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import co.edu.uniquindio.epq.pagos.servicio.TimeoutPagoException;
 import jakarta.annotation.PreDestroy;
 
 /**
  * Aplica la política de CO-02 a cualquier pasarela: timeout de 30 segundos por intento y máximo
- * 2 intentos antes de reportar {@link TimeoutPagoException}. Los rechazos no se reintentan.
+ * 2 intentos antes de reportar {@link PasarelaSinRespuestaException}. Los rechazos no se reintentan.
  * La misma referencia viaja en cada intento para que la pasarela no cobre dos veces.
  */
 @Component
@@ -55,7 +54,7 @@ public class ProcesadorTransaccionesPasarela {
                 break;
             }
         }
-        throw new TimeoutPagoException(maximo);
+        throw new PasarelaSinRespuestaException(maximo);
     }
 
     @PreDestroy
