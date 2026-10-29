@@ -487,21 +487,61 @@ factura ajena, cobro aprobado no aplicable, pagos simultáneos) está protegida.
 
 ### 8.2 Procedimiento antes/después
 
-Desde `backend/`. No se necesita la base de datos: son pruebas unitarias con dobles (Mockito).
+Se ejecuta en el computador de un integrante, en una terminal, desde la carpeta `backend/` del repositorio.
+Requisitos: JDK 21 e internet la primera vez (Maven descarga las dependencias). No se necesita la base de datos
+ni Docker: son pruebas unitarias con dobles (Mockito).
+
+Las salidas se guardan **fuera del repositorio** (`../../evidencias-taller/`), porque al cambiar a los commits
+anteriores la carpeta `docs/refactorizacion/evidencias/` todavía no existe. Al final se copian a esa carpeta.
+
+**Git Bash (Windows) o terminal de Linux / macOS:**
 
 ```bash
+git fetch origin
+git checkout refactor/taller-f05-pagos
+cd backend
+mkdir -p ../../evidencias-taller
 CLASES='AplicadorPagoTest,RegistroPagoServiceImplTest,ProcesadorTransaccionesPasarelaTest,FacturaCobroTest'
 
 git checkout 7b08875   # ANTES: código original + pruebas de caracterización
-./mvnw test -Dtest="$CLASES" | tee ../docs/refactorizacion/evidencias/antes.txt
+./mvnw test -Dtest="$CLASES" | tee ../../evidencias-taller/antes.txt
 
 git checkout b1fcb9f   # Después de la primera refactorización (H-02)
-./mvnw test -Dtest="$CLASES" | tee ../docs/refactorizacion/evidencias/despues-h02.txt
+./mvnw test -Dtest="$CLASES" | tee ../../evidencias-taller/despues-h02.txt
 
 git checkout b7d4111   # Después de la segunda refactorización (H-03)
-./mvnw test -Dtest="$CLASES" | tee ../docs/refactorizacion/evidencias/despues-h03.txt
-./mvnw test | tee ../docs/refactorizacion/evidencias/suite-completa.txt   # sin regresiones en otros módulos
+./mvnw test -Dtest="$CLASES" | tee ../../evidencias-taller/despues-h03.txt
+./mvnw test | tee ../../evidencias-taller/suite-completa.txt   # sin regresiones en otros módulos
+
+git checkout refactor/taller-f05-pagos   # volver a la rama
+cp ../../evidencias-taller/*.txt ../docs/refactorizacion/evidencias/
 ```
+
+**PowerShell (Windows):**
+
+```powershell
+git fetch origin
+git checkout refactor/taller-f05-pagos
+cd backend
+New-Item -ItemType Directory -Force ..\..\evidencias-taller | Out-Null
+$CLASES = "AplicadorPagoTest,RegistroPagoServiceImplTest,ProcesadorTransaccionesPasarelaTest,FacturaCobroTest"
+
+git checkout 7b08875
+.\mvnw.cmd test "-Dtest=$CLASES" | Tee-Object ..\..\evidencias-taller\antes.txt
+
+git checkout b1fcb9f
+.\mvnw.cmd test "-Dtest=$CLASES" | Tee-Object ..\..\evidencias-taller\despues-h02.txt
+
+git checkout b7d4111
+.\mvnw.cmd test "-Dtest=$CLASES" | Tee-Object ..\..\evidencias-taller\despues-h03.txt
+.\mvnw.cmd test | Tee-Object ..\..\evidencias-taller\suite-completa.txt
+
+git checkout refactor/taller-f05-pagos
+Copy-Item ..\..\evidencias-taller\*.txt ..\docs\refactorizacion\evidencias\
+```
+
+Cada ejecución termina con una línea `Tests run: N, Failures: F, Errors: E, Skipped: S` y `BUILD SUCCESS` o
+`BUILD FAILURE`; esos valores van en la tabla 8.4. Al cambiar de commit Git avisa *detached HEAD*: es normal.
 
 ### 8.3 Comprobación manual (Swagger: `http://localhost:8080/swagger-ui.html`)
 
