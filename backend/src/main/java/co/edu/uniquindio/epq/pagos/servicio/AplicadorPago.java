@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.uniquindio.epq.auditoria.dominio.AccionAuditoria;
 import co.edu.uniquindio.epq.auditoria.servicio.ServicioAuditoria;
 import co.edu.uniquindio.epq.comun.excepcion.RecursoNoEncontradoException;
-import co.edu.uniquindio.epq.comun.excepcion.ReglaNegocioException;
 import co.edu.uniquindio.epq.comun.secuencia.GeneradorConsecutivos;
 import co.edu.uniquindio.epq.comun.secuencia.SecuenciaNegocio;
 import co.edu.uniquindio.epq.facturacion.dominio.Factura;
@@ -53,11 +52,7 @@ public class AplicadorPago {
                         String referencia, String usuario) {
         Factura factura = facturaRepository.buscarParaActualizar(numeroFactura.trim())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Factura", numeroFactura));
-        factura.validarPagable();   // SWR-23
-        if (valor.compareTo(factura.getTotal()) != 0) {
-            throw new ReglaNegocioException("El valor %s no coincide con el total de la factura %s (%s)"
-                    .formatted(valor, factura.getNumeroFactura(), factura.getTotal()));
-        }
+        factura.validarPago(valor);   // SWR-23 y CO-02: la regla vive en el dominio
         LocalDateTime ahora = LocalDateTime.now(clock);
         Pago pago = pagoRepository.save(Pago.registrar(
                 "PAG-%09d".formatted(consecutivos.siguiente(SecuenciaNegocio.PAGO)), factura, valor, canal, ahora,

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Objects;
 
 import co.edu.uniquindio.epq.comercial.dominio.Contrato;
 import co.edu.uniquindio.epq.comercial.dominio.Tarifa;
@@ -170,6 +171,18 @@ public class Factura {
         if (acuerdoPagoId != null) {
             throw new ReglaNegocioException(("La factura %s está incluida en un acuerdo de pago vigente: "
                     + "el pago se realiza mediante las cuotas del acuerdo").formatted(numeroFactura));
+        }
+    }
+
+    /**
+     * SWR-23 + CO-02: la factura admite el pago y el valor coincide con el total (no se admiten pagos
+     * parciales). Primero valida el estado y después el valor. La comparación es por monto, no por escala.
+     */
+    public void validarPago(BigDecimal valor) {
+        validarPagable();
+        if (Objects.requireNonNull(valor, "El valor del pago es obligatorio").compareTo(total) != 0) {
+            throw new ReglaNegocioException("El valor %s no coincide con el total de la factura %s (%s)"
+                    .formatted(valor, numeroFactura, total));
         }
     }
 

@@ -92,11 +92,9 @@ public class RegistroPagoServiceImpl implements RegistroPagoService {
     public ComprobantePagoResponse pagarEnLinea(String numeroFactura, PagoEnLineaRequest s) {
         UsuarioAutenticado ciudadano = contexto.requerirUsuario();
         Factura factura = facturaDelCiudadano(numeroFactura, ciudadano);
-        factura.validarPagable();                                   // SWR-23
         BigDecimal monto = factura.getTotal();
-        if (s.valor() != null && s.valor().compareTo(monto) != 0) {  // CO-02: el monto coincide con el total
-            throw new ReglaNegocioException("El valor a pagar debe ser el total de la factura: " + monto);
-        }
+        // SWR-23 y CO-02 antes de cobrar la tarjeta; el valor es opcional y, si no llega, se cobra el total
+        factura.validarPago(s.valor() == null ? monto : s.valor());
         if (!pagosEnCurso.add(factura.getNumeroFactura())) {
             throw new RecursoDuplicadoException("Ya hay un pago en proceso para la factura " + factura.getNumeroFactura());
         }
